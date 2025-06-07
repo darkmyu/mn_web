@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ROUTE_CAT_PAGE, ROUTE_DOG_PAGE, ROUTE_HOME_PAGE } from '@/constants/route';
+import { ROUTE_HOME_PAGE } from '@/constants/route';
 import { usePathname, useRouter } from 'next/navigation';
 
 interface Service {
@@ -10,16 +10,12 @@ interface Service {
 
 const services: readonly Service[] = [
   {
-    label: '전체',
+    label: '랭킹',
     route: ROUTE_HOME_PAGE,
   },
   {
-    label: '강아지',
-    route: ROUTE_DOG_PAGE,
-  },
-  {
-    label: '고양이',
-    route: ROUTE_CAT_PAGE,
+    label: '커뮤니티',
+    route: '/community',
   },
 ];
 

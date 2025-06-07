@@ -4,6 +4,7 @@ import React from 'react';
 import { ThemeProvider } from 'next-themes';
 import Layout from '@/components/layout/Layout';
 import localFont from 'next/font/local';
+import ModalProvider from '@/components/provider/ModalProvider';
 
 interface Props {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: Props) {
       <body>
         <ThemeProvider>
           <Layout>{children}</Layout>
+          <ModalProvider />
         </ThemeProvider>
       </body>
     </html>

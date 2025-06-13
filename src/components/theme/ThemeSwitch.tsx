@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
+import { useTheme } from 'next-themes';
 import { IoSunny } from 'react-icons/io5';
 import { PiMoonFill } from 'react-icons/pi';
-import { useTheme } from 'next-themes';
 
 function ThemeSwitch() {
   const { resolvedTheme, setTheme } = useTheme();

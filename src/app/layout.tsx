@@ -1,10 +1,10 @@
 import '@/tailwind.css';
 
-import React from 'react';
-import { ThemeProvider } from 'next-themes';
 import Layout from '@/components/layout/Layout';
-import localFont from 'next/font/local';
 import ModalProvider from '@/components/provider/ModalProvider';
+import { ThemeProvider } from 'next-themes';
+import localFont from 'next/font/local';
+import React from 'react';
 
 interface Props {
   children: React.ReactNode;

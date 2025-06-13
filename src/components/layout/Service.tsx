@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import { ROUTE_HOME_PAGE } from '@/constants/route';
+import { motion } from 'motion/react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface Service {
   label: string;

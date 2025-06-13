@@ -1,9 +1,11 @@
-import { create } from 'zustand/react';
-import React from 'react';
 import { nanoid } from 'nanoid';
+import React from 'react';
 import { devtools } from 'zustand/middleware';
+import { create } from 'zustand/react';
 
-type OpenArgs<P> = object extends P ? [Component: React.ComponentType<P>, props?: P] : [Component: React.ComponentType<P>, props: P];
+type OpenArgs<P> = object extends P
+  ? [Component: React.ComponentType<P>, props?: P]
+  : [Component: React.ComponentType<P>, props: P];
 
 interface Modal<P = object> {
   id: string;

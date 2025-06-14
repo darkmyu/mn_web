@@ -1,8 +1,8 @@
 'use client';
 
-import { useModals } from '@/stores/model';
+import { useModals } from '@/stores/modal';
+import { Dialog } from 'radix-ui';
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 function ModalProvider() {
   const { modals, close } = useModals();
@@ -19,14 +19,16 @@ function ModalProvider() {
       {modals.map((modal) => {
         const { id, Component, props } = modal;
 
-        return createPortal(
-          <div
-            key={id}
-            className={'fixed top-0 right-0 bottom-0 left-0 z-50 flex flex-col items-center justify-center bg-black/30'}
-          >
-            <Component {...props} />
-          </div>,
-          document.body,
+        return (
+          <Dialog.Root key={id} open={true} onOpenChange={() => close(id)}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center overflow-y-auto bg-black/30">
+                <Dialog.Content>
+                  <Component {...props} />
+                </Dialog.Content>
+              </Dialog.Overlay>
+            </Dialog.Portal>
+          </Dialog.Root>
         );
       })}
     </>

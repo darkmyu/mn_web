@@ -7,7 +7,7 @@ interface Props {
 
 function Layout({ children }: Props) {
   return (
-    <div className={'flex min-h-dvh flex-col bg-neutral-50 dark:bg-neutral-900'}>
+    <div className={'flex min-h-dvh flex-col bg-zinc-50 dark:bg-zinc-900'}>
       <Header />
       <main>{children}</main>
     </div>

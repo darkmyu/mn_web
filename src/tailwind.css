@@ -2,7 +2,9 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-html,
-body {
-  @apply text-zinc-900 dark:text-zinc-50;
+@layer base {
+  html,
+  body {
+    @apply text-zinc-900 dark:text-zinc-50;
+  }
 }

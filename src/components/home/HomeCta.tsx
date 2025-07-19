@@ -1,12 +1,12 @@
 function HomeCta() {
   return (
     <div className="col-2 my-24 flex justify-center">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-3xl">
         <div className="rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-700 px-8 py-10 text-white shadow-xl transition-all duration-300 hover:shadow-2xl dark:from-emerald-700 dark:to-emerald-900">
           <div className="text-center">
             <h3 className="mb-3 text-2xl font-bold">여러분의 반려동물도 참여해 보세요!</h3>
             <p className="mb-6 text-lg leading-relaxed text-emerald-100">
-              사랑스러운 반려동물 사진을 업로드하고 랭킹에 도전해보세요
+              사랑스러운 반려동물 사진을 업로드하고 랭킹에 도전해 보세요
             </p>
             <button className="cursor-pointer rounded-xl bg-white px-8 py-4 text-lg font-semibold text-emerald-600 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
               지금 참여하기 →
@@ -22,7 +22,7 @@ function HomeCta() {
               </div>
               <div>
                 <h4 className="mb-1 font-semibold text-zinc-900 dark:text-zinc-50">투표하기</h4>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">마음에 드는 반려동물에게 투표해보세요</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">마음에 드는 반려동물에게 투표해 보세요</p>
               </div>
             </div>
           </div>

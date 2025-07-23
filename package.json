@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@egjs/react-flicking": "^4.13.0",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.52.0",
     "lucide-react": "^0.515.0",
     "motion": "^12.16.0",
     "nanoid": "^5.1.5",

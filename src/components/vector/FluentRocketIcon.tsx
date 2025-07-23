@@ -1,8 +1,9 @@
 import { SVGProps } from 'react';
 
-function RocketIcon(props: SVGProps<SVGSVGElement>) {
+function FluentRocketIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32" {...props}>
+      {/* Icon from Fluent Emoji by Microsoft Corporation - https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE */}
       <g fill="none">
         <g clipPath="url(#f2230idv)">
           <path
@@ -427,4 +428,4 @@ function RocketIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export default RocketIcon;
+export default FluentRocketIcon;

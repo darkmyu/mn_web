@@ -1,12 +1,12 @@
 import Image from 'next/image';
-import { RocketIcon } from '../vector';
+import { FluentRocketIcon } from '../vector';
 
 function HomeRanking() {
   return (
     <div className="col-2 mb-24 flex flex-col gap-16">
       <div className="flex flex-col gap-2 text-center">
         <div className="flex items-center justify-center gap-2">
-          <RocketIcon width={24} height={24} />
+          <FluentRocketIcon width={24} height={24} />
           <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">TOP 3 반려동물</span>
         </div>
         <p className="text-md font-medium text-zinc-600 dark:text-zinc-400">

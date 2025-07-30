@@ -1,10 +1,8 @@
-'use client';
-
 import { useTheme } from 'next-themes';
 import { IoSunny } from 'react-icons/io5';
 import { PiMoonFill } from 'react-icons/pi';
 
-function ThemeSwitch() {
+function HeaderThemeSwitch() {
   const { resolvedTheme, setTheme } = useTheme();
 
   const handleThemeClick = () => {
@@ -19,4 +17,4 @@ function ThemeSwitch() {
   );
 }
 
-export default ThemeSwitch;
+export default HeaderThemeSwitch;

@@ -1,11 +1,23 @@
 import GoogleLogo from '@/assets/images/google.png';
 import KakaoLogo from '@/assets/images/kakao.png';
 import NaverLogo from '@/assets/images/naver.png';
-import { MailIcon } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
+import { Provider } from '@supabase/supabase-js';
 import Image from 'next/image';
 import Link from 'next/link';
 
 function LoginModal() {
+  const supabase = createClient();
+
+  const handleSocialLogin = async (provider: Provider) => {
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/api/auth/callback`,
+      },
+    });
+  };
+
   return (
     <div className="w-[24rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
       <div className="flex flex-col gap-6">
@@ -24,7 +36,10 @@ function LoginModal() {
           </span>
         </div>
         <div className="flex flex-col gap-2">
-          <button className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50">
+          <button
+            className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50"
+            onClick={() => handleSocialLogin('google')}
+          >
             <Image src={GoogleLogo} alt="google" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">구글 계정으로 시작하기</span>
           </button>
@@ -32,14 +47,17 @@ function LoginModal() {
             <Image src={NaverLogo} alt="naver" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">네이버 계정으로 시작하기</span>
           </button>
-          <button className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50">
+          <button
+            className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50"
+            onClick={() => handleSocialLogin('kakao')}
+          >
             <Image src={KakaoLogo} alt="kakao" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">카카오 계정으로 시작하기</span>
           </button>
-          <button className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50">
+          {/* <button className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50">
             <MailIcon size={16} />
             <span className="text-sm font-medium dark:text-zinc-400">이메일 계정으로 시작하기</span>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ const services: readonly Service[] = [
   },
 ];
 
-function Service() {
+function HeaderService() {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -62,4 +62,4 @@ function Service() {
   );
 }
 
-export default Service;
+export default HeaderService;

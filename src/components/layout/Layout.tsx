@@ -1,4 +1,4 @@
-import Header from '@/components/layout/Header';
+import Header from '@/components/header/Header';
 import React from 'react';
 
 interface Props {

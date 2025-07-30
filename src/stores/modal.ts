@@ -28,7 +28,7 @@ const initialState: ModalState = {
   modals: [],
 };
 
-const useModalStore = create<ModalStore>()(
+export const useModalStore = create<ModalStore>()(
   devtools((set) => ({
     ...initialState,
     open: (Component, props) => {
@@ -47,11 +47,3 @@ const useModalStore = create<ModalStore>()(
     },
   })),
 );
-
-export const useModals = () => {
-  const modals = useModalStore((state) => state.modals);
-  const open = useModalStore((state) => state.open);
-  const close = useModalStore((state) => state.close);
-
-  return { modals, open, close };
-};

@@ -1,7 +1,6 @@
 import '@/tailwind.css';
 
 import Layout from '@/components/layout/Layout';
-import AuthProvider from '@/components/provider/AuthProvider';
 import ModalProvider from '@/components/provider/ModalProvider';
 import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
@@ -20,7 +19,6 @@ export default function RootLayout({ children }: Props) {
     <html lang="ko" className={pretendardFonts.className} suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <AuthProvider />
           <ModalProvider />
           <Layout>{children}</Layout>
         </ThemeProvider>

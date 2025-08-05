@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "types": "openapi-typescript http://localhost:4000/api-json -o ./src/api/schema.d.ts"
+    "lint": "next lint"
   },
   "dependencies": {
     "@egjs/react-flicking": "^4.13.0",
@@ -37,7 +36,7 @@
     "openapi-typescript": "^7.8.0",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
-    "supabase": "^2.31.8",
+    "supabase": "^2.33.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -10,8 +10,12 @@ interface Service {
 
 const services: readonly Service[] = [
   {
-    label: '랭킹',
+    label: '홈',
     route: ROUTE_HOME_PAGE,
+  },
+  {
+    label: '랭킹',
+    route: '/ranking',
   },
   {
     label: '커뮤니티',

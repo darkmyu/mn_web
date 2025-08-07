@@ -14,10 +14,6 @@ const services: readonly Service[] = [
     route: ROUTE_HOME_PAGE,
   },
   {
-    label: '랭킹',
-    route: '/ranking',
-  },
-  {
     label: '커뮤니티',
     route: '/community',
   },

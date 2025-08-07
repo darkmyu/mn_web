@@ -5,7 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 function LoginModal() {
-  const handleSocialLogin = () => {};
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:4000/api/v1/auth/google';
+  };
 
   return (
     <div className="w-[24rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
@@ -27,21 +29,21 @@ function LoginModal() {
         <div className="flex flex-col gap-2">
           <button
             className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50"
-            onClick={handleSocialLogin}
+            onClick={handleGoogleLogin}
           >
             <Image src={GoogleLogo} alt="google" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">구글 계정으로 시작하기</span>
           </button>
           <button
             className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50"
-            onClick={handleSocialLogin}
+            onClick={handleGoogleLogin}
           >
             <Image src={NaverLogo} alt="naver" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">네이버 계정으로 시작하기</span>
           </button>
           <button
             className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50"
-            onClick={handleSocialLogin}
+            onClick={handleGoogleLogin}
           >
             <Image src={KakaoLogo} alt="kakao" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">카카오 계정으로 시작하기</span>

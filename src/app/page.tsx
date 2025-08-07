@@ -1,11 +1,13 @@
-import HomeCta from '@/components/home/HomeCta';
-import HomeRanking from '@/components/home/HomeRaking';
+import RankingFilter from '@/components/ranking/RankingFilter';
+import RankingGrid from '@/components/ranking/RankingGrid';
 
 export default function HomePage() {
   return (
     <div className="grid grid-cols-[1fr_min(1280px,100%)_1fr]">
-      <HomeCta />
-      <HomeRanking />
+      <div className="col-2 my-14 flex flex-col gap-4">
+        <RankingFilter />
+        <RankingGrid />
+      </div>
     </div>
   );
 }

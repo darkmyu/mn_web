@@ -43,24 +43,23 @@ function RankingFilter() {
             {isPopoverOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setIsPopoverOpen(false)}></div>
-                <div className="absolute top-full right-0 z-20 mt-1 w-24 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-                  <div className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-emerald-600 transition-colors duration-150 dark:text-emerald-400">
+                <div className="absolute top-full right-0 z-20 w-24 rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                  <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-emerald-600 transition-colors duration-150 dark:text-emerald-400">
                     오늘
                   </div>
-                  <div className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
+                  <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
                     이번 주
                   </div>
-                  <div className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
+                  <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
                     이번 달
                   </div>
-                  <div className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
+                  <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
                     올해
                   </div>
                 </div>
               </>
             )}
           </div>
-
           <div className="relative">
             <div
               onClick={() => setIsSortPopoverOpen(!isSortPopoverOpen)}
@@ -79,11 +78,11 @@ function RankingFilter() {
             {isSortPopoverOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setIsSortPopoverOpen(false)}></div>
-                <div className="absolute top-full right-0 z-20 mt-1 w-20 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-                  <div className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-emerald-600 transition-colors duration-150 dark:text-emerald-400">
+                <div className="absolute top-full right-0 z-20 w-20 rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                  <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-emerald-600 transition-colors duration-150 dark:text-emerald-400">
                     최신순
                   </div>
-                  <div className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
+                  <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-zinc-600 transition-colors duration-150 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100">
                     인기순
                   </div>
                 </div>

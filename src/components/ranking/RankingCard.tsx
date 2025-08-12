@@ -14,7 +14,7 @@ function RankingCard() {
         <div className="absolute inset-0 bg-black/50 opacity-0 transition-all duration-300 group-hover:opacity-100">
           <div className="absolute inset-0 flex flex-col justify-between p-4">
             <div className="flex flex-col gap-1">
-              <span className="text-lg font-bold">빵이</span>
+              <span className="text-lg font-bold text-white">빵이</span>
               <div className="w-fit cursor-pointer rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white">
                 말티폼
               </div>

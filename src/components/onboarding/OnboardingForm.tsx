@@ -1,8 +1,8 @@
 'use client';
 
-import { AuthRegisterRequest } from '@/api/auth';
+import { $api } from '@/api';
+import { AuthRegisterRequest } from '@/api/types/auth';
 import { useAuthRegisterForm } from '@/hooks/forms/auth';
-import { useAuthRegisterMutation } from '@/hooks/queries/auth';
 import { SubmitHandler } from 'react-hook-form';
 
 function OnboardingForm() {
@@ -12,11 +12,9 @@ function OnboardingForm() {
     formState: { errors },
   } = useAuthRegisterForm();
 
-  const mutation = useAuthRegisterMutation();
+  const { mutate } = $api.useMutation('post', '/api/v1/auth/register');
 
-  const onSubmit: SubmitHandler<AuthRegisterRequest> = (data) => {
-    mutation.mutate(data);
-  };
+  const onSubmit: SubmitHandler<AuthRegisterRequest> = (body) => mutate({ body });
 
   return (
     <main className="flex h-full flex-col items-center justify-center">

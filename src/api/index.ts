@@ -1,4 +1,5 @@
-import createClient, { Middleware } from 'openapi-fetch';
+import createFetchClient, { Middleware } from 'openapi-fetch';
+import createClient from 'openapi-react-query';
 import type { paths } from './schema';
 
 const middleware: Middleware = {
@@ -6,5 +7,7 @@ const middleware: Middleware = {
   onResponse: ({ request, response, options }) => {},
 };
 
-export const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_API_URL, credentials: 'include' });
+const client = createFetchClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_API_URL, credentials: 'include' });
 client.use(middleware);
+
+export const $api = createClient(client);

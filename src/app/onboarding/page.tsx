@@ -1,3 +1,5 @@
+import OnboardingForm from '@/components/onboarding/OnboardingForm';
+
 export default function OnboardingPage() {
-  <div>OnBoardingPage</div>;
+  return <OnboardingForm />;
 }

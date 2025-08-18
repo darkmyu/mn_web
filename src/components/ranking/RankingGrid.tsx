@@ -1,5 +1,3 @@
-'use client';
-
 import RankingCard from './RankingCard';
 
 function RankingGrid() {

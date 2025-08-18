@@ -2,6 +2,7 @@ import '@/tailwind.css';
 
 import Layout from '@/components/layout/Layout';
 import ModalProvider from '@/components/provider/ModalProvider';
+import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';
 import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
 import React from 'react';
@@ -18,10 +19,12 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="ko" className={pretendardFonts.className} suppressHydrationWarning>
       <body>
-        <ThemeProvider>
-          <ModalProvider />
-          <Layout>{children}</Layout>
-        </ThemeProvider>
+        <TanStackQueryProvider>
+          <ThemeProvider>
+            <ModalProvider />
+            <Layout>{children}</Layout>
+          </ThemeProvider>
+        </TanStackQueryProvider>
       </body>
     </html>
   );

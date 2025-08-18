@@ -1,4 +1,3 @@
-import Header from '@/components/header/Header';
 import React from 'react';
 
 interface Props {
@@ -6,12 +5,7 @@ interface Props {
 }
 
 function Layout({ children }: Props) {
-  return (
-    <div className={'flex min-h-dvh flex-col bg-zinc-50 dark:bg-zinc-900'}>
-      <Header />
-      <main>{children}</main>
-    </div>
-  );
+  return <div className="h-dvh bg-zinc-50 dark:bg-zinc-900">{children}</div>;
 }
 
 export default Layout;

@@ -35,8 +35,11 @@ function RankingFilter() {
               </div>
             </Popover.Trigger>
             <Popover.Portal>
-              <Popover.Content align="end">
-                <div className="w-24 rounded-lg border border-zinc-200 bg-white shadow-lg select-none dark:border-zinc-700 dark:bg-zinc-800">
+              <Popover.Content
+                className="w-24 rounded-lg border border-zinc-200 bg-white shadow-lg outline-none select-none dark:border-zinc-700 dark:bg-zinc-800"
+                align="end"
+              >
+                <div className="flex flex-col">
                   <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-emerald-600 transition-colors duration-150 dark:text-emerald-400">
                     오늘
                   </div>
@@ -69,8 +72,11 @@ function RankingFilter() {
               </div>
             </Popover.Trigger>
             <Popover.Portal>
-              <Popover.Content align="end">
-                <div className="w-20 rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+              <Popover.Content
+                className="w-20 rounded-lg border border-zinc-200 bg-white shadow-lg outline-none dark:border-zinc-700 dark:bg-zinc-800"
+                align="end"
+              >
+                <div className="flex flex-col">
                   <div className="w-full cursor-pointer px-4 py-3 text-left text-sm text-emerald-600 transition-colors duration-150 dark:text-emerald-400">
                     인기순
                   </div>

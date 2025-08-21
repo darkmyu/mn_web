@@ -1,23 +1,24 @@
+import { UserResponse } from '@/api/types';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 interface AuthState {
-  isAuth: boolean;
+  user: UserResponse | null;
 }
 
 interface AuthAction {
-  setIsAuth: (isAuth: boolean) => void;
+  setUser: (user: UserResponse | null) => void;
 }
 
 interface AuthStore extends AuthState, AuthAction {}
 
 const initialState: AuthState = {
-  isAuth: false,
+  user: null,
 };
 
 export const useAuthStore = create<AuthStore>()(
   devtools((set) => ({
     ...initialState,
-    setIsAuth: (isAuth) => set(() => ({ isAuth })),
+    setUser: (user) => set(() => ({ user })),
   })),
 );

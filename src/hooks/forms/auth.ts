@@ -1,4 +1,4 @@
-import { AuthRegisterRequest } from '@/api/types/auth';
+import { AuthRegisterRequest } from '@/api/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';

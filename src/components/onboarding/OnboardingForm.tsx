@@ -1,20 +1,39 @@
 'use client';
 
 import { $api } from '@/api';
-import { AuthRegisterRequest } from '@/api/types/auth';
+import { AuthRegisterRequest } from '@/api/types';
+import { ROUTE_HOME_PAGE } from '@/constants/route';
 import { useAuthRegisterForm } from '@/hooks/forms/auth';
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'next/navigation';
 import { SubmitHandler } from 'react-hook-form';
 
 function OnboardingForm() {
+  const router = useRouter();
+  const { setUser } = useAuthStore();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useAuthRegisterForm();
 
-  const { mutate } = $api.useMutation('post', '/api/v1/auth/register');
+  const { mutate } = $api.useMutation('post', '/api/v1/auth/register', {
+    onSuccess: (data) => {
+      setUser(data);
+    },
+  });
 
-  const onSubmit: SubmitHandler<AuthRegisterRequest> = (body) => mutate({ body });
+  const onSubmit: SubmitHandler<AuthRegisterRequest> = (body) => {
+    mutate(
+      { body },
+      {
+        onSuccess: () => {
+          router.push(ROUTE_HOME_PAGE);
+        },
+      },
+    );
+  };
 
   return (
     <main className="flex h-full flex-col items-center justify-center">

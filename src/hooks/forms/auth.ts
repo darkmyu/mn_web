@@ -5,7 +5,7 @@ import * as z from 'zod';
 
 export const useAuthRegisterForm = () => {
   return useForm<AuthRegisterRequest>({
-    mode: 'all',
+    mode: 'onChange',
     resolver: zodResolver(
       z.object({
         nickname: z.string().min(1, '이름을 입력해주세요.'),

@@ -5,35 +5,82 @@ import { AuthRegisterRequest } from '@/api/types';
 import { ROUTE_HOME_PAGE } from '@/constants/route';
 import { useAuthRegisterForm } from '@/hooks/forms/auth';
 import { useAuthStore } from '@/stores/auth';
+import { debounce } from 'es-toolkit';
 import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
 function OnboardingForm() {
   const router = useRouter();
   const { setUser } = useAuthStore();
+  const [isCheckDuplicateUsername, setIsCheckDuplicateUsername] = useState(false);
 
   const {
+    watch,
     register,
+    setError,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useAuthRegisterForm();
 
-  const { mutate } = $api.useMutation('post', '/api/v1/auth/register', {
+  const username = watch('username');
+
+  const { mutate: registerMutate } = $api.useMutation('post', '/api/v1/auth/register', {
     onSuccess: (data) => {
       setUser(data);
     },
   });
 
+  const { mutate: checkDuplicateUsernameMutate } = $api.useMutation('post', '/api/v1/auth/check-duplicate-username', {
+    onSuccess: () => {
+      setIsCheckDuplicateUsername(true);
+    },
+    onError: () => {
+      setIsCheckDuplicateUsername(false);
+      setError('username', {
+        type: 'duplicate',
+        message: '이미 사용중인 고유명이에요. 다른 이름을 입력해주세요.',
+      });
+    },
+  });
+
+  const debouncedRegisterMutate = useMemo(
+    () =>
+      debounce((body: AuthRegisterRequest) => {
+        registerMutate(
+          { body },
+          {
+            onSuccess: () => {
+              router.push(ROUTE_HOME_PAGE);
+            },
+          },
+        );
+      }, 500),
+    [registerMutate, router],
+  );
+
+  const debouncedCheckDuplicateUsernameMutate = useMemo(
+    () =>
+      debounce((username: string) => {
+        checkDuplicateUsernameMutate({
+          body: {
+            username,
+          },
+        });
+      }, 500),
+    [checkDuplicateUsernameMutate],
+  );
+
   const onSubmit: SubmitHandler<AuthRegisterRequest> = (body) => {
-    mutate(
-      { body },
-      {
-        onSuccess: () => {
-          router.push(ROUTE_HOME_PAGE);
-        },
-      },
-    );
+    debouncedRegisterMutate(body);
   };
+
+  useEffect(() => {
+    if (username && !errors.username) {
+      setIsCheckDuplicateUsername(false);
+      debouncedCheckDuplicateUsernameMutate(username);
+    }
+  }, [debouncedCheckDuplicateUsernameMutate, errors.username, username]);
 
   return (
     <main className="flex h-full flex-col items-center justify-center">
@@ -93,7 +140,8 @@ function OnboardingForm() {
           </div>
           <button
             type="submit"
-            className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800"
+            disabled={!isValid || !isCheckDuplicateUsername}
+            className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
           >
             가입 완료
           </button>

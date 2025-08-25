@@ -119,17 +119,22 @@ function OnboardingForm() {
                   {`고유명 `}
                   <span className="text-sm text-red-700">*</span>
                 </label>
-                <input
-                  {...register('username')}
-                  id="username"
-                  type="text"
-                  autoComplete="off"
-                  className={`rounded-lg border px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:text-zinc-100 dark:placeholder-zinc-500 ${
+                <div
+                  className={`flex items-center gap-0.5 rounded-lg border px-4 py-3 text-sm focus-within:ring-0 ${
                     errors.username
-                      ? 'border-red-400 focus:border-red-400 dark:border-red-400 dark:focus:border-red-400'
-                      : 'border-zinc-200 focus:border-zinc-400 dark:border-zinc-700 dark:focus:border-zinc-500'
+                      ? 'border-red-400 focus-within:border-red-400 dark:border-red-400 dark:focus-within:border-red-400'
+                      : 'border-zinc-200 focus-within:border-zinc-400 dark:border-zinc-700 dark:focus-within:border-zinc-500'
                   }`}
-                />
+                >
+                  {username && <span className="text-zinc-400 dark:text-zinc-500">@</span>}
+                  <input
+                    {...register('username')}
+                    id="username"
+                    type="text"
+                    autoComplete="off"
+                    className="flex-1 bg-transparent placeholder-zinc-400 focus:outline-none dark:text-zinc-100 dark:placeholder-zinc-500"
+                  />
+                </div>
               </div>
               <p className={`text-sm ${errors.username ? 'text-red-400' : 'text-zinc-400'}`}>
                 {errors.username

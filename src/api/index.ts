@@ -7,7 +7,7 @@ const middleware: Middleware = {
   onResponse: ({ request, response, options }) => {},
 };
 
-const client = createFetchClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_API_URL, credentials: 'include' });
-client.use(middleware);
+export const api = createFetchClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_API_URL, credentials: 'include' });
+api.use(middleware);
 
-export const $api = createClient(client);
+export const $api = createClient(api);

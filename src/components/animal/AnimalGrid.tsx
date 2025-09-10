@@ -1,13 +1,13 @@
-import RankingCard from './RankingCard';
+import AnimalCard from './AnimalCard';
 
-function RankingGrid() {
+function AnimalGrid() {
   return (
     <div className="grid grid-cols-5 gap-4">
       {Array.from({ length: 30 }, (_, index) => index).map((item) => (
-        <RankingCard key={item} />
+        <AnimalCard key={item} />
       ))}
     </div>
   );
 }
 
-export default RankingGrid;
+export default AnimalGrid;

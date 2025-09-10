@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { FluentHeartIcon } from '../vector';
 
-function RankingCard() {
+function AnimalCard() {
   return (
     <div className="group relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02]">
       <div className="relative aspect-square overflow-hidden">
@@ -35,4 +35,4 @@ function RankingCard() {
   );
 }
 
-export default RankingCard;
+export default AnimalCard;

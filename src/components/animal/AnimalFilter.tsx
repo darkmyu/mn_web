@@ -1,6 +1,6 @@
 import { Popover } from 'radix-ui';
 
-function RankingFilter() {
+function AnimalFilter() {
   return (
     <div className="col-2">
       <div className="flex items-center justify-between">
@@ -93,4 +93,4 @@ function RankingFilter() {
   );
 }
 
-export default RankingFilter;
+export default AnimalFilter;

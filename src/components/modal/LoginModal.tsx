@@ -1,12 +1,21 @@
 import GoogleLogo from '@/assets/images/google.png';
 import KakaoLogo from '@/assets/images/kakao.png';
 import NaverLogo from '@/assets/images/naver.png';
+import { API_ROUTE_OAUTH_GOOGLE, API_ROUTE_OAUTH_KAKAO, API_ROUTE_OAUTH_NAVER } from '@/constants/route';
 import Image from 'next/image';
 import Link from 'next/link';
 
 function LoginModal() {
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:4000/api/v1/auth/google';
+    window.location.href = API_ROUTE_OAUTH_GOOGLE;
+  };
+
+  const handleNaverLogin = () => {
+    window.location.href = API_ROUTE_OAUTH_NAVER;
+  };
+
+  const handleKakaoLogin = () => {
+    window.location.href = API_ROUTE_OAUTH_KAKAO;
   };
 
   return (
@@ -36,14 +45,14 @@ function LoginModal() {
           </button>
           <button
             className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50"
-            onClick={handleGoogleLogin}
+            onClick={handleNaverLogin}
           >
             <Image src={NaverLogo} alt="naver" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">네이버 계정으로 시작하기</span>
           </button>
           <button
             className="flex cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-zinc-200/50 p-2 text-sm dark:bg-zinc-800/50"
-            onClick={handleGoogleLogin}
+            onClick={handleKakaoLogin}
           >
             <Image src={KakaoLogo} alt="kakao" width={16} height={16} />
             <span className="text-sm font-medium dark:text-zinc-400">카카오 계정으로 시작하기</span>

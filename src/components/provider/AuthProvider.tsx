@@ -12,7 +12,7 @@ function AuthProvider() {
 
     api.GET('/api/v1/auth/info').then((response) => {
       if (response.data) {
-        setUser(response.data.user || null);
+        setUser(response.data.user);
       }
     });
   }, [setUser, user]);

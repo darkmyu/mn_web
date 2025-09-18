@@ -1,9 +1,10 @@
 'use client';
 
-import HeaderService from '@/components/header/HeaderService';
 import dynamic from 'next/dynamic';
+import HeaderService from './HeaderService';
 
-const HeaderThemeSwitch = dynamic(() => import('@/components/header/HeaderThemeSwitch'), { ssr: false });
+const HeaderUpload = dynamic(() => import('./HeaderUpload'), { ssr: false });
+const HeaderThemeSwitch = dynamic(() => import('./HeaderThemeSwitch'), { ssr: false });
 const HeaderProfile = dynamic(() => import('./HeaderProfile'), { ssr: false });
 
 function Header() {
@@ -14,6 +15,7 @@ function Header() {
         <HeaderService />
       </div>
       <div className="flex items-center gap-6">
+        <HeaderUpload />
         <HeaderThemeSwitch />
         <HeaderProfile />
       </div>

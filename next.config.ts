@@ -8,6 +8,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  rewrites: async () => [
+    {
+      source: '/@:username',
+      destination: '/profile/:username',
+    },
+  ],
 };
 
 export default nextConfig;

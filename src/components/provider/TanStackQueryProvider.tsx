@@ -1,6 +1,7 @@
 'use client';
 
 import { isServer, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 interface Props {
   children: React.ReactNode;
@@ -9,7 +10,11 @@ interface Props {
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
-      queries: {},
+      queries: {
+        retry: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+      },
     },
   });
 }
@@ -28,7 +33,12 @@ function getQueryClient() {
 function TanStackQueryProvider({ children }: Props) {
   const queryClient = getQueryClient();
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
+      {children}
+    </QueryClientProvider>
+  );
 }
 
 export default TanStackQueryProvider;

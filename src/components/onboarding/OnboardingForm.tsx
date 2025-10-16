@@ -84,7 +84,7 @@ function OnboardingForm() {
 
   return (
     <main className="flex h-full flex-col items-center justify-center">
-      <div className="gap4 flex w-md flex-col gap-20 rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
+      <div className="flex w-md flex-col gap-20 rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
         <div className="flex flex-col items-center gap-4">
           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">환영합니다!</p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">사용하실 이름과 고유명을 입력해주세요.</p>
@@ -92,7 +92,7 @@ function OnboardingForm() {
         <form className="flex flex-col gap-12" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-2">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="nickname" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   {`이름 `}
                   <span className="text-sm text-red-700">*</span>
@@ -114,7 +114,7 @@ function OnboardingForm() {
               </p>
             </div>
             <div className="flex flex-col gap-2">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="username" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   {`고유명 `}
                   <span className="text-sm text-red-700">*</span>

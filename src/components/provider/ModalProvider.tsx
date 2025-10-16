@@ -2,17 +2,9 @@
 
 import { useModalStore } from '@/stores/modal';
 import { Dialog, VisuallyHidden } from 'radix-ui';
-import { useEffect, useState } from 'react';
 
 function ModalProvider() {
   const { modals, close } = useModalStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
 
   return (
     <>
@@ -26,6 +18,7 @@ function ModalProvider() {
                 <Dialog.Content className="z-50">
                   <VisuallyHidden.Root>
                     <Dialog.Title />
+                    <Dialog.Description />
                   </VisuallyHidden.Root>
                   <Component {...props} />
                 </Dialog.Content>

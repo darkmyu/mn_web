@@ -1,15 +1,14 @@
 import { $api } from '@/api';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
-import { useModalStore } from '@/stores/modal';
 import { Cat, Dog, LogOut, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Popover } from 'radix-ui';
-import LoginModal from '../modal/LoginModal';
+import { Modal } from '../modal';
+import LoginModal from '../modal/contents/LoginModal';
 
 function HeaderProfile() {
-  const { open } = useModalStore();
   const { user, setUser } = useAuthStore();
 
   const { mutate: logoutMutate } = $api.useMutation('post', '/api/v1/auth/logout', {
@@ -20,12 +19,16 @@ function HeaderProfile() {
 
   if (!user) {
     return (
-      <button
-        className="cursor-pointer rounded-lg bg-emerald-600 px-4.5 py-2.5 text-sm text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 dark:bg-emerald-800 dark:hover:bg-emerald-800/90"
-        onClick={() => open(LoginModal)}
-      >
-        로그인
-      </button>
+      <Modal>
+        <Modal.Trigger>
+          <button className="cursor-pointer rounded-lg bg-emerald-600 px-4.5 py-2.5 text-sm text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 dark:bg-emerald-800 dark:hover:bg-emerald-800/90">
+            로그인
+          </button>
+        </Modal.Trigger>
+        <Modal.Content>
+          <LoginModal />
+        </Modal.Content>
+      </Modal>
     );
   }
 

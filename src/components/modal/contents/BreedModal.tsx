@@ -1,9 +1,10 @@
 import { $api } from '@/api';
 import { AnimalSpecies, BreedResponse } from '@/api/types';
-import { useModalStore } from '@/stores/modal';
 import { getChoseong } from 'es-hangul';
 import { Check, Search, X } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { Modal } from '..';
+import { useModalContext } from '../context';
 
 interface Props {
   selectedSpecies: AnimalSpecies;
@@ -75,21 +76,25 @@ function BreedListSkeleton() {
   );
 }
 
-function BreedModal({ selectedSpecies, selectedBreed, onBreedClick: handleBreedClick }: Props) {
-  const { close } = useModalStore();
+function BreedModal({ selectedSpecies, selectedBreed, onBreedClick }: Props) {
+  const { close } = useModalContext();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleBreedClick = (breed: BreedResponse) => {
+    onBreedClick(breed);
+    close();
+  };
 
   return (
     <div className="w-[28rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="font-medium">품종 선택</h1>
-          <button
-            className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
-            onClick={() => close()}
-          >
-            <X size={20} />
-          </button>
+          <Modal.Close>
+            <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+              <X size={20} />
+            </button>
+          </Modal.Close>
         </div>
         <div className="relative">
           <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400" size={18} />

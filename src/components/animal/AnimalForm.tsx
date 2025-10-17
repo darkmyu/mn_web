@@ -2,14 +2,12 @@
 
 import { AnimalGender, AnimalSpecies, BreedResponse } from '@/api/types';
 import { useAnimalCreateForm } from '@/hooks/forms/animal';
-import { useModalStore } from '@/stores/modal';
 import { Camera, Search } from 'lucide-react';
 import { useState } from 'react';
-import BreedModal from '../modal/BreedModal';
+import { Modal } from '../modal';
+import BreedModal from '../modal/contents/BreedModal';
 
 function AnimalForm() {
-  const { open, close } = useModalStore();
-
   const {
     watch,
     reset,
@@ -36,16 +34,9 @@ function AnimalForm() {
     reset({ ...values, breedId: undefined });
   };
 
-  const handleBreedClick = () => {
-    open(BreedModal, {
-      selectedSpecies,
-      selectedBreed,
-      onBreedClick: (breed) => {
-        setValue('breedId', breed.id, { shouldValidate: true });
-        setSelectedBreed(breed);
-        close();
-      },
-    });
+  const handleBreedClick = (breed: BreedResponse) => {
+    setValue('breedId', breed.id, { shouldValidate: true });
+    setSelectedBreed(breed);
   };
 
   const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,18 +96,29 @@ function AnimalForm() {
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 품종 <span className="text-sm text-red-700">*</span>
               </label>
-              <div className="relative w-full" onClick={handleBreedClick}>
-                <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
-                  <Search className="h-4 w-4 text-zinc-700" />
-                </div>
-                <input
-                  type="text"
-                  readOnly
-                  defaultValue={selectedBreed?.name}
-                  placeholder="반려동물의 품종을 선택해주세요"
-                  className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
-                />
-              </div>
+              <Modal>
+                <Modal.Trigger>
+                  <div className="relative w-full">
+                    <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
+                      <Search className="h-4 w-4 text-zinc-700" />
+                    </div>
+                    <input
+                      type="text"
+                      readOnly
+                      defaultValue={selectedBreed?.name}
+                      placeholder="반려동물의 품종을 선택해주세요"
+                      className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
+                    />
+                  </div>
+                </Modal.Trigger>
+                <Modal.Content>
+                  <BreedModal
+                    selectedSpecies={selectedSpecies}
+                    selectedBreed={selectedBreed}
+                    onBreedClick={handleBreedClick}
+                  />
+                </Modal.Content>
+              </Modal>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">

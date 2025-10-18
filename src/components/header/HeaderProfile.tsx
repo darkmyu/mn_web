@@ -19,7 +19,7 @@ function HeaderProfile() {
 
   if (!user) {
     return (
-      <Modal>
+      <Modal.Root>
         <Modal.Trigger>
           <button className="cursor-pointer rounded-lg bg-emerald-600 px-4.5 py-2.5 text-sm text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 dark:bg-emerald-800 dark:hover:bg-emerald-800/90">
             로그인
@@ -28,7 +28,7 @@ function HeaderProfile() {
         <Modal.Content>
           <LoginModal />
         </Modal.Content>
-      </Modal>
+      </Modal.Root>
     );
   }
 

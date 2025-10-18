@@ -96,7 +96,7 @@ function AnimalForm() {
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 품종 <span className="text-sm text-red-700">*</span>
               </label>
-              <Modal>
+              <Modal.Root>
                 <Modal.Trigger>
                   <div className="relative w-full">
                     <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
@@ -118,7 +118,7 @@ function AnimalForm() {
                     onBreedClick={handleBreedClick}
                   />
                 </Modal.Content>
-              </Modal>
+              </Modal.Root>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">

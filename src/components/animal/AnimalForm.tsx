@@ -1,26 +1,97 @@
 'use client';
 
-import { AnimalGender, AnimalSpecies, BreedResponse } from '@/api/types';
-import { useAnimalCreateForm } from '@/hooks/forms/animal';
+import { $api } from '@/api';
+import { AnimalGender, AnimalResponse, AnimalSpecies, BreedResponse } from '@/api/types';
+import { AnimalBody, useAnimalForm } from '@/hooks/forms/animal';
+import dayjs from '@/utils/dayjs';
+import { debounce } from 'es-toolkit';
 import { Camera, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { SubmitHandler } from 'react-hook-form';
 import { Modal } from '../modal';
 import BreedModal from '../modal/contents/BreedModal';
 
-function AnimalForm() {
+interface Props {
+  initialAnimal?: AnimalResponse;
+}
+
+function AnimalForm({ initialAnimal }: Props) {
   const {
     watch,
     reset,
     register,
     setValue,
     getValues,
+    handleSubmit,
     formState: { errors, isValid },
-  } = useAnimalCreateForm();
+  } = useAnimalForm(
+    initialAnimal && {
+      breedId: initialAnimal.breed.id,
+      name: initialAnimal.name,
+      gender: initialAnimal.gender,
+      birthday: initialAnimal.birthday,
+      ...(initialAnimal.thumbnail && { thumbnail: initialAnimal.thumbnail }),
+    },
+  );
 
+  const router = useRouter();
+  const isEdit = !!initialAnimal;
   const birthday = watch('birthday');
   const selectedGender = watch('gender');
   const [selectedSpecies, setSelectedSpecie] = useState<AnimalSpecies>('DOG');
   const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(null);
+
+  const { mutate: createAnimalMutate } = $api.useMutation('post', '/api/v1/animals');
+  const { mutate: updateAnimalMutate } = $api.useMutation('put', '/api/v1/animals/{id}');
+
+  const debouncedCreateAnimalMutate = useMemo(
+    () =>
+      debounce((body: AnimalBody) => {
+        createAnimalMutate(
+          { body },
+          {
+            onSuccess: (data) => {
+              router.push(`/@${data.user.username}`);
+            },
+          },
+        );
+      }, 500),
+    [createAnimalMutate, router],
+  );
+
+  const debouncedUpdateAnimalMutate = useMemo(
+    () =>
+      debounce((id: number, body: AnimalBody) => {
+        updateAnimalMutate(
+          {
+            params: {
+              path: { id },
+            },
+            body,
+          },
+          {
+            onSuccess: (data) => {
+              router.push(`/@${data.user.username}`);
+            },
+          },
+        );
+      }, 500),
+    [updateAnimalMutate, router],
+  );
+
+  const onSubmit: SubmitHandler<AnimalBody> = (body) => {
+    const payload = {
+      ...body,
+      birthday: dayjs(body.birthday).toISOString(),
+    };
+
+    if (!isEdit) {
+      debouncedCreateAnimalMutate(payload);
+    } else {
+      debouncedUpdateAnimalMutate(initialAnimal.id, payload);
+    }
+  };
 
   const handleGenderClick = (gender: AnimalGender) => {
     setValue('gender', gender);
@@ -53,7 +124,7 @@ function AnimalForm() {
           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">반려동물 등록</p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 정보를 입력해주세요.</p>
         </div>
-        <form className="flex flex-col gap-12">
+        <form className="flex flex-col gap-12" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col items-center gap-4">
             <div className="relative h-32 w-32 cursor-pointer">
               <div className="h-full w-full rounded-full bg-zinc-200 dark:bg-zinc-700" />

@@ -1,11 +1,13 @@
-import { AnimalCreateRequest, AnimalUpdateRequest } from '@/api/types';
+import { AnimalCreateRequest } from '@/api/types';
 import dayjs from '@/utils/dayjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-export const useAnimalCreateForm = () => {
-  return useForm<AnimalCreateRequest>({
+export type AnimalBody = AnimalCreateRequest;
+
+export const useAnimalForm = (defaultValues?: AnimalBody) => {
+  return useForm<AnimalBody>({
     mode: 'onChange',
     resolver: zodResolver(
       z.object({
@@ -26,10 +28,7 @@ export const useAnimalCreateForm = () => {
     ),
     defaultValues: {
       gender: 'MALE',
+      ...defaultValues,
     },
   });
-};
-
-export const useAnimalUpdateForm = () => {
-  return useForm<AnimalUpdateRequest>({});
 };

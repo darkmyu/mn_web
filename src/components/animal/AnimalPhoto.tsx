@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-function AnimalCard() {
+function AnimalPhoto() {
   return (
     <div className="relative aspect-square cursor-pointer overflow-hidden">
       <Image
@@ -14,4 +14,4 @@ function AnimalCard() {
   );
 }
 
-export default AnimalCard;
+export default AnimalPhoto;

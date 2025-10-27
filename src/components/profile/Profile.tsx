@@ -1,22 +1,29 @@
+'use client';
+
+import { $api } from '@/api';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import Image from 'next/image';
 import Link from 'next/link';
 
-function Profile() {
+interface Props {
+  username: string;
+}
+
+function Profile({ username }: Props) {
+  const { data: user } = $api.useSuspenseQuery('get', '/api/v1/users/{username}', {
+    params: {
+      path: { username },
+    },
+  });
+
   return (
     <div className="flex gap-16">
       <div className="relative h-54 w-54 rounded-full border-2 border-zinc-400 dark:border-zinc-600">
-        <Image
-          className="rounded-full object-cover"
-          src="https://pub-80ea7a041b9d49848ef0daecc4392a3b.r2.dev/KakaoTalk_Photo_2025-08-01-15-06-34%20010.jpeg"
-          sizes="25vw"
-          alt=""
-          fill
-        />
+        <Image className="rounded-full object-cover" src={user.profileImage ?? ''} sizes="25vw" alt="" fill priority />
       </div>
       <div className="flex flex-col py-2">
         <div className="mb-2 flex items-center gap-4">
-          <p className="text-2xl font-medium">밤뮤</p>
+          <p className="text-2xl font-medium">{user.nickname}</p>
           <Link
             href={ROUTE_SETTINGS_PAGE}
             className="rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
@@ -25,7 +32,7 @@ function Profile() {
           </Link>
         </div>
         <div className="mb-6 flex items-center">
-          <p className="text-base font-semibold">@bammyu</p>
+          <p className="text-base font-semibold">{`@${user.username}`}</p>
           <span className="mx-3 text-xs text-zinc-600">•</span>
           <p className="text-base">
             <span className="font-semibold">1,203</span> 팔로워

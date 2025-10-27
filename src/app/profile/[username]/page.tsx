@@ -1,8 +1,8 @@
 import { $api } from '@/api';
 import Header from '@/components/header/Header';
 import Profile from '@/components/profile/Profile';
-import ProfileAnimalChipList from '@/components/profile/ProfileAnimalChipList';
-import ProfileAnimalPhotoGrid from '@/components/profile/ProfileAnimalPhotoGrid';
+import ProfileAnimalList from '@/components/profile/ProfileAnimalList';
+import ProfileAnimalPhotos from '@/components/profile/ProfileAnimalPhotoGrid';
 import { getQueryClient } from '@/utils/getQueryClient';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
@@ -46,8 +46,8 @@ export default async function ProfilePage({ params }: Props) {
         <main className="col-2 my-16 flex flex-col gap-24">
           <Profile username={username} />
           <div className="flex flex-col gap-8">
-            <ProfileAnimalChipList username={username} />
-            <ProfileAnimalPhotoGrid username={username} />
+            <ProfileAnimalList username={username} />
+            <ProfileAnimalPhotos username={username} />
           </div>
         </main>
       </div>

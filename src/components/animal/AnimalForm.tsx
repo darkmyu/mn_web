@@ -6,8 +6,9 @@ import { AnimalBody, useAnimalForm } from '@/hooks/forms/animal';
 import dayjs from '@/utils/dayjs';
 import { debounce } from 'es-toolkit';
 import { Camera, Search } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Modal } from '../modal';
 import BreedModal from '../modal/contents/BreedModal';
@@ -35,15 +36,27 @@ function AnimalForm({ initialAnimal }: Props) {
     },
   );
 
-  const router = useRouter();
   const isEdit = !!initialAnimal;
   const birthday = watch('birthday');
+  const thumbnail = watch('thumbnail');
   const selectedGender = watch('gender');
+
+  const router = useRouter();
+  const thumbnailRef = useRef<HTMLInputElement>(null);
   const [selectedSpecies, setSelectedSpecie] = useState<AnimalSpecies>('DOG');
   const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(null);
 
   const { mutate: createAnimalMutate } = $api.useMutation('post', '/api/v1/animals');
   const { mutate: updateAnimalMutate } = $api.useMutation('put', '/api/v1/animals/{id}');
+
+  const { mutate: uploadAnimalThumbnail } = $api.useMutation('post', '/api/v1/animals/thumbnail', {
+    onSuccess: ({ path }) => {
+      setValue('thumbnail', path);
+    },
+    onError: () => {
+      /** @TODO alert error */
+    },
+  });
 
   const debouncedCreateAnimalMutate = useMemo(
     () =>
@@ -117,6 +130,24 @@ function AnimalForm({ initialAnimal }: Props) {
     setValue('birthday', formatted, { shouldValidate: true });
   };
 
+  const handleThumbnailClick = () => {
+    thumbnailRef.current?.click();
+  };
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const thumbnail = e.target.files?.[0];
+    if (!thumbnail) return;
+
+    uploadAnimalThumbnail({
+      body: { thumbnail },
+      bodySerializer: (body) => {
+        const formData = new FormData();
+        formData.append('thumbnail', body.thumbnail);
+        return formData;
+      },
+    });
+  };
+
   return (
     <main className="flex h-full flex-col items-center justify-center">
       <div className="flex w-md flex-col gap-10 rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
@@ -125,13 +156,23 @@ function AnimalForm({ initialAnimal }: Props) {
           <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 정보를 입력해주세요.</p>
         </div>
         <form className="flex flex-col gap-12" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative h-32 w-32 cursor-pointer">
-              <div className="h-full w-full rounded-full bg-zinc-200 dark:bg-zinc-700" />
+          <div className="flex flex-col items-center">
+            <div className="relative h-32 w-32 cursor-pointer" onClick={handleThumbnailClick}>
+              {thumbnail && (
+                <Image
+                  src={thumbnail}
+                  width={128}
+                  height={128}
+                  alt=""
+                  className="aspect-square rounded-full object-cover"
+                />
+              )}
+              {!thumbnail && <div className="h-full w-full rounded-full bg-zinc-200 dark:bg-zinc-700" />}
               <div className="absolute right-0 bottom-0 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-white dark:bg-zinc-50 dark:text-black">
                 <Camera size={20} />
               </div>
             </div>
+            <input type="file" accept="image/*" ref={thumbnailRef} onChange={handleThumbnailChange} hidden />
           </div>
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-2">

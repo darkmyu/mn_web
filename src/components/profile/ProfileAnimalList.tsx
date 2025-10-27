@@ -7,7 +7,7 @@ interface Props {
   username: string;
 }
 
-function ProfileAnimalChipList({ username }: Props) {
+function ProfileAnimalList({ username }: Props) {
   const { data: animals } = $api.useSuspenseQuery('get', '/api/v1/users/{username}/animals', {
     params: {
       path: { username },
@@ -23,4 +23,4 @@ function ProfileAnimalChipList({ username }: Props) {
   );
 }
 
-export default ProfileAnimalChipList;
+export default ProfileAnimalList;

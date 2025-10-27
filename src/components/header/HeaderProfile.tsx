@@ -35,13 +35,15 @@ function HeaderProfile() {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <Image
-          className="h-9 w-9 cursor-pointer rounded-full object-cover"
-          src="https://pub-80ea7a041b9d49848ef0daecc4392a3b.r2.dev/KakaoTalk_Photo_2025-08-01-15-06-34%20010.jpeg"
-          alt=""
-          width={36}
-          height={36}
-        />
+        {user.profileImage && (
+          <Image
+            className="h-9 w-9 cursor-pointer rounded-full object-cover"
+            src={user.profileImage}
+            alt=""
+            width={36}
+            height={36}
+          />
+        )}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
@@ -53,13 +55,15 @@ function HeaderProfile() {
             href={`/@${user.username}`}
             className="flex cursor-pointer gap-3 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700/40"
           >
-            <Image
-              className="h-12 w-12 cursor-pointer rounded-full object-cover"
-              src="https://pub-80ea7a041b9d49848ef0daecc4392a3b.r2.dev/KakaoTalk_Photo_2025-08-01-15-06-34%20010.jpeg"
-              alt=""
-              width={48}
-              height={48}
-            />
+            {user.profileImage && (
+              <Image
+                className="h-12 w-12 cursor-pointer rounded-full object-cover"
+                src={user.profileImage}
+                alt=""
+                width={48}
+                height={48}
+              />
+            )}
             <div className="flex flex-col justify-center">
               <p className="text-sm font-bold">{user.nickname}</p>
               <p className="text-sm">{`@${user.username}`}</p>

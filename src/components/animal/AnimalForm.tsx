@@ -37,6 +37,7 @@ function AnimalForm({ animal }: Props) {
   );
 
   const isEdit = !!animal;
+  const name = watch('name');
   const gender = watch('gender');
   const birthday = watch('birthday');
   const thumbnail = watch('thumbnail');
@@ -152,7 +153,9 @@ function AnimalForm({ animal }: Props) {
     <main className="flex h-full flex-col items-center justify-center">
       <div className="flex w-md flex-col gap-10 rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
         <div className="flex flex-col items-center gap-4">
-          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">반려동물 등록</p>
+          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            {!isEdit ? '반려동물 등록' : '반려동물 수정'}
+          </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 정보를 입력해주세요.</p>
         </div>
         <form className="flex flex-col gap-12" onSubmit={handleSubmit(onSubmit)}>
@@ -241,6 +244,7 @@ function AnimalForm({ animal }: Props) {
                 {...register('name')}
                 type="text"
                 autoComplete="off"
+                defaultValue={name}
                 placeholder="반려동물의 이름을 입력해주세요"
                 className={`rounded-lg border px-4 py-3 text-sm focus:ring-0 focus:outline-none dark:text-zinc-100 ${
                   errors.name

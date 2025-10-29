@@ -2,6 +2,7 @@ import { $api } from '@/api';
 import AnimalEdit from '@/components/animal/AnimalEdit';
 import { getQueryClient } from '@/utils/getQueryClient';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
 
 export default async function AnimalsEditPage({ params }: Props) {
   const { id } = await params;
+  const cookieStore = await cookies();
+  const cookie = cookieStore.toString();
   const queryClient = getQueryClient();
 
   try {
@@ -18,6 +21,7 @@ export default async function AnimalsEditPage({ params }: Props) {
         params: {
           path: { id },
         },
+        headers: { cookie },
       }),
     );
   } catch {
@@ -26,7 +30,7 @@ export default async function AnimalsEditPage({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AnimalEdit id={id} />
+      <AnimalEdit id={id} cookie={cookie} />
     </HydrationBoundary>
   );
 }

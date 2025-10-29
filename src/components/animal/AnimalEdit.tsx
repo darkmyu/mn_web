@@ -5,13 +5,15 @@ import AnimalForm from './AnimalForm';
 
 interface Props {
   id: number;
+  cookie: string;
 }
 
-function AnimalEdit({ id }: Props) {
+function AnimalEdit({ id, cookie }: Props) {
   const { data } = $api.useSuspenseQuery('get', '/api/v1/animals/{id}', {
     params: {
       path: { id },
     },
+    headers: { cookie },
   });
 
   return <AnimalForm animal={data} />;

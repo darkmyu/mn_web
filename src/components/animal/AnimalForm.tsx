@@ -14,10 +14,10 @@ import { Modal } from '../modal';
 import BreedModal from '../modal/contents/BreedModal';
 
 interface Props {
-  initialAnimal?: AnimalResponse;
+  animal?: AnimalResponse;
 }
 
-function AnimalForm({ initialAnimal }: Props) {
+function AnimalForm({ animal }: Props) {
   const {
     watch,
     reset,
@@ -27,24 +27,24 @@ function AnimalForm({ initialAnimal }: Props) {
     handleSubmit,
     formState: { errors, isValid },
   } = useAnimalForm(
-    initialAnimal && {
-      breedId: initialAnimal.breed.id,
-      name: initialAnimal.name,
-      gender: initialAnimal.gender,
-      birthday: initialAnimal.birthday,
-      ...(initialAnimal.thumbnail && { thumbnail: initialAnimal.thumbnail }),
+    animal && {
+      breedId: animal.breed.id,
+      name: animal.name,
+      gender: animal.gender,
+      birthday: animal.birthday,
+      ...(animal.thumbnail && { thumbnail: animal.thumbnail }),
     },
   );
 
-  const isEdit = !!initialAnimal;
+  const isEdit = !!animal;
+  const gender = watch('gender');
   const birthday = watch('birthday');
   const thumbnail = watch('thumbnail');
-  const selectedGender = watch('gender');
 
   const router = useRouter();
   const thumbnailRef = useRef<HTMLInputElement>(null);
-  const [selectedSpecies, setSelectedSpecie] = useState<AnimalSpecies>('DOG');
-  const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(null);
+  const [selectedSpecies, setSelectedSpecie] = useState<AnimalSpecies>(animal?.breed.species ?? 'DOG');
+  const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(animal?.breed ?? null);
 
   const { mutate: createAnimalMutate } = $api.useMutation('post', '/api/v1/animals');
   const { mutate: updateAnimalMutate } = $api.useMutation('put', '/api/v1/animals/{id}');
@@ -102,7 +102,7 @@ function AnimalForm({ initialAnimal }: Props) {
     if (!isEdit) {
       debouncedCreateAnimalMutate(payload);
     } else {
-      debouncedUpdateAnimalMutate(initialAnimal.id, payload);
+      debouncedUpdateAnimalMutate(animal.id, payload);
     }
   };
 
@@ -164,6 +164,7 @@ function AnimalForm({ initialAnimal }: Props) {
                   width={128}
                   height={128}
                   alt=""
+                  priority
                   className="aspect-square rounded-full object-cover"
                 />
               )}
@@ -257,7 +258,7 @@ function AnimalForm({ initialAnimal }: Props) {
                   type="button"
                   onClick={() => handleGenderClick('MALE')}
                   className={`cursor-pointer rounded-lg border py-3 text-sm font-medium ${
-                    selectedGender === 'MALE'
+                    gender === 'MALE'
                       ? 'border-emerald-500 text-emerald-700 dark:border-emerald-600 dark:text-emerald-50'
                       : 'border-zinc-200 bg-white text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
                   }`}
@@ -268,7 +269,7 @@ function AnimalForm({ initialAnimal }: Props) {
                   type="button"
                   onClick={() => handleGenderClick('FEMALE')}
                   className={`cursor-pointer rounded-lg border py-3 text-sm font-medium ${
-                    selectedGender === 'FEMALE'
+                    gender === 'FEMALE'
                       ? 'border-emerald-500 text-emerald-700 dark:border-emerald-600 dark:text-emerald-50'
                       : 'border-zinc-200 bg-white text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50'
                   }`}
@@ -299,7 +300,7 @@ function AnimalForm({ initialAnimal }: Props) {
             disabled={!isValid}
             className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
           >
-            등록하기
+            {!isEdit ? '등록하기' : '수정하기'}
           </button>
         </form>
       </div>

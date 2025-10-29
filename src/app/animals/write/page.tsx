@@ -1,5 +1,5 @@
 import AnimalForm from '@/components/animal/AnimalForm';
 
-export default function ProfileAnimalsWritePage() {
+export default function AnimalsWritePage() {
   return <AnimalForm />;
 }

@@ -1,16 +1,17 @@
 'use client';
 
 import { $api } from '@/api';
-import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import Link from 'next/link';
+
+const ProfileActions = dynamic(() => import('./ProfileActions'), { ssr: false });
 
 interface Props {
   username: string;
 }
 
 function Profile({ username }: Props) {
-  const { data: user } = $api.useSuspenseQuery('get', '/api/v1/users/{username}', {
+  const { data: target } = $api.useSuspenseQuery('get', '/api/v1/users/{username}', {
     params: {
       path: { username },
     },
@@ -19,20 +20,22 @@ function Profile({ username }: Props) {
   return (
     <div className="flex gap-16">
       <div className="relative h-54 w-54 rounded-full border-2 border-zinc-400 dark:border-zinc-600">
-        <Image className="rounded-full object-cover" src={user.profileImage ?? ''} sizes="25vw" alt="" fill priority />
+        <Image
+          className="rounded-full object-cover"
+          src={target.profileImage ?? ''}
+          sizes="25vw"
+          alt=""
+          fill
+          priority
+        />
       </div>
       <div className="flex flex-col py-2">
         <div className="mb-2 flex items-center gap-4">
-          <p className="text-2xl font-medium">{user.nickname}</p>
-          <Link
-            href={ROUTE_SETTINGS_PAGE}
-            className="rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-          >
-            프로필 편집
-          </Link>
+          <p className="text-2xl font-medium">{target.nickname}</p>
+          <ProfileActions target={target} />
         </div>
         <div className="mb-6 flex items-center">
-          <p className="text-base font-semibold">{`@${user.username}`}</p>
+          <p className="text-base font-semibold">{`@${target.username}`}</p>
           <span className="mx-3 text-xs text-zinc-600">•</span>
           <p className="text-base">
             <span className="font-semibold">1,203</span> 팔로워

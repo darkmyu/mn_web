@@ -77,30 +77,32 @@ function SidebarProfile() {
 
           <hr className="my-4 text-zinc-300 dark:text-zinc-600" />
 
-          <div className="flex flex-col gap-1 px-2">
-            {animals.length === 0 && (
-              <Popover.Close asChild>
-                <Link
-                  href={ROUTE_ANIMALS_WRITE_PAGE}
-                  className="w-full cursor-pointer rounded-lg border border-zinc-300 bg-transparent px-4 py-2 text-center text-sm font-semibold hover:bg-zinc-100 dark:border-zinc-600 dark:bg-transparent dark:hover:bg-zinc-700/40"
-                >
-                  반려동물 등록하기
-                </Link>
-              </Popover.Close>
-            )}
-            {animals.map((animal) => (
-              <div className="flex items-center gap-2" key={animal.id}>
-                {animal.breed.species === 'DOG' && <Dog className="text-zinc-500 dark:text-zinc-300" size={16} />}
-                {animal.breed.species === 'CAT' && <Cat className="text-zinc-500 dark:text-zinc-300" size={16} />}
-                <div className="flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
-                  <p className="shrink-0">{animal.name}</p>
-                  <p className="shrink-0 text-zinc-300">|</p>
-                  <p className="shrink-0">{animal.breed.name}</p>
-                  <p className="shrink-0 text-zinc-300">|</p>
-                  <p className="shrink-0">{formatAge(animal.birthday)}</p>
-                </div>
+          <div className="flex flex-col gap-4 px-2">
+            {animals.length > 0 && (
+              <div className="flex flex-col gap-1">
+                {animals.map((animal) => (
+                  <div className="flex items-center gap-2" key={animal.id}>
+                    {animal.breed.species === 'DOG' && <Dog className="text-zinc-500 dark:text-zinc-300" size={16} />}
+                    {animal.breed.species === 'CAT' && <Cat className="text-zinc-500 dark:text-zinc-300" size={16} />}
+                    <div className="flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
+                      <p className="shrink-0">{animal.name}</p>
+                      <p className="shrink-0 text-zinc-300">|</p>
+                      <p className="shrink-0">{animal.breed.name}</p>
+                      <p className="shrink-0 text-zinc-300">|</p>
+                      <p className="shrink-0">{formatAge(animal.birthday)}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+            <Popover.Close asChild>
+              <Link
+                href={ROUTE_ANIMALS_WRITE_PAGE}
+                className="w-full cursor-pointer rounded-lg border border-zinc-300 bg-transparent px-4 py-2 text-center text-sm font-semibold hover:bg-zinc-100 dark:border-zinc-600 dark:bg-transparent dark:hover:bg-zinc-700/40"
+              >
+                반려동물 등록하기
+              </Link>
+            </Popover.Close>
           </div>
 
           <hr className="my-4 text-zinc-300 dark:text-zinc-600" />

@@ -11,14 +11,14 @@ function SidebarMenu() {
       <Link href={ROUTE_HOME_PAGE}>
         <button className="flex cursor-pointer items-center justify-center">
           <LucideHouse
-            className={`${pathname !== ROUTE_HOME_PAGE ? 'text-zinc-500 dark:text-zinc-700' : 'text-zinc-800 dark:text-zinc-200'}`}
+            className={`${pathname !== ROUTE_HOME_PAGE ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-800 dark:text-zinc-200'}`}
           />
         </button>
       </Link>
       <Link href={ROUTE_COMMUNITY_PAGE}>
         <button className="flex cursor-pointer items-center justify-center">
           <LucideMessageSquareText
-            className={`${pathname !== ROUTE_COMMUNITY_PAGE ? 'text-zinc-500 dark:text-zinc-700' : 'text-zinc-800 dark:text-zinc-200'}`}
+            className={`${pathname !== ROUTE_COMMUNITY_PAGE ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-800 dark:text-zinc-200'}`}
           />
         </button>
       </Link>

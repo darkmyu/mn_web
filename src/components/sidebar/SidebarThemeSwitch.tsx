@@ -10,9 +10,9 @@ function SidebarThemeSwitch() {
   };
 
   return (
-    <button className={'flex items-center justify-center'} onClick={handleThemeClick}>
-      {resolvedTheme === 'light' && <IoSunny className={'h-6 w-6 cursor-pointer text-gray-500'} />}
-      {resolvedTheme === 'dark' && <PiMoonFill className={'h-6 w-6 cursor-pointer text-gray-500'} />}
+    <button className="flex items-center justify-center" onClick={handleThemeClick}>
+      {resolvedTheme === 'light' && <IoSunny className="h-6 w-6 cursor-pointer text-gray-500" />}
+      {resolvedTheme === 'dark' && <PiMoonFill className="h-6 w-6 cursor-pointer text-gray-500" />}
     </button>
   );
 }

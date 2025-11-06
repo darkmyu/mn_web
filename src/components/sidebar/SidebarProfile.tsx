@@ -84,12 +84,12 @@ function SidebarProfile() {
                   <div className="flex items-center gap-2" key={animal.id}>
                     {animal.breed.species === 'DOG' && <Dog className="text-zinc-500 dark:text-zinc-300" size={16} />}
                     {animal.breed.species === 'CAT' && <Cat className="text-zinc-500 dark:text-zinc-300" size={16} />}
-                    <div className="flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
-                      <p className="shrink-0">{animal.name}</p>
-                      <p className="shrink-0 text-zinc-300">|</p>
-                      <p className="shrink-0">{animal.breed.name}</p>
-                      <p className="shrink-0 text-zinc-300">|</p>
-                      <p className="shrink-0">{formatAge(animal.birthday)}</p>
+                    <div className="flex w-full items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
+                      <p className="flex-1/6 truncate">{animal.name}</p>
+                      <p className="text-zinc-300 dark:text-zinc-500">|</p>
+                      <p className="flex-3/6 truncate">{animal.breed.name}</p>
+                      <p className="text-zinc-300 dark:text-zinc-500">|</p>
+                      <p className="flex-2/6 truncate">{formatAge(animal.birthday)}</p>
                     </div>
                   </div>
                 ))}

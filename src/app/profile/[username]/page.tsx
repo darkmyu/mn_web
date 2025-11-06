@@ -1,5 +1,4 @@
 import { $api } from '@/api';
-import Header from '@/components/header/Header';
 import Profile from '@/components/profile/Profile';
 import ProfileAnimalList from '@/components/profile/ProfileAnimalList';
 import ProfileAnimalPhotos from '@/components/profile/ProfileAnimalPhotoGrid';
@@ -41,15 +40,12 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="grid grid-cols-[1fr_min(1280px,100%)_1fr]">
-        <Header />
-        <main className="col-2 my-16 flex flex-col gap-24">
+      <div className="flex flex-col gap-20 p-16">
+        <div className="flex flex-col gap-16">
           <Profile username={username} />
-          <div className="flex flex-col gap-8">
-            <ProfileAnimalList username={username} />
-            <ProfileAnimalPhotos username={username} />
-          </div>
-        </main>
+          <ProfileAnimalList username={username} />
+        </div>
+        <ProfileAnimalPhotos username={username} />
       </div>
     </HydrationBoundary>
   );

@@ -1,9 +1,7 @@
-'use client';
-
 import { useAuthStore } from '@/stores/auth';
 import { Plus } from 'lucide-react';
 
-function HeaderUpload() {
+function SidebarUpload() {
   const { user } = useAuthStore();
 
   if (!user) return null;
@@ -15,4 +13,4 @@ function HeaderUpload() {
   );
 }
 
-export default HeaderUpload;
+export default SidebarUpload;

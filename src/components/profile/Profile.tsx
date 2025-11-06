@@ -19,7 +19,7 @@ function Profile({ username }: Props) {
 
   return (
     <div className="flex gap-16">
-      <div className="relative h-54 w-54 rounded-full border-2 border-zinc-400 dark:border-zinc-600">
+      <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-2 border-zinc-400 dark:border-zinc-600">
         <Image
           className="rounded-full object-cover"
           src={target.profileImage ?? ''}

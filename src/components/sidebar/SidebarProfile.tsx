@@ -1,14 +1,14 @@
 import { $api } from '@/api';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
-import { Cat, Dog, LogOut, Settings } from 'lucide-react';
+import { Cat, Dog, LogOut, LucideLogIn, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Popover } from 'radix-ui';
 import { Modal } from '../modal';
 import LoginModal from '../modal/contents/LoginModal';
 
-function HeaderProfile() {
+function SidebarProfile() {
   const { user, setUser } = useAuthStore();
 
   const { mutate: logoutMutate } = $api.useMutation('post', '/api/v1/auth/logout', {
@@ -21,9 +21,9 @@ function HeaderProfile() {
     return (
       <Modal.Root>
         <Modal.Trigger>
-          <button className="cursor-pointer rounded-lg bg-emerald-600 px-4.5 py-2.5 text-sm text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 dark:bg-emerald-800 dark:hover:bg-emerald-800/90">
-            로그인
-          </button>
+          <div className="flex cursor-pointer items-center justify-center">
+            <LucideLogIn className="text-zinc-500" />
+          </div>
         </Modal.Trigger>
         <Modal.Content>
           <LoginModal />
@@ -37,38 +37,42 @@ function HeaderProfile() {
       <Popover.Trigger asChild>
         {user.profileImage && (
           <Image
-            className="h-9 w-9 cursor-pointer rounded-full object-cover"
+            className="h-8 w-8 cursor-pointer rounded-full object-cover"
             src={user.profileImage}
             alt=""
-            width={36}
-            height={36}
+            width={32}
+            height={32}
           />
         )}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
           className="flex w-80 flex-col rounded-lg bg-zinc-50 p-4 shadow-2xl/50 outline-none dark:bg-zinc-800"
-          sideOffset={8}
+          side="right"
+          sideOffset={16}
           align="end"
+          alignOffset={32}
         >
-          <Link
-            href={`/@${user.username}`}
-            className="flex cursor-pointer gap-3 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700/40"
-          >
-            {user.profileImage && (
-              <Image
-                className="h-12 w-12 cursor-pointer rounded-full object-cover"
-                src={user.profileImage}
-                alt=""
-                width={48}
-                height={48}
-              />
-            )}
-            <div className="flex flex-col justify-center">
-              <p className="text-sm font-bold">{user.nickname}</p>
-              <p className="text-sm">{`@${user.username}`}</p>
-            </div>
-          </Link>
+          <Popover.Close asChild>
+            <Link
+              href={`/@${user.username}`}
+              className="flex cursor-pointer gap-3 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700/40"
+            >
+              {user.profileImage && (
+                <Image
+                  className="h-12 w-12 cursor-pointer rounded-full object-cover"
+                  src={user.profileImage}
+                  alt=""
+                  width={48}
+                  height={48}
+                />
+              )}
+              <div className="flex flex-col justify-center">
+                <p className="text-sm font-bold">{user.nickname}</p>
+                <p className="text-sm">{`@${user.username}`}</p>
+              </div>
+            </Link>
+          </Popover.Close>
 
           <hr className="my-4 text-zinc-300 dark:text-zinc-600" />
 
@@ -115,4 +119,4 @@ function HeaderProfile() {
   );
 }
 
-export default HeaderProfile;
+export default SidebarProfile;

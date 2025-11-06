@@ -2,7 +2,7 @@ import { useTheme } from 'next-themes';
 import { IoSunny } from 'react-icons/io5';
 import { PiMoonFill } from 'react-icons/pi';
 
-function HeaderThemeSwitch() {
+function SidebarThemeSwitch() {
   const { resolvedTheme, setTheme } = useTheme();
 
   const handleThemeClick = () => {
@@ -17,4 +17,4 @@ function HeaderThemeSwitch() {
   );
 }
 
-export default HeaderThemeSwitch;
+export default SidebarThemeSwitch;

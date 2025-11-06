@@ -6,6 +6,6 @@
 @layer base {
   html,
   body {
-    @apply text-zinc-900 dark:text-zinc-50;
+    @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50;
   }
 }

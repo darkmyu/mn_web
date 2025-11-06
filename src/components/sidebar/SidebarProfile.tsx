@@ -1,6 +1,7 @@
 import { $api } from '@/api';
-import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
+import { ROUTE_ANIMALS_WRITE_PAGE, ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
+import { formatAge } from '@/utils/formatters';
 import { Cat, Dog, LogOut, LucideLogIn, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +10,7 @@ import { Modal } from '../modal';
 import LoginModal from '../modal/contents/LoginModal';
 
 function SidebarProfile() {
-  const { user, setUser } = useAuthStore();
+  const { user, animals, setUser } = useAuthStore();
 
   const { mutate: logoutMutate } = $api.useMutation('post', '/api/v1/auth/logout', {
     onSuccess: () => {
@@ -49,7 +50,7 @@ function SidebarProfile() {
         <Popover.Content
           className="flex w-80 flex-col rounded-lg bg-zinc-50 p-4 shadow-2xl/50 outline-none dark:bg-zinc-800"
           side="right"
-          sideOffset={16}
+          sideOffset={32}
           align="end"
           alignOffset={32}
         >
@@ -77,22 +78,29 @@ function SidebarProfile() {
           <hr className="my-4 text-zinc-300 dark:text-zinc-600" />
 
           <div className="flex flex-col gap-1 px-2">
-            <div className="flex items-center gap-2">
-              <Dog className="text-zinc-500 dark:text-zinc-300" size={16} />
-              <div className="flex text-sm text-zinc-500 dark:text-zinc-300">
-                <p>빵이</p>
-                <p className="before:mx-1 before:content-['•']">믹스견</p>
-                <p className="before:mx-1 before:content-['•']">10개월</p>
+            {animals.length === 0 && (
+              <Popover.Close asChild>
+                <Link
+                  href={ROUTE_ANIMALS_WRITE_PAGE}
+                  className="w-full cursor-pointer rounded-lg border border-zinc-300 bg-transparent px-4 py-2 text-center text-sm font-semibold hover:bg-zinc-100 dark:border-zinc-600 dark:bg-transparent dark:hover:bg-zinc-700/40"
+                >
+                  반려동물 등록하기
+                </Link>
+              </Popover.Close>
+            )}
+            {animals.map((animal) => (
+              <div className="flex items-center gap-2" key={animal.id}>
+                {animal.breed.species === 'DOG' && <Dog className="text-zinc-500 dark:text-zinc-300" size={16} />}
+                {animal.breed.species === 'CAT' && <Cat className="text-zinc-500 dark:text-zinc-300" size={16} />}
+                <div className="flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
+                  <p className="shrink-0">{animal.name}</p>
+                  <p className="shrink-0 text-zinc-300">|</p>
+                  <p className="shrink-0">{animal.breed.name}</p>
+                  <p className="shrink-0 text-zinc-300">|</p>
+                  <p className="shrink-0">{formatAge(animal.birthday)}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Cat className="text-zinc-500 dark:text-zinc-300" size={16} />
-              <div className="flex text-sm text-zinc-500 dark:text-zinc-300">
-                <p>빵삼</p>
-                <p className="before:mx-1 before:content-['•']">믹스묘</p>
-                <p className="before:mx-1 before:content-['•']">1살(+4개월)</p>
-              </div>
-            </div>
+            ))}
           </div>
 
           <hr className="my-4 text-zinc-300 dark:text-zinc-600" />

@@ -1,0 +1,1 @@
+export { formatAge } from './formatAge';

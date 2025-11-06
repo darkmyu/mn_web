@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useEffect } from 'react';
 
 function AuthProvider() {
-  const { user, setUser } = useAuthStore();
+  const { user, setUser, setAnimals } = useAuthStore();
 
   useEffect(() => {
     if (user) return;
@@ -13,9 +13,10 @@ function AuthProvider() {
     api.GET('/api/v1/auth/info').then((response) => {
       if (response.data) {
         setUser(response.data.user);
+        setAnimals(response.data.animals);
       }
     });
-  }, [setUser, user]);
+  }, [setAnimals, setUser, user]);
 
   return null;
 }

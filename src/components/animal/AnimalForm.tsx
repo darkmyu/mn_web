@@ -149,36 +149,64 @@ function AnimalForm({ animal }: Props) {
     });
   };
 
+  const handleThumbnailCancel = () => {
+    setValue('thumbnail', undefined);
+  };
+
   return (
-    <div className="flex h-full flex-col items-center justify-center">
-      <div className="flex w-md flex-col gap-10 rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
-        <div className="flex flex-col items-center gap-4">
-          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-            {!isEdit ? '반려동물 등록' : '반려동물 수정'}
+    <div className="relative flex min-h-dvh flex-col">
+      <div className="sticky top-0 flex items-center justify-between bg-zinc-50 px-4 py-2 dark:bg-zinc-900">
+        <div className="flex items-center gap-4">
+          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            {!isEdit ? '# 반려동물 프로필 등록' : '# 반려동물 프로필 수정'}
           </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 정보를 입력해주세요.</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            반려동물의 프로필을 완성하고 소중한 기록을 남겨보세요.
+          </p>
         </div>
-        <form className="flex flex-col gap-12" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col items-center">
-            <div className="relative h-32 w-32 cursor-pointer" onClick={handleThumbnailClick}>
-              {thumbnail && (
-                <Image
-                  src={thumbnail}
-                  width={128}
-                  height={128}
-                  alt=""
-                  priority
-                  className="aspect-square rounded-full object-cover"
-                />
+        <button
+          disabled={!isValid}
+          onClick={handleSubmit(onSubmit)}
+          className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+        >
+          {!isEdit ? '등록하기' : '수정하기'}
+        </button>
+      </div>
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center">
+        <form className="grid grid-cols-4 items-center gap-8 p-6">
+          <div className="col-span-2 flex flex-col items-center gap-6">
+            <div
+              className="relative h-64 w-64 cursor-pointer rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
+              onClick={handleThumbnailClick}
+            >
+              {thumbnail && <Image src={thumbnail} alt="" fill sizes="192px" className="rounded-full object-cover" />}
+              {!thumbnail && (
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-400">
+                  <Camera size={32} />
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">프로필 사진을 선택해주세요.</p>
+                </div>
               )}
-              {!thumbnail && <div className="h-full w-full rounded-full bg-zinc-200 dark:bg-zinc-700" />}
-              <div className="absolute right-0 bottom-0 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-white dark:bg-zinc-50 dark:text-black">
-                <Camera size={20} />
-              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleThumbnailClick}
+                className="cursor-pointer rounded-md border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800"
+              >
+                이미지 업로드
+              </button>
+              <button
+                type="button"
+                disabled={!thumbnail}
+                onClick={handleThumbnailCancel}
+                className="cursor-pointer rounded-md border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              >
+                이미지 삭제
+              </button>
             </div>
             <input type="file" accept="image/*" ref={thumbnailRef} onChange={handleThumbnailChange} hidden />
           </div>
-          <div className="flex flex-col gap-10">
+          <div className="col-span-2 flex flex-col gap-10">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 동물 <span className="text-sm text-red-700">*</span>
@@ -299,13 +327,6 @@ function AnimalForm({ animal }: Props) {
               />
             </div>
           </div>
-          <button
-            type="submit"
-            disabled={!isValid}
-            className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
-          >
-            {!isEdit ? '등록하기' : '수정하기'}
-          </button>
         </form>
       </div>
     </div>

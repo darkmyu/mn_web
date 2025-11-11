@@ -45,4 +45,5 @@ next-env.d.ts
 .idea/
 .vscode/
 
+AGENTS.md
 GEMINI.md

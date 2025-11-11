@@ -13,7 +13,7 @@ function PhotoForm() {
       <div className="sticky top-0 flex items-center justify-between bg-zinc-50 px-4 py-2 dark:bg-zinc-900">
         <div className="flex items-center gap-4">
           <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50"># 반려동물 사진 등록</p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">자신의 반려동물 사진을 공유하고 저장해보세요!</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 사진을 공유하고 저장해보세요.</p>
         </div>
         <button className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700">
           등록하기
@@ -28,7 +28,7 @@ function PhotoForm() {
             <div className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
               <LucideCamera size={48} className="text-zinc-400" />
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                여기로 사진을 끌어다 놓거나 클릭하여 선택하세요.
+                여기로 사진을 끌어다 놓거나 클릭하여 선택해주세요.
               </p>
             </div>
           </div>

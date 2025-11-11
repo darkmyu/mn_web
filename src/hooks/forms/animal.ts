@@ -6,7 +6,7 @@ import * as z from 'zod';
 
 export type AnimalBody = AnimalCreateRequest;
 
-export const useAnimalForm = (defaultValues?: AnimalBody) => {
+export function useAnimalForm(defaultValues?: AnimalBody) {
   return useForm<AnimalBody>({
     mode: 'onChange',
     resolver: zodResolver(
@@ -32,4 +32,4 @@ export const useAnimalForm = (defaultValues?: AnimalBody) => {
       ...(defaultValues?.birthday && { birthday: dayjs(defaultValues.birthday).format('YYYY-MM-DD') }),
     },
   });
-};
+}

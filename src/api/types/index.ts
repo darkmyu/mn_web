@@ -18,3 +18,7 @@ export type AnimalSpecies = components['schemas']['AnimalResponse']['breed']['sp
 
 /** breed */
 export type BreedResponse = components['schemas']['BreedResponse'];
+
+/** photo */
+export type PhotoResponse = components['schemas']['PhotoResponse'];
+export type PhotoCreateRequest = components['schemas']['PhotoCreateRequest'];

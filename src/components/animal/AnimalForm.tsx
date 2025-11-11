@@ -150,7 +150,7 @@ function AnimalForm({ animal }: Props) {
   };
 
   return (
-    <main className="flex h-full flex-col items-center justify-center">
+    <div className="flex h-full flex-col items-center justify-center">
       <div className="flex w-md flex-col gap-10 rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
         <div className="flex flex-col items-center gap-4">
           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
@@ -308,7 +308,7 @@ function AnimalForm({ animal }: Props) {
           </button>
         </form>
       </div>
-    </main>
+    </div>
   );
 }
 

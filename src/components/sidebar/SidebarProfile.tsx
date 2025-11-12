@@ -1,8 +1,7 @@
 import { $api } from '@/api';
-import { ROUTE_ANIMALS_WRITE_PAGE, ROUTE_SETTINGS_PAGE } from '@/constants/route';
+import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
-import { formatAge } from '@/utils/formatters';
-import { Cat, Dog, LogOut, LucideLogIn, Settings } from 'lucide-react';
+import { LogOut, LucideLogIn, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Popover } from 'radix-ui';
@@ -10,7 +9,7 @@ import { Modal } from '../modal';
 import LoginModal from '../modal/contents/LoginModal';
 
 function SidebarProfile() {
-  const { user, animals, setUser } = useAuthStore();
+  const { user, setUser } = useAuthStore();
 
   const { mutate: logoutMutate } = $api.useMutation('post', '/api/v1/auth/logout', {
     onSuccess: () => {
@@ -74,36 +73,6 @@ function SidebarProfile() {
               </div>
             </Link>
           </Popover.Close>
-
-          <hr className="my-4 text-zinc-300 dark:text-zinc-600" />
-
-          <div className="flex flex-col gap-4 px-2">
-            {animals.length > 0 && (
-              <div className="flex flex-col gap-1">
-                {animals.map((animal) => (
-                  <div className="flex items-center gap-2" key={animal.id}>
-                    {animal.breed.species === 'DOG' && <Dog className="text-zinc-500 dark:text-zinc-300" size={16} />}
-                    {animal.breed.species === 'CAT' && <Cat className="text-zinc-500 dark:text-zinc-300" size={16} />}
-                    <div className="flex w-full items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
-                      <p className="flex-1/6 truncate">{animal.name}</p>
-                      <p className="text-zinc-300 dark:text-zinc-500">|</p>
-                      <p className="flex-3/6 truncate">{animal.breed.name}</p>
-                      <p className="text-zinc-300 dark:text-zinc-500">|</p>
-                      <p className="flex-2/6 truncate">{formatAge(animal.birthday)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <Popover.Close asChild>
-              <Link
-                href={ROUTE_ANIMALS_WRITE_PAGE}
-                className="w-full cursor-pointer rounded-lg border border-zinc-300 bg-transparent px-4 py-2 text-center text-sm font-semibold hover:bg-zinc-100 dark:border-zinc-600 dark:bg-transparent dark:hover:bg-zinc-700/40"
-              >
-                반려동물 등록하기
-              </Link>
-            </Popover.Close>
-          </div>
 
           <hr className="my-4 text-zinc-300 dark:text-zinc-600" />
 

@@ -9,15 +9,15 @@ import { Modal } from '../modal';
 import LoginModal from '../modal/contents/LoginModal';
 
 function SidebarProfile() {
-  const { user, setUser } = useAuthStore();
+  const { profile, setProfile } = useAuthStore();
 
   const { mutate: logoutMutate } = $api.useMutation('post', '/api/v1/auth/logout', {
     onSuccess: () => {
-      setUser(null);
+      setProfile(null);
     },
   });
 
-  if (!user) {
+  if (!profile) {
     return (
       <Modal.Root>
         <Modal.Trigger>
@@ -35,10 +35,10 @@ function SidebarProfile() {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        {user.profileImage && (
+        {profile.profileImage && (
           <Image
             className="h-8 w-8 cursor-pointer rounded-full object-cover"
-            src={user.profileImage}
+            src={profile.profileImage}
             alt=""
             width={32}
             height={32}
@@ -55,21 +55,21 @@ function SidebarProfile() {
         >
           <Popover.Close asChild>
             <Link
-              href={`/@${user.username}`}
+              href={`/@${profile.username}`}
               className="flex cursor-pointer gap-3 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700/40"
             >
-              {user.profileImage && (
+              {profile.profileImage && (
                 <Image
                   className="h-12 w-12 cursor-pointer rounded-full object-cover"
-                  src={user.profileImage}
+                  src={profile.profileImage}
                   alt=""
                   width={48}
                   height={48}
                 />
               )}
               <div className="flex flex-col justify-center">
-                <p className="text-sm font-bold">{user.nickname}</p>
-                <p className="text-sm">{`@${user.username}`}</p>
+                <p className="text-sm font-bold">{profile.nickname}</p>
+                <p className="text-sm">{`@${profile.username}`}</p>
               </div>
             </Link>
           </Popover.Close>

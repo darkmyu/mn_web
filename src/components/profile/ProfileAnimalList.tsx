@@ -12,10 +12,10 @@ interface Props {
 }
 
 function ProfileAnimalList({ username }: Props) {
-  const { user } = useAuthStore();
-  const isOwner = user?.username === username;
+  const { profile } = useAuthStore();
+  const isOwner = profile?.username === username;
 
-  const { data: animals } = $api.useSuspenseQuery('get', '/api/v1/users/{username}/animals', {
+  const { data: animals } = $api.useSuspenseQuery('get', '/api/v1/profiles/{username}/animals', {
     params: {
       path: { username },
     },

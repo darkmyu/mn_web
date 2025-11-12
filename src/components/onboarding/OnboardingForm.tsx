@@ -12,7 +12,7 @@ import { SubmitHandler } from 'react-hook-form';
 
 function OnboardingForm() {
   const router = useRouter();
-  const { setUser } = useAuthStore();
+  const { setProfile } = useAuthStore();
   const [isCheckDuplicateUsername, setIsCheckDuplicateUsername] = useState(false);
 
   const {
@@ -27,7 +27,7 @@ function OnboardingForm() {
 
   const { mutate: registerMutate } = $api.useMutation('post', '/api/v1/auth/register', {
     onSuccess: (data) => {
-      setUser(data);
+      setProfile(data);
     },
   });
 

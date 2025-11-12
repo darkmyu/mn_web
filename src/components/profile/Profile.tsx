@@ -11,7 +11,7 @@ interface Props {
 }
 
 function Profile({ username }: Props) {
-  const { data: target } = $api.useSuspenseQuery('get', '/api/v1/users/{username}', {
+  const { data: target } = $api.useSuspenseQuery('get', '/api/v1/profiles/{username}', {
     params: {
       path: { username },
     },

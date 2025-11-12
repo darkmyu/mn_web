@@ -16,7 +16,7 @@ export default async function ProfilePage({ params }: Props) {
 
   try {
     await queryClient.fetchQuery(
-      $api.queryOptions('get', '/api/v1/users/{username}', {
+      $api.queryOptions('get', '/api/v1/profiles/{username}', {
         params: {
           path: { username },
         },
@@ -28,7 +28,7 @@ export default async function ProfilePage({ params }: Props) {
 
   try {
     await queryClient.fetchQuery(
-      $api.queryOptions('get', '/api/v1/users/{username}/animals', {
+      $api.queryOptions('get', '/api/v1/profiles/{username}/animals', {
         params: {
           path: { username },
         },

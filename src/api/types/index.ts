@@ -1,7 +1,7 @@
 import type { components } from '@/api/schema';
 
 /** user */
-export type UserResponse = components['schemas']['UserResponse'];
+export type ProfileResponse = components['schemas']['ProfileResponse'];
 
 /** auth */
 export type AuthInfoResponse = components['schemas']['AuthInfoResponse'];

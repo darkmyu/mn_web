@@ -66,7 +66,7 @@ function AnimalForm({ animal }: Props) {
           { body },
           {
             onSuccess: (data) => {
-              router.push(`/@${data.user.username}`);
+              router.push(`/@${data.owner.username}`);
             },
           },
         );
@@ -86,7 +86,7 @@ function AnimalForm({ animal }: Props) {
           },
           {
             onSuccess: (data) => {
-              router.push(`/@${data.user.username}`);
+              router.push(`/@${data.owner.username}`);
             },
           },
         );

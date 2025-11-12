@@ -4,9 +4,9 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 function SidebarUpload() {
-  const { user } = useAuthStore();
+  const { profile } = useAuthStore();
 
-  if (!user) return null;
+  if (!profile) return null;
 
   return (
     <Link className="flex items-center justify-center" href={ROUTE_PHOTOS_WRITE_PAGE}>

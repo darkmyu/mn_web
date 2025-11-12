@@ -5,17 +5,17 @@ import { useAuthStore } from '@/stores/auth';
 import { useEffect } from 'react';
 
 function AuthProvider() {
-  const { user, setUser } = useAuthStore();
+  const { profile, setProfile } = useAuthStore();
 
   useEffect(() => {
-    if (user) return;
+    if (profile) return;
 
     api.GET('/api/v1/auth/info').then((response) => {
       if (response.data) {
-        setUser(response.data.user);
+        setProfile(response.data.profile);
       }
     });
-  }, [setUser, user]);
+  }, [setProfile, profile]);
 
   return null;
 }

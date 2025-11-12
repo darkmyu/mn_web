@@ -1,15 +1,15 @@
-import { UserResponse } from '@/api/types';
+import { ProfileResponse } from '@/api/types';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import Link from 'next/link';
 
 interface Props {
-  target: UserResponse;
+  target: ProfileResponse;
 }
 
 function ProfileActions({ target }: Props) {
-  const { user } = useAuthStore();
-  const isOwner = user?.username === target.username;
+  const { profile } = useAuthStore();
+  const isOwner = profile?.username === target.username;
 
   if (isOwner) {
     return (

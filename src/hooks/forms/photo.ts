@@ -5,7 +5,7 @@ import * as z from 'zod';
 
 export type PhotoBody = PhotoCreateRequest;
 
-export function usePhotoForm() {
+export function usePhotoForm(defaultValues?: PhotoBody) {
   return useForm<PhotoBody>({
     mode: 'onChange',
     resolver: zodResolver(
@@ -17,6 +17,6 @@ export function usePhotoForm() {
         tags: z.string().array().optional(),
       }),
     ),
-    defaultValues: {},
+    defaultValues,
   });
 }

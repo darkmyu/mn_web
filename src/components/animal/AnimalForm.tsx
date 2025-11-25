@@ -31,7 +31,7 @@ function AnimalForm({ animal }: Props) {
       breedId: animal.breed.id,
       name: animal.name,
       gender: animal.gender,
-      birthday: animal.birthday,
+      birthday: dayjs(animal.birthday).format('YYYY-MM-DD'),
       ...(animal.thumbnail && { thumbnail: animal.thumbnail }),
     },
   );

@@ -10,7 +10,6 @@ export type AuthRegisterRequest = components['schemas']['AuthRegisterRequest'];
 /** animal */
 export type AnimalResponse = components['schemas']['AnimalResponse'];
 export type AnimalCreateRequest = components['schemas']['AnimalCreateRequest'];
-export type AnimalUpdateRequest = components['schemas']['AnimalUpdateRequest'];
 
 /** animal enums */
 export type AnimalGender = components['schemas']['AnimalResponse']['gender'];

@@ -29,7 +29,6 @@ export function useAnimalForm(defaultValues?: AnimalBody) {
     defaultValues: {
       gender: 'MALE',
       ...defaultValues,
-      ...(defaultValues?.birthday && { birthday: dayjs(defaultValues.birthday).format('YYYY-MM-DD') }),
     },
   });
 }

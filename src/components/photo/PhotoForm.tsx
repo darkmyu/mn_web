@@ -1,8 +1,7 @@
 'use client';
 
 import { $api } from '@/api';
-import { AnimalResponse } from '@/api/types';
-import { ROUTE_PHOTOS_PAGE } from '@/constants/route';
+import { AnimalResponse, PhotoResponse } from '@/api/types';
 import { PhotoBody, usePhotoForm } from '@/hooks/forms/photo';
 import { debounce } from 'es-toolkit';
 import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
@@ -13,24 +12,37 @@ import { SubmitHandler } from 'react-hook-form';
 import { Modal } from '../modal';
 import SelectAnimalModal from '../modal/contents/SelectAnimalModal';
 
-function PhotoForm() {
+interface Props {
+  photo?: PhotoResponse;
+}
+
+function PhotoForm({ photo }: Props) {
   const {
     watch,
     register,
     setValue,
     handleSubmit,
     formState: { isValid },
-  } = usePhotoForm();
+  } = usePhotoForm(
+    photo && {
+      animalId: photo.animal.id,
+      image: photo.image,
+      tags: photo.tags.map((tag) => tag.name),
+      ...(photo.title && { title: photo.title }),
+      ...(photo.description && { description: photo.description }),
+    },
+  );
 
+  const isEdit = !!photo;
   const tags = watch('tags');
   const image = watch('image');
 
   const router = useRouter();
   const imageRef = useRef<HTMLInputElement>(null);
-  const [imageAspectRatio, setImageAspectRatio] = useState(1);
-  const [selectedAnimal, setSelectedAnimal] = useState<AnimalResponse | null>(null);
+  const [selectedAnimal, setSelectedAnimal] = useState<AnimalResponse | null>(photo?.animal ?? null);
 
   const { mutate: createPhotoMutate } = $api.useMutation('post', '/api/v1/photos');
+  const { mutate: updatePhotoMutate } = $api.useMutation('put', '/api/v1/photos/{id}');
 
   const { mutate: uploadPhotoImage, isPending: isUploadPhotoImagePending } = $api.useMutation(
     'post',
@@ -52,7 +64,7 @@ function PhotoForm() {
           { body },
           {
             onSuccess: (data) => {
-              router.push(`${ROUTE_PHOTOS_PAGE}/${data.id}`);
+              router.push(`/@${data.author.username}/photos/${data.id}`);
             },
           },
         );
@@ -60,8 +72,32 @@ function PhotoForm() {
     [createPhotoMutate, router],
   );
 
+  const debouncedUpdatePhotoMutate = useMemo(
+    () =>
+      debounce((id: number, body: PhotoBody) => {
+        updatePhotoMutate(
+          {
+            params: {
+              path: { id },
+            },
+            body,
+          },
+          {
+            onSuccess: (data) => {
+              router.push(`/@${data.author.username}/photos/${data.id}`);
+            },
+          },
+        );
+      }, 500),
+    [router, updatePhotoMutate],
+  );
+
   const onSubmit: SubmitHandler<PhotoBody> = (body) => {
-    debouncedCreatePhotoMutate(body);
+    if (!isEdit) {
+      debouncedCreatePhotoMutate(body);
+    } else {
+      debouncedUpdatePhotoMutate(photo.id, body);
+    }
   };
 
   const handleImageClick = () => {
@@ -80,10 +116,6 @@ function PhotoForm() {
         return formData;
       },
     });
-  };
-
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    setImageAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
   };
 
   const handleAnimalChange = (animal: AnimalResponse) => {
@@ -112,7 +144,9 @@ function PhotoForm() {
     <div className="relative flex min-h-dvh flex-col">
       <div className="sticky top-0 flex items-center justify-between bg-zinc-50 px-4 py-2 dark:bg-zinc-900">
         <div className="flex items-center gap-4">
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50"># 반려동물 사진 등록</p>
+          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            {!isEdit ? '# 반려동물 사진 등록' : '# 반려동물 사진 수정'}
+          </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 사진을 공유하고 저장해보세요.</p>
         </div>
         <button
@@ -120,7 +154,7 @@ function PhotoForm() {
           onClick={handleSubmit(onSubmit)}
           className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
         >
-          등록하기
+          {!isEdit ? '등록하기' : '수정하기'}
         </button>
       </div>
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center">
@@ -132,16 +166,16 @@ function PhotoForm() {
             {image && (
               <div
                 onClick={handleImageClick}
-                style={{ aspectRatio: imageAspectRatio }}
-                className="relative cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600"
+                className="relative cursor-pointer items-center justify-center rounded-lg"
               >
                 <Image
-                  className="rounded-lg object-cover"
+                  className="h-auto w-full rounded-lg object-cover"
                   src={image}
-                  sizes="25wv"
                   alt=""
-                  fill
-                  onLoad={handleImageLoad}
+                  width={0}
+                  height={0}
+                  sizes="25vw"
+                  priority
                 />
               </div>
             )}

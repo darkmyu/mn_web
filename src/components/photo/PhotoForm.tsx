@@ -1,12 +1,112 @@
 'use client';
 
-import { usePhotoForm } from '@/hooks/forms/photo';
-import { LucideCamera, LucideSearch, LucideX } from 'lucide-react';
+import { $api } from '@/api';
+import { AnimalResponse } from '@/api/types';
+import { ROUTE_PHOTOS_PAGE } from '@/constants/route';
+import { PhotoBody, usePhotoForm } from '@/hooks/forms/photo';
+import { debounce } from 'es-toolkit';
+import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useMemo, useRef, useState } from 'react';
+import { SubmitHandler } from 'react-hook-form';
+import { Modal } from '../modal';
+import SelectAnimalModal from '../modal/contents/SelectAnimalModal';
 
 function PhotoForm() {
-  const { watch, register } = usePhotoForm();
+  const {
+    watch,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { isValid },
+  } = usePhotoForm();
 
   const tags = watch('tags');
+  const image = watch('image');
+
+  const router = useRouter();
+  const imageRef = useRef<HTMLInputElement>(null);
+  const [imageAspectRatio, setImageAspectRatio] = useState(1);
+  const [selectedAnimal, setSelectedAnimal] = useState<AnimalResponse | null>(null);
+
+  const { mutate: createPhotoMutate } = $api.useMutation('post', '/api/v1/photos');
+
+  const { mutate: uploadPhotoImage, isPending: isUploadPhotoImagePending } = $api.useMutation(
+    'post',
+    '/api/v1/photos/image',
+    {
+      onSuccess: ({ path }) => {
+        setValue('image', path, { shouldValidate: true });
+      },
+      onError: () => {
+        /** @TODO alert error */
+      },
+    },
+  );
+
+  const debouncedCreatePhotoMutate = useMemo(
+    () =>
+      debounce((body: PhotoBody) => {
+        createPhotoMutate(
+          { body },
+          {
+            onSuccess: (data) => {
+              router.push(`${ROUTE_PHOTOS_PAGE}/${data.id}`);
+            },
+          },
+        );
+      }, 500),
+    [createPhotoMutate, router],
+  );
+
+  const onSubmit: SubmitHandler<PhotoBody> = (body) => {
+    debouncedCreatePhotoMutate(body);
+  };
+
+  const handleImageClick = () => {
+    imageRef.current?.click();
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const image = e.target.files?.[0];
+    if (!image) return;
+
+    uploadPhotoImage({
+      body: { image },
+      bodySerializer: (body) => {
+        const formData = new FormData();
+        formData.append('image', body.image);
+        return formData;
+      },
+    });
+  };
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    setImageAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
+  };
+
+  const handleAnimalChange = (animal: AnimalResponse) => {
+    setValue('animalId', animal.id, { shouldValidate: true });
+    setSelectedAnimal(animal);
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing || e.key !== 'Enter') return;
+
+    const normalizedTag = e.currentTarget.value.trim().replace(/\s+/g, ' ');
+    e.currentTarget.value = '';
+    if (!normalizedTag || tags?.includes(normalizedTag)) return;
+
+    setValue('tags', [...(tags ?? []), normalizedTag]);
+  };
+
+  const handleTagRemove = (target: string) => {
+    if (!tags) return;
+
+    const filteredTags = tags.filter((tag) => tag !== target);
+    setValue('tags', filteredTags);
+  };
 
   return (
     <div className="relative flex min-h-dvh flex-col">
@@ -15,44 +115,118 @@ function PhotoForm() {
           <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50"># 반려동물 사진 등록</p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 사진을 공유하고 저장해보세요.</p>
         </div>
-        <button className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700">
+        <button
+          disabled={!isValid || isUploadPhotoImagePending}
+          onClick={handleSubmit(onSubmit)}
+          className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+        >
           등록하기
         </button>
       </div>
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center">
         <form className="grid grid-cols-4 gap-8 p-6">
-          <div className="col-span-2 flex aspect-square flex-col gap-2">
+          <div className="col-span-2 flex h-full flex-col gap-2">
             <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               사진 <span className="text-sm text-red-700">*</span>
             </label>
-            <div className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
-              <LucideCamera size={48} className="text-zinc-400" />
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                여기로 사진을 끌어다 놓거나 클릭하여 선택해주세요.
-              </p>
-            </div>
+            {image && (
+              <div
+                onClick={handleImageClick}
+                style={{ aspectRatio: imageAspectRatio }}
+                className="relative cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600"
+              >
+                <Image
+                  className="rounded-lg object-cover"
+                  src={image}
+                  sizes="25wv"
+                  alt=""
+                  fill
+                  onLoad={handleImageLoad}
+                />
+              </div>
+            )}
+            {!image && (
+              <div
+                onClick={handleImageClick}
+                className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
+              >
+                <LucideCamera size={48} className="text-zinc-400" />
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물 사진을 선택해주세요.</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 파일만 업로드 가능해요.</p>
+              </div>
+            )}
+            <input
+              ref={imageRef}
+              type="file"
+              accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+              onChange={handleImageChange}
+              hidden
+            />
           </div>
           <div className="col-span-2 flex flex-col gap-10">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                동물 <span className="text-sm text-red-700">*</span>
+                반려동물 <span className="text-sm text-red-700">*</span>
               </label>
-              <div className="relative w-full">
-                <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
-                  <LucideSearch className="h-4 w-4 text-zinc-700" />
-                </div>
-                <input
-                  type="text"
-                  readOnly
-                  placeholder="사진 속 반려동물을 선택해주세요"
-                  className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
-                />
-              </div>
+              <Modal.Root>
+                {!selectedAnimal && (
+                  <Modal.Trigger asChild>
+                    <div className="relative w-full">
+                      <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
+                        <LucideSearch className="h-4 w-4 text-zinc-700" />
+                      </div>
+                      <input
+                        type="text"
+                        readOnly
+                        placeholder="사진 속 반려동물을 선택해주세요"
+                        className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
+                      />
+                    </div>
+                  </Modal.Trigger>
+                )}
+                {selectedAnimal && (
+                  <Modal.Trigger asChild>
+                    <div className="flex cursor-pointer items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 dark:bg-zinc-800">
+                      <div className="flex items-center gap-3">
+                        {selectedAnimal.thumbnail && (
+                          <Image
+                            className="h-8 w-8 rounded-full object-cover"
+                            src={selectedAnimal.thumbnail}
+                            alt=""
+                            width={32}
+                            height={32}
+                          />
+                        )}
+                        {!selectedAnimal.thumbnail && (
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full border-1 border-dashed border-zinc-300 dark:border-zinc-600">
+                            {selectedAnimal.breed.species === 'DOG' && (
+                              <LucideDog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                            )}
+                            {selectedAnimal.breed.species === 'CAT' && (
+                              <LucideCat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                            )}
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <p className="text-sm font-semibold">{selectedAnimal.name}</p>
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400">{selectedAnimal.breed.name}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <LucideSearch className="h-4 w-4 text-zinc-700" />
+                      </div>
+                    </div>
+                  </Modal.Trigger>
+                )}
+                <SelectAnimalModal value={selectedAnimal} onChange={handleAnimalChange} />
+              </Modal.Root>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">제목</label>
               <input
+                {...register('title')}
                 type="text"
+                spellCheck="false"
                 autoComplete="off"
                 placeholder="사진 제목을 입력해주세요"
                 className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
@@ -61,22 +235,29 @@ function PhotoForm() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">설명</label>
               <textarea
-                rows={4}
+                {...register('description')}
+                rows={5}
+                spellCheck="false"
+                autoComplete="off"
                 placeholder="사진에 대한 설명을 입력해주세요"
-                className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
+                className="resize-none rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">태그</label>
-              <input
-                type="text"
-                autoComplete="off"
-                placeholder="태그를 입력 후 엔터를 눌러주세요"
-                className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
-              />
-              <div className="mt-2 flex flex-wrap gap-2">
-                {tags &&
-                  tags.map((tag) => (
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">태그</label>
+                <input
+                  type="text"
+                  spellCheck="false"
+                  autoComplete="off"
+                  placeholder="태그를 입력 후 엔터를 눌러주세요"
+                  onKeyDown={handleTagKeyDown}
+                  className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
+                />
+              </div>
+              {tags && (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
                     <div
                       key={tag}
                       className="flex items-center gap-2 rounded-md bg-emerald-100 py-1.5 pr-2 pl-3 text-sm font-medium text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
@@ -84,13 +265,15 @@ function PhotoForm() {
                       <span>{`#${tag}`}</span>
                       <button
                         type="button"
+                        onClick={() => handleTagRemove(tag)}
                         className="flex cursor-pointer items-center justify-center rounded-full p-0.5 text-emerald-700/70 hover:bg-emerald-200/70 hover:text-emerald-800 dark:text-emerald-300/70 dark:hover:bg-emerald-800/50 dark:hover:text-emerald-200"
                       >
                         <LucideX className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   ))}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </form>

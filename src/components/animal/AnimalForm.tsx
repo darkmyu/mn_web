@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Modal } from '../modal';
-import BreedModal from '../modal/contents/BreedModal';
+import SelectBreedModal from '../modal/contents/SelectBreedModal';
 
 interface Props {
   animal?: AnimalResponse;
@@ -50,14 +50,18 @@ function AnimalForm({ animal }: Props) {
   const { mutate: createAnimalMutate } = $api.useMutation('post', '/api/v1/animals');
   const { mutate: updateAnimalMutate } = $api.useMutation('put', '/api/v1/animals/{id}');
 
-  const { mutate: uploadAnimalThumbnail } = $api.useMutation('post', '/api/v1/animals/thumbnail', {
-    onSuccess: ({ path }) => {
-      setValue('thumbnail', path);
+  const { mutate: uploadAnimalThumbnail, isPending: isUploadAnimalThumbnailPending } = $api.useMutation(
+    'post',
+    '/api/v1/animals/thumbnail',
+    {
+      onSuccess: ({ path }) => {
+        setValue('thumbnail', path);
+      },
+      onError: () => {
+        /** @TODO alert error */
+      },
     },
-    onError: () => {
-      /** @TODO alert error */
-    },
-  });
+  );
 
   const debouncedCreateAnimalMutate = useMemo(
     () =>
@@ -119,7 +123,7 @@ function AnimalForm({ animal }: Props) {
     reset({ ...values, breedId: undefined });
   };
 
-  const handleBreedClick = (breed: BreedResponse) => {
+  const handleBreedChange = (breed: BreedResponse) => {
     setValue('breedId', breed.id, { shouldValidate: true });
     setSelectedBreed(breed);
   };
@@ -165,7 +169,7 @@ function AnimalForm({ animal }: Props) {
           </p>
         </div>
         <button
-          disabled={!isValid}
+          disabled={!isValid || isUploadAnimalThumbnailPending}
           onClick={handleSubmit(onSubmit)}
           className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:focus:ring-emerald-800 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
         >
@@ -176,8 +180,8 @@ function AnimalForm({ animal }: Props) {
         <form className="grid grid-cols-4 items-center gap-8 p-6">
           <div className="col-span-2 flex flex-col items-center gap-6">
             <div
-              className="relative h-64 w-64 cursor-pointer rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
               onClick={handleThumbnailClick}
+              className="relative h-64 w-64 cursor-pointer rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
             >
               {thumbnail && <Image src={thumbnail} alt="" fill sizes="192px" className="rounded-full object-cover" />}
               {!thumbnail && (
@@ -204,7 +208,13 @@ function AnimalForm({ animal }: Props) {
                 이미지 삭제
               </button>
             </div>
-            <input type="file" accept="image/*" ref={thumbnailRef} onChange={handleThumbnailChange} hidden />
+            <input
+              ref={thumbnailRef}
+              type="file"
+              accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+              onChange={handleThumbnailChange}
+              hidden
+            />
           </div>
           <div className="col-span-2 flex flex-col gap-10">
             <div className="flex flex-col gap-2">
@@ -241,7 +251,7 @@ function AnimalForm({ animal }: Props) {
                 품종 <span className="text-sm text-red-700">*</span>
               </label>
               <Modal.Root>
-                <Modal.Trigger>
+                <Modal.Trigger asChild>
                   <div className="relative w-full">
                     <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
                       <Search className="h-4 w-4 text-zinc-700" />
@@ -255,13 +265,7 @@ function AnimalForm({ animal }: Props) {
                     />
                   </div>
                 </Modal.Trigger>
-                <Modal.Content>
-                  <BreedModal
-                    selectedSpecies={selectedSpecies}
-                    selectedBreed={selectedBreed}
-                    onBreedClick={handleBreedClick}
-                  />
-                </Modal.Content>
+                <SelectBreedModal value={selectedBreed} species={selectedSpecies} onChange={handleBreedChange} />
               </Modal.Root>
             </div>
             <div className="flex flex-col gap-2">

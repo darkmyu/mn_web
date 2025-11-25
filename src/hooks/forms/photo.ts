@@ -11,7 +11,7 @@ export function usePhotoForm() {
     resolver: zodResolver(
       z.object({
         animalId: z.number().min(1),
-        url: z.string().min(1),
+        image: z.string().min(1),
         title: z.string().optional(),
         description: z.string().optional(),
         tags: z.string().array().optional(),

@@ -1,5 +1,5 @@
 import { AnimalResponse } from '@/api/types';
-import { Cat, Dog } from 'lucide-react';
+import { LucideCat, LucideDog } from 'lucide-react';
 import Image from 'next/image';
 
 interface Props {
@@ -14,10 +14,10 @@ function AnimalChip({ animal }: Props) {
           <Image className="aspect-square rounded-full object-cover" src={animal.thumbnail} sizes="2vw" alt="" fill />
         )}
         {!animal.thumbnail && animal.breed.species === 'DOG' && (
-          <Dog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+          <LucideDog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
         )}
         {!animal.thumbnail && animal.breed.species === 'CAT' && (
-          <Cat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+          <LucideCat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
         )}
       </div>
       <div>

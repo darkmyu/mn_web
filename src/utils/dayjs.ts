@@ -7,6 +7,6 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isSameOrAfter);
-dayjs.extend(customParseFormat)
+dayjs.extend(customParseFormat);
 
 export default dayjs;

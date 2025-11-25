@@ -20,7 +20,7 @@ function SidebarProfile() {
   if (!profile) {
     return (
       <Modal.Root>
-        <Modal.Trigger>
+        <Modal.Trigger asChild>
           <div className="flex cursor-pointer items-center justify-center">
             <LucideLogIn className="text-zinc-500" />
           </div>

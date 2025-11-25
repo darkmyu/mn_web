@@ -4,19 +4,18 @@ import { getChoseong } from 'es-hangul';
 import { Check, Search, X } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { Modal } from '..';
-import { useModalContext } from '../context';
 
 interface Props {
-  selectedSpecies: AnimalSpecies;
-  selectedBreed: BreedResponse | null;
-  onBreedClick: (breed: BreedResponse) => void;
+  value: BreedResponse | null;
+  species: AnimalSpecies;
+  onChange: (breed: BreedResponse) => void;
 }
 
 interface BreedListProps extends Props {
   searchQuery: string;
 }
 
-function BreedList({ selectedSpecies, selectedBreed, onBreedClick: handleBreedClick, searchQuery }: BreedListProps) {
+function BreedList({ species, value, onChange, searchQuery }: BreedListProps) {
   const selectedItemRef = useRef<HTMLLIElement>(null);
 
   const { data: breeds } = $api.useSuspenseQuery(
@@ -25,7 +24,7 @@ function BreedList({ selectedSpecies, selectedBreed, onBreedClick: handleBreedCl
     {
       params: {
         query: {
-          species: selectedSpecies,
+          species,
         },
       },
     },
@@ -46,20 +45,21 @@ function BreedList({ selectedSpecies, selectedBreed, onBreedClick: handleBreedCl
   return (
     <ul className="flex flex-col gap-2">
       {filteredBreeds.map((breed) => {
-        const isSelected = breed.id === selectedBreed?.id;
+        const isSelected = breed.id === value?.id;
 
         return (
-          <li
-            key={breed.id}
-            ref={isSelected ? selectedItemRef : null}
-            onClick={() => handleBreedClick(breed)}
-            className={`cursor-pointer rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
-              isSelected && 'flex items-center justify-between'
-            }`}
-          >
-            <span>{breed.name}</span>
-            {isSelected && <Check size={20} className="text-emerald-600" />}
-          </li>
+          <Modal.Close key={breed.id} asChild>
+            <li
+              ref={isSelected ? selectedItemRef : null}
+              onClick={() => onChange(breed)}
+              className={`cursor-pointer rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
+                isSelected && 'flex items-center justify-between'
+              }`}
+            >
+              <span>{breed.name}</span>
+              {isSelected && <Check size={20} className="text-emerald-600" />}
+            </li>
+          </Modal.Close>
         );
       })}
     </ul>
@@ -76,21 +76,15 @@ function BreedListSkeleton() {
   );
 }
 
-function BreedModal({ selectedSpecies, selectedBreed, onBreedClick }: Props) {
-  const { close } = useModalContext();
+function SelectBreedModal({ species, value, onChange }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleBreedClick = (breed: BreedResponse) => {
-    onBreedClick(breed);
-    close();
-  };
-
   return (
-    <div className="w-[28rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
+    <Modal.Content className="w-[28rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="font-medium">품종 선택</h1>
-          <Modal.Close>
+          <Modal.Close asChild>
             <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
               <X size={20} />
             </button>
@@ -108,17 +102,12 @@ function BreedModal({ selectedSpecies, selectedBreed, onBreedClick }: Props) {
         </div>
         <div className="scrollbar-hide h-80 overflow-y-auto">
           <Suspense fallback={<BreedListSkeleton />}>
-            <BreedList
-              selectedSpecies={selectedSpecies}
-              selectedBreed={selectedBreed}
-              onBreedClick={handleBreedClick}
-              searchQuery={searchQuery}
-            />
+            <BreedList value={value} species={species} searchQuery={searchQuery} onChange={onChange} />
           </Suspense>
         </div>
       </div>
-    </div>
+    </Modal.Content>
   );
 }
 
-export default BreedModal;
+export default SelectBreedModal;

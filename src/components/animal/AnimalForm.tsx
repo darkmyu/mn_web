@@ -190,6 +190,14 @@ function AnimalForm({ animal }: Props) {
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">프로필 사진을 선택해주세요.</p>
                 </div>
               )}
+              {isUploadAnimalThumbnailPending && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-zinc-950/40 backdrop-blur-[1px]">
+                  <div className="relative h-full w-full">
+                    <div className="absolute inset-1 rounded-full border border-white/20" />
+                    <div className="absolute inset-1 animate-[spin_1.2s_linear_infinite] rounded-full border-2 border-transparent border-t-emerald-400 border-l-emerald-500" />
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <button

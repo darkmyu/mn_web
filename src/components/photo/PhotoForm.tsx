@@ -163,32 +163,41 @@ function PhotoForm({ photo }: Props) {
             <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               사진 <span className="text-sm text-red-700">*</span>
             </label>
-            {image && (
-              <div
-                onClick={handleImageClick}
-                className="relative cursor-pointer items-center justify-center rounded-lg"
-              >
-                <Image
-                  className="h-auto w-full rounded-lg object-cover"
-                  src={image}
-                  alt=""
-                  width={0}
-                  height={0}
-                  sizes="25vw"
-                  priority
-                />
-              </div>
-            )}
-            {!image && (
-              <div
-                onClick={handleImageClick}
-                className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
-              >
-                <LucideCamera size={48} className="text-zinc-400" />
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물 사진을 선택해주세요.</p>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 파일만 업로드 가능해요.</p>
-              </div>
-            )}
+            <div className="relative">
+              {image && (
+                <div
+                  onClick={handleImageClick}
+                  className="relative cursor-pointer items-center justify-center rounded-lg"
+                >
+                  <Image
+                    className="h-auto w-full rounded-lg object-cover"
+                    src={image}
+                    alt=""
+                    width={0}
+                    height={0}
+                    sizes="25vw"
+                    priority
+                  />
+                </div>
+              )}
+              {!image && (
+                <div
+                  onClick={handleImageClick}
+                  className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
+                >
+                  <LucideCamera size={48} className="text-zinc-400" />
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물 사진을 선택해주세요.</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 파일만 업로드 가능해요.</p>
+                </div>
+              )}
+              {isUploadPhotoImagePending && (
+                <div className="pointer-events-none absolute inset-0 flex flex-col rounded-lg bg-zinc-950/40 backdrop-blur-[1px]">
+                  <div className="mt-auto h-1 overflow-hidden rounded-b-lg bg-zinc-900/60">
+                    <div className="h-full w-1/3 animate-[shimmer_1.6s_ease-in-out_infinite] bg-emerald-500" />
+                  </div>
+                </div>
+              )}
+            </div>
             <input
               ref={imageRef}
               type="file"

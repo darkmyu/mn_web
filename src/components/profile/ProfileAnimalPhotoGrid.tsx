@@ -17,18 +17,17 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
     },
   });
 
-  const [aspectRatios, setAspectRatios] = useState<Record<number, number>>({});
+  const gap = 16;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const gap = 16;
+  const [aspectRatios, setAspectRatios] = useState<Record<number, number>>({});
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
       if (!entries[0]) return;
-      const width = entries[0].contentRect.width;
-      setContainerWidth((prev) => (prev === width ? prev : width));
+      setContainerWidth(entries[0].contentRect.width);
     });
 
     observer.observe(containerRef.current);
@@ -40,8 +39,9 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
       return { positions: {}, height: 0 };
     }
 
+    const minColumnCount = 2;
     const minColumnWidth = 272;
-    const columnCount = Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
+    const columnCount = Math.max(minColumnCount, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
     const columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount;
     const columnHeights = new Array(columnCount).fill(0);
     const positions: Record<number, { left: number; top: number; width: number; height: number }> = {};
@@ -51,20 +51,20 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
       const ratio = aspectRatios[item.id] ?? 1;
       const height = columnWidth * ratio;
 
-      let targetColumn = 0;
+      let targetIndex = 0;
       for (let columnIndex = 1; columnIndex < columnCount; columnIndex += 1) {
-        if (columnHeights[columnIndex] < columnHeights[targetColumn]) {
-          targetColumn = columnIndex;
+        if (columnHeights[columnIndex] < columnHeights[targetIndex]) {
+          targetIndex = columnIndex;
         }
       }
 
-      const left = targetColumn * (columnWidth + gap);
-      const top = columnHeights[targetColumn];
+      const left = targetIndex * (columnWidth + gap);
+      const top = columnHeights[targetIndex];
 
       positions[item.id] = { left, top, width: columnWidth, height };
 
-      columnHeights[targetColumn] += height + gap;
-      maxHeight = Math.max(maxHeight, columnHeights[targetColumn]);
+      columnHeights[targetIndex] += height + gap;
+      maxHeight = Math.max(maxHeight, columnHeights[targetIndex]);
     }
 
     return {
@@ -74,7 +74,6 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
   }, [aspectRatios, containerWidth, data, gap]);
 
   const handleImageLoad = (key: number, naturalWidth: number, naturalHeight: number) => {
-    if (!naturalWidth || !naturalHeight) return;
     const ratio = naturalHeight / naturalWidth;
     setAspectRatios((prev) => {
       if (prev[key] && Math.abs(prev[key] - ratio) < 0.01) {
@@ -87,13 +86,14 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
   return (
     <div className="w-full" ref={containerRef}>
       <div
-        className="relative transition-opacity duration-300"
+        className="relative"
         style={{
           height: layout.height,
         }}
       >
         {data?.items.map((item) => {
           const position = layout.positions[item.id];
+
           return (
             <div
               key={item.id}
@@ -106,7 +106,7 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
             >
               <Image
                 src={item.image}
-                alt={`${username} companion ${item.id}`}
+                alt=""
                 fill
                 sizes="25vw"
                 className="object-cover"

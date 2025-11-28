@@ -1,7 +1,7 @@
 import { $api } from '@/api';
 import Profile from '@/components/profile/Profile';
 import ProfileAnimalList from '@/components/profile/ProfileAnimalList';
-import ProfileAnimalPhotos from '@/components/profile/ProfileAnimalPhotoGrid';
+import ProfileAnimalPhotoGrid from '@/components/profile/ProfileAnimalPhotoGrid';
 import { getQueryClient } from '@/utils/getQueryClient';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
@@ -45,7 +45,7 @@ export default async function ProfilePage({ params }: Props) {
           <Profile username={username} />
           <ProfileAnimalList username={username} />
         </div>
-        <ProfileAnimalPhotos username={username} />
+        <ProfileAnimalPhotoGrid username={username} />
       </div>
     </HydrationBoundary>
   );

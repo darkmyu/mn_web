@@ -11,7 +11,13 @@ export function usePhotoForm(defaultValues?: PhotoBody) {
     resolver: zodResolver(
       z.object({
         animalId: z.number().min(1),
-        image: z.string().min(1),
+        image: z.object({
+          path: z.string().min(1),
+          size: z.number().min(1),
+          width: z.number().min(1),
+          height: z.number().min(1),
+          mimetype: z.string().min(1),
+        }),
         title: z.string().optional(),
         description: z.string().optional(),
         tags: z.string().array().optional(),

@@ -48,8 +48,8 @@ function PhotoForm({ photo }: Props) {
     'post',
     '/api/v1/photos/image',
     {
-      onSuccess: ({ path }) => {
-        setValue('image', path, { shouldValidate: true });
+      onSuccess: (image) => {
+        setValue('image', image, { shouldValidate: true });
       },
       onError: () => {
         /** @TODO alert error */
@@ -171,7 +171,7 @@ function PhotoForm({ photo }: Props) {
                 >
                   <Image
                     className="h-auto w-full rounded-lg object-cover"
-                    src={image}
+                    src={image.path}
                     alt=""
                     width={0}
                     height={0}

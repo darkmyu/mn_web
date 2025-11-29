@@ -1,7 +1,9 @@
+import { FileResponse } from '@/api/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface UseMasonryLayoutOptions<T extends { id: number }> {
   items: T[];
+  sizes: FileResponse[];
   gap?: number;
   minColumnCount?: number;
   minColumnWidth?: number;
@@ -9,13 +11,13 @@ interface UseMasonryLayoutOptions<T extends { id: number }> {
 
 export function useMasonryLayout<T extends { id: number }>({
   items,
+  sizes,
   gap = 16,
   minColumnCount = 2,
   minColumnWidth = 272,
 }: UseMasonryLayoutOptions<T>) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [aspectRatios, setAspectRatios] = useState<Record<number, number>>({});
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -40,8 +42,11 @@ export function useMasonryLayout<T extends { id: number }>({
     const positions: Record<number, { left: number; top: number; width: number; height: number }> = {};
     let maxHeight = 0;
 
-    for (const item of items) {
-      const ratio = aspectRatios[item.id] ?? 1;
+    items.forEach((item, index) => {
+      const size = sizes[index];
+      if (!size) return;
+
+      const ratio = size.height / size.width;
       const height = columnWidth * ratio;
 
       const targetIndex = columnHeights.indexOf(Math.min(...columnHeights));
@@ -51,27 +56,16 @@ export function useMasonryLayout<T extends { id: number }>({
       positions[item.id] = { left, top, width: columnWidth, height };
       columnHeights[targetIndex] += height + gap;
       maxHeight = Math.max(maxHeight, columnHeights[targetIndex]);
-    }
+    });
 
     return {
       positions,
       height: Math.max(0, maxHeight - gap),
     };
-  }, [aspectRatios, containerWidth, gap, items, minColumnCount, minColumnWidth]);
-
-  const measureImage = (id: number, naturalWidth: number, naturalHeight: number) => {
-    const ratio = naturalHeight / naturalWidth;
-    setAspectRatios((prev) => {
-      if (prev[id] && Math.abs(prev[id] - ratio) < 0.01) {
-        return prev;
-      }
-      return { ...prev, [id]: ratio };
-    });
-  };
+  }, [containerWidth, gap, items, minColumnCount, minColumnWidth, sizes]);
 
   return {
     containerRef,
     layout,
-    measureImage,
   };
 }

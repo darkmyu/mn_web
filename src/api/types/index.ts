@@ -1,5 +1,8 @@
 import type { components } from '@/api/schema';
 
+/** file */
+export type FileResponse = components['schemas']['FileResponse'];
+
 /** user */
 export type ProfileResponse = components['schemas']['ProfileResponse'];
 

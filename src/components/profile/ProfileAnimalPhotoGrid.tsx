@@ -17,7 +17,10 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
     },
   });
 
-  const { containerRef, layout, measureImage } = useMasonryLayout({ items: data?.items ?? [] });
+  const { containerRef, layout } = useMasonryLayout({
+    items: data?.items ?? [],
+    sizes: data?.items.map((item) => item.image) ?? [],
+  });
 
   return (
     <div className="w-full" ref={containerRef}>
@@ -35,15 +38,7 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
                 transform: `translate(${position?.left ?? 0}px, ${position?.top ?? 0}px)`,
               }}
             >
-              <Image
-                src={item.image}
-                alt=""
-                fill
-                sizes="25vw"
-                priority={index < 4}
-                className="object-cover"
-                onLoad={(e) => measureImage(item.id, e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)}
-              />
+              <Image src={item.image.path} alt="" fill sizes="25vw" priority={index < 4} className="object-cover" />
             </div>
           );
         })}

@@ -1,21 +1,24 @@
-import { FileResponse } from '@/api/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-interface UseMasonryLayoutOptions<T extends { id: number }> {
-  items: T[];
-  sizes: FileResponse[];
+interface UseMasonryLayoutDimension {
+  id: number;
+  width: number;
+  height: number;
+}
+
+interface UseMasonryLayoutOptions {
+  dimensions: UseMasonryLayoutDimension[];
   gap?: number;
   minColumnCount?: number;
   minColumnWidth?: number;
 }
 
-export function useMasonryLayout<T extends { id: number }>({
-  items,
-  sizes,
+export function useMasonryLayout({
+  dimensions,
   gap = 16,
   minColumnCount = 2,
   minColumnWidth = 272,
-}: UseMasonryLayoutOptions<T>) {
+}: UseMasonryLayoutOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -42,18 +45,15 @@ export function useMasonryLayout<T extends { id: number }>({
     const positions: Record<number, { left: number; top: number; width: number; height: number }> = {};
     let maxHeight = 0;
 
-    items.forEach((item, index) => {
-      const size = sizes[index];
-      if (!size) return;
-
-      const ratio = size.height / size.width;
+    dimensions.forEach((dimension) => {
+      const ratio = dimension.height / dimension.width;
       const height = columnWidth * ratio;
 
       const targetIndex = columnHeights.indexOf(Math.min(...columnHeights));
       const left = targetIndex * (columnWidth + gap);
       const top = columnHeights[targetIndex];
 
-      positions[item.id] = { left, top, width: columnWidth, height };
+      positions[dimension.id] = { left, top, width: columnWidth, height };
       columnHeights[targetIndex] += height + gap;
       maxHeight = Math.max(maxHeight, columnHeights[targetIndex]);
     });
@@ -62,7 +62,7 @@ export function useMasonryLayout<T extends { id: number }>({
       positions,
       height: Math.max(0, maxHeight - gap),
     };
-  }, [containerWidth, gap, items, minColumnCount, minColumnWidth, sizes]);
+  }, [containerWidth, dimensions, gap, minColumnCount, minColumnWidth]);
 
   return {
     containerRef,

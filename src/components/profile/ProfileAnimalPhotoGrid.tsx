@@ -18,8 +18,12 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
   });
 
   const { containerRef, layout } = useMasonryLayout({
-    items: data?.items ?? [],
-    sizes: data?.items.map((item) => item.image) ?? [],
+    dimensions:
+      data?.items.map((item) => ({
+        id: item.id,
+        width: item.image.width,
+        height: item.image.height,
+      })) ?? [],
   });
 
   return (

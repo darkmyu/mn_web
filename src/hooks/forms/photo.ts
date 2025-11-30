@@ -1,12 +1,10 @@
-import { PhotoCreateRequest } from '@/api/types';
+import { PhotoCreateRequest } from '@/api/index.schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-export type PhotoBody = PhotoCreateRequest;
-
-export function usePhotoForm(defaultValues?: PhotoBody) {
-  return useForm<PhotoBody>({
+export function usePhotoForm(defaultValues?: PhotoCreateRequest) {
+  return useForm<PhotoCreateRequest>({
     mode: 'onChange',
     resolver: zodResolver(
       z.object({

@@ -1,13 +1,11 @@
-import { AnimalCreateRequest } from '@/api/types';
+import { AnimalCreateRequest } from '@/api/index.schemas';
 import dayjs from '@/utils/dayjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-export type AnimalBody = AnimalCreateRequest;
-
-export function useAnimalForm(defaultValues?: AnimalBody) {
-  return useForm<AnimalBody>({
+export function useAnimalForm(defaultValues?: AnimalCreateRequest) {
+  return useForm<AnimalCreateRequest>({
     mode: 'onChange',
     resolver: zodResolver(
       z.object({

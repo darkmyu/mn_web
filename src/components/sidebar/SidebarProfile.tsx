@@ -1,4 +1,4 @@
-import { $api } from '@/api';
+import { useAuthControllerLogout } from '@/api/auth';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { LogOut, LucideLogIn, Settings } from 'lucide-react';
@@ -11,9 +11,11 @@ import LoginModal from '../modal/contents/LoginModal';
 function SidebarProfile() {
   const { profile, setProfile } = useAuthStore();
 
-  const { mutate: logoutMutate } = $api.useMutation('post', '/api/v1/auth/logout', {
-    onSuccess: () => {
-      setProfile(null);
+  const { mutate: logoutMutate } = useAuthControllerLogout({
+    mutation: {
+      onSuccess: () => {
+        setProfile(null);
+      },
     },
   });
 
@@ -86,7 +88,7 @@ function SidebarProfile() {
             </Link>
             <div
               className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-3 hover:bg-zinc-100 hover:dark:bg-zinc-700/40"
-              onClick={() => logoutMutate({})}
+              onClick={() => logoutMutate()}
             >
               <LogOut className="text-zinc-500 dark:text-zinc-300" size={20} />
               <p className="text-sm font-semibold">로그아웃</p>

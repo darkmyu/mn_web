@@ -1,5 +1,5 @@
-import { $api } from '@/api';
-import { AnimalResponse } from '@/api/types';
+import { useAnimalControllerAllSuspense } from '@/api/animal';
+import { AnimalResponse } from '@/api/index.schemas';
 import { LucideCat, LucideCheck, LucideDog, X } from 'lucide-react';
 import Image from 'next/image';
 import { Suspense } from 'react';
@@ -11,7 +11,7 @@ interface Props {
 }
 
 function AnimalList({ value, onChange }: Props) {
-  const { data: animals } = $api.useSuspenseQuery('get', '/api/v1/animals');
+  const { data: animals } = useAnimalControllerAllSuspense();
 
   return (
     <ul className="flex flex-col gap-2">

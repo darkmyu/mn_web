@@ -1,7 +1,7 @@
 'use client';
 
-import { $api } from '@/api';
-import { AuthRegisterRequest } from '@/api/types';
+import { useAuthControllerCheckDuplicateUsername, useAuthControllerRegister } from '@/api/auth';
+import { AuthRegisterRequest } from '@/api/index.schemas';
 import { ROUTE_HOME_PAGE } from '@/constants/route';
 import { useAuthRegisterForm } from '@/hooks/forms/auth';
 import { useAuthStore } from '@/stores/auth';
@@ -25,30 +25,34 @@ function OnboardingForm() {
 
   const username = watch('username');
 
-  const { mutate: registerMutate } = $api.useMutation('post', '/api/v1/auth/register', {
-    onSuccess: (data) => {
-      setProfile(data);
+  const { mutate: registerMutate } = useAuthControllerRegister({
+    mutation: {
+      onSuccess: (data) => {
+        setProfile(data);
+      },
     },
   });
 
-  const { mutate: checkDuplicateUsernameMutate } = $api.useMutation('post', '/api/v1/auth/check-duplicate-username', {
-    onSuccess: () => {
-      setIsCheckDuplicateUsername(true);
-    },
-    onError: () => {
-      setIsCheckDuplicateUsername(false);
-      setError('username', {
-        type: 'duplicate',
-        message: '이미 사용중인 고유명이에요. 다른 이름을 입력해주세요.',
-      });
+  const { mutate: checkDuplicateUsernameMutate } = useAuthControllerCheckDuplicateUsername({
+    mutation: {
+      onSuccess: () => {
+        setIsCheckDuplicateUsername(true);
+      },
+      onError: () => {
+        setIsCheckDuplicateUsername(false);
+        setError('username', {
+          type: 'duplicate',
+          message: '이미 사용중인 고유명이에요. 다른 이름을 입력해주세요.',
+        });
+      },
     },
   });
 
   const debouncedRegisterMutate = useMemo(
     () =>
-      debounce((body: AuthRegisterRequest) => {
+      debounce((data: AuthRegisterRequest) => {
         registerMutate(
-          { body },
+          { data },
           {
             onSuccess: () => {
               router.push(ROUTE_HOME_PAGE);
@@ -63,9 +67,7 @@ function OnboardingForm() {
     () =>
       debounce((username: string) => {
         checkDuplicateUsernameMutate({
-          body: {
-            username,
-          },
+          data: { username },
         });
       }, 500),
     [checkDuplicateUsernameMutate],

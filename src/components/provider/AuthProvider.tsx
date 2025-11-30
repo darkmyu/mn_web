@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '@/api';
+import { authControllerInfo } from '@/api/auth';
 import { useAuthStore } from '@/stores/auth';
 import { useEffect } from 'react';
 
@@ -10,10 +10,8 @@ function AuthProvider() {
   useEffect(() => {
     if (profile) return;
 
-    api.GET('/api/v1/auth/info').then((response) => {
-      if (response.data) {
-        setProfile(response.data.profile);
-      }
+    authControllerInfo().then((response) => {
+      setProfile(response.profile);
     });
   }, [setProfile, profile]);
 

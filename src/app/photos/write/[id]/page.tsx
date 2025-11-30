@@ -1,4 +1,4 @@
-import { api } from '@/api';
+import { photoControllerRead } from '@/api/photo';
 import PhotoForm from '@/components/photo/PhotoForm';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
@@ -12,16 +12,13 @@ export default async function PhotosEditPage({ params }: Props) {
   const cookieStore = await cookies();
   const cookie = cookieStore.toString();
 
-  const { data } = await api.GET('/api/v1/photos/{id}', {
-    params: {
-      path: { id },
-    },
+  const photo = await photoControllerRead(id, {
     headers: {
       cookie,
     },
   });
 
-  if (!data) notFound();
+  if (!photo) notFound();
 
-  return <PhotoForm photo={data} />;
+  return <PhotoForm photo={photo} />;
 }

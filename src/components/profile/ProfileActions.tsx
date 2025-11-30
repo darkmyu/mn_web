@@ -1,4 +1,4 @@
-import { ProfileResponse } from '@/api/types';
+import { ProfileResponse } from '@/api/index.schemas';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import Link from 'next/link';

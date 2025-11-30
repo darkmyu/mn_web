@@ -1,5 +1,5 @@
-import { $api } from '@/api';
-import { AnimalSpecies, BreedResponse } from '@/api/types';
+import { useBreedControllerReadSuspense } from '@/api/breed';
+import { BreedResponse, BreedResponseSpecies } from '@/api/index.schemas';
 import { getChoseong } from 'es-hangul';
 import { Check, Search, X } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
@@ -7,7 +7,7 @@ import { Modal } from '..';
 
 interface Props {
   value: BreedResponse | null;
-  species: AnimalSpecies;
+  species: BreedResponseSpecies;
   onChange: (breed: BreedResponse) => void;
 }
 
@@ -18,19 +18,15 @@ interface BreedListProps extends Props {
 function BreedList({ species, value, onChange, searchQuery }: BreedListProps) {
   const selectedItemRef = useRef<HTMLLIElement>(null);
 
-  const { data: breeds } = $api.useSuspenseQuery(
-    'get',
-    '/api/v1/breeds',
+  const { data: breeds } = useBreedControllerReadSuspense(
     {
-      params: {
-        query: {
-          species,
-        },
-      },
+      species,
     },
     {
-      gcTime: Infinity,
-      staleTime: Infinity,
+      query: {
+        gcTime: Infinity,
+        staleTime: Infinity,
+      },
     },
   );
 

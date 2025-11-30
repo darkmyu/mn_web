@@ -1,6 +1,6 @@
 'use client';
 
-import { $api } from '@/api';
+import { useProfileControllerReadSuspense } from '@/api/profile';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 
@@ -11,11 +11,7 @@ interface Props {
 }
 
 function Profile({ username }: Props) {
-  const { data: target } = $api.useSuspenseQuery('get', '/api/v1/profiles/{username}', {
-    params: {
-      path: { username },
-    },
-  });
+  const { data: target } = useProfileControllerReadSuspense(username);
 
   return (
     <div className="flex gap-16">

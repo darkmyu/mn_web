@@ -1,4 +1,4 @@
-import { api } from '@/api';
+import { animalControllerRead } from '@/api/animal';
 import AnimalForm from '@/components/animal/AnimalForm';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
@@ -12,16 +12,13 @@ export default async function AnimalsEditPage({ params }: Props) {
   const cookieStore = await cookies();
   const cookie = cookieStore.toString();
 
-  const { data } = await api.GET('/api/v1/animals/{id}', {
-    params: {
-      path: { id },
-    },
+  const animal = await animalControllerRead(id, {
     headers: {
       cookie,
     },
   });
 
-  if (!data) notFound();
+  if (!animal) notFound();
 
-  return <AnimalForm animal={data} />;
+  return <AnimalForm animal={animal} />;
 }

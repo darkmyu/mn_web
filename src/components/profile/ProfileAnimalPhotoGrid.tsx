@@ -1,6 +1,6 @@
 'use client';
 
-import { $api } from '@/api';
+import { useProfileControllerPhotosSuspenseInfinite } from '@/api/profile';
 import { useMasonryLayout } from '@/hooks/useMasonryLayout';
 import Image from 'next/image';
 
@@ -9,27 +9,32 @@ interface Props {
 }
 
 function ProfileAnimalPhotoGrid({ username }: Props) {
-  const { data } = $api.useQuery('get', '/api/v1/profiles/{username}/photos', {
-    params: {
-      path: {
-        username,
+  const { data } = useProfileControllerPhotosSuspenseInfinite(
+    username,
+    {
+      limit: 20,
+    },
+    {
+      query: {
+        getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.page + 1 : undefined),
       },
     },
-  });
+  );
+
+  const items = data.pages.flatMap((page) => page.items);
 
   const { containerRef, layout } = useMasonryLayout({
-    dimensions:
-      data?.items.map((item) => ({
-        id: item.id,
-        width: item.image.width,
-        height: item.image.height,
-      })) ?? [],
+    dimensions: items.map((item) => ({
+      id: item.id,
+      width: item.image.width,
+      height: item.image.height,
+    })),
   });
 
   return (
     <div className="w-full" ref={containerRef}>
       <div className="relative" style={{ height: layout.height }}>
-        {data?.items.map((item, index) => {
+        {items.map((item) => {
           const position = layout.positions[item.id];
 
           return (
@@ -42,7 +47,7 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
                 transform: `translate(${position?.left ?? 0}px, ${position?.top ?? 0}px)`,
               }}
             >
-              <Image src={item.image.path} alt="" fill sizes="25vw" priority={index < 4} className="object-cover" />
+              <Image src={item.image.path} alt="" fill sizes="25vw" className="object-cover" />
             </div>
           );
         })}

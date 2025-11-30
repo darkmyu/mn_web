@@ -1,4 +1,4 @@
-import { ProfileResponse } from '@/api/types';
+import { ProfileResponse } from '@/api/index.schemas';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 

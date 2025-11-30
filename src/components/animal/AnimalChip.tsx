@@ -1,4 +1,4 @@
-import { AnimalResponse } from '@/api/types';
+import { AnimalResponse } from '@/api/index.schemas';
 import { LucideCat, LucideDog } from 'lucide-react';
 import Image from 'next/image';
 

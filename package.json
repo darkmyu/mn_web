@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "types": "tsx scripts/openapi-generate-types.ts"
+    "orval": "orval --config orval.config.ts"
   },
   "dependencies": {
     "@egjs/react-flicking": "^4.13.0",
@@ -24,8 +24,6 @@
     "nanoid": "^5.1.5",
     "next": "15.3.3",
     "next-themes": "^0.4.6",
-    "openapi-fetch": "^0.14.0",
-    "openapi-react-query": "^0.5.0",
     "radix-ui": "^1.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -44,7 +42,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "^10.1.5",
-    "openapi-typescript": "^7.8.0",
+    "orval": "^7.17.0",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "tailwindcss": "^4",

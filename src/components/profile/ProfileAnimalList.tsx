@@ -1,6 +1,6 @@
 'use client';
 
-import { $api } from '@/api';
+import { useProfileControllerAnimalsSuspense } from '@/api/profile';
 import { ROUTE_ANIMALS_WRITE_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { Plus } from 'lucide-react';
@@ -14,12 +14,7 @@ interface Props {
 function ProfileAnimalList({ username }: Props) {
   const { profile } = useAuthStore();
   const isOwner = profile?.username === username;
-
-  const { data: animals } = $api.useSuspenseQuery('get', '/api/v1/profiles/{username}/animals', {
-    params: {
-      path: { username },
-    },
-  });
+  const { data: animals } = useProfileControllerAnimalsSuspense(username);
 
   if (!isOwner && animals.items.length === 0) return null;
 

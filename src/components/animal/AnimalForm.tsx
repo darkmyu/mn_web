@@ -1,8 +1,15 @@
 'use client';
 
-import { $api } from '@/api';
-import { AnimalGender, AnimalResponse, AnimalSpecies, BreedResponse } from '@/api/types';
-import { AnimalBody, useAnimalForm } from '@/hooks/forms/animal';
+import { useAnimalControllerCreate, useAnimalControllerUpdate, useAnimalControllerUpload } from '@/api/animal';
+import {
+  AnimalCreateRequest,
+  AnimalResponse,
+  AnimalResponseGender,
+  AnimalUpdateRequest,
+  BreedResponse,
+  BreedResponseSpecies,
+} from '@/api/index.schemas';
+import { useAnimalForm } from '@/hooks/forms/animal';
 import dayjs from '@/utils/dayjs';
 import { debounce } from 'es-toolkit';
 import { Camera, Search } from 'lucide-react';
@@ -44,16 +51,14 @@ function AnimalForm({ animal }: Props) {
 
   const router = useRouter();
   const thumbnailRef = useRef<HTMLInputElement>(null);
-  const [selectedSpecies, setSelectedSpecie] = useState<AnimalSpecies>(animal?.breed.species ?? 'DOG');
   const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(animal?.breed ?? null);
+  const [selectedSpecies, setSelectedSpecie] = useState<BreedResponseSpecies>(animal?.breed.species ?? 'DOG');
 
-  const { mutate: createAnimalMutate } = $api.useMutation('post', '/api/v1/animals');
-  const { mutate: updateAnimalMutate } = $api.useMutation('put', '/api/v1/animals/{id}');
+  const { mutate: createAnimalMutate } = useAnimalControllerCreate();
+  const { mutate: updateAnimalMutate } = useAnimalControllerUpdate();
 
-  const { mutate: uploadAnimalThumbnail, isPending: isUploadAnimalThumbnailPending } = $api.useMutation(
-    'post',
-    '/api/v1/animals/thumbnail',
-    {
+  const { mutate: uploadAnimalThumbnail, isPending: isUploadAnimalThumbnailPending } = useAnimalControllerUpload({
+    mutation: {
       onSuccess: ({ path }) => {
         setValue('thumbnail', path);
       },
@@ -61,13 +66,13 @@ function AnimalForm({ animal }: Props) {
         /** @TODO alert error */
       },
     },
-  );
+  });
 
   const debouncedCreateAnimalMutate = useMemo(
     () =>
-      debounce((body: AnimalBody) => {
+      debounce((data: AnimalCreateRequest) => {
         createAnimalMutate(
-          { body },
+          { data },
           {
             onSuccess: (data) => {
               router.push(`/@${data.owner.username}`);
@@ -80,13 +85,11 @@ function AnimalForm({ animal }: Props) {
 
   const debouncedUpdateAnimalMutate = useMemo(
     () =>
-      debounce((id: number, body: AnimalBody) => {
+      debounce((id: number, data: AnimalUpdateRequest) => {
         updateAnimalMutate(
           {
-            params: {
-              path: { id },
-            },
-            body,
+            id,
+            data,
           },
           {
             onSuccess: (data) => {
@@ -98,7 +101,7 @@ function AnimalForm({ animal }: Props) {
     [updateAnimalMutate, router],
   );
 
-  const onSubmit: SubmitHandler<AnimalBody> = (body) => {
+  const onSubmit: SubmitHandler<AnimalCreateRequest> = (body) => {
     const payload = {
       ...body,
       birthday: dayjs(body.birthday).toISOString(),
@@ -111,11 +114,11 @@ function AnimalForm({ animal }: Props) {
     }
   };
 
-  const handleGenderClick = (gender: AnimalGender) => {
+  const handleGenderClick = (gender: AnimalResponseGender) => {
     setValue('gender', gender);
   };
 
-  const handleSpeciesClick = (species: AnimalSpecies) => {
+  const handleSpeciesClick = (species: BreedResponseSpecies) => {
     setSelectedSpecie(species);
     setSelectedBreed(null);
 
@@ -144,12 +147,7 @@ function AnimalForm({ animal }: Props) {
     if (!thumbnail) return;
 
     uploadAnimalThumbnail({
-      body: { thumbnail },
-      bodySerializer: (body) => {
-        const formData = new FormData();
-        formData.append('thumbnail', body.thumbnail);
-        return formData;
-      },
+      data: { thumbnail },
     });
   };
 

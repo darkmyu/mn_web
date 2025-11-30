@@ -1,8 +1,8 @@
 'use client';
 
-import { $api } from '@/api';
-import { AnimalResponse, PhotoResponse } from '@/api/types';
-import { PhotoBody, usePhotoForm } from '@/hooks/forms/photo';
+import { AnimalResponse, PhotoCreateRequest, PhotoResponse, PhotoUpdateRequest } from '@/api/index.schemas';
+import { usePhotoControllerCreate, usePhotoControllerUpdate, usePhotoControllerUpload } from '@/api/photo';
+import { usePhotoForm } from '@/hooks/forms/photo';
 import { debounce } from 'es-toolkit';
 import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
 import Image from 'next/image';
@@ -41,13 +41,11 @@ function PhotoForm({ photo }: Props) {
   const imageRef = useRef<HTMLInputElement>(null);
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalResponse | null>(photo?.animal ?? null);
 
-  const { mutate: createPhotoMutate } = $api.useMutation('post', '/api/v1/photos');
-  const { mutate: updatePhotoMutate } = $api.useMutation('put', '/api/v1/photos/{id}');
+  const { mutate: createPhotoMutate } = usePhotoControllerCreate();
+  const { mutate: updatePhotoMutate } = usePhotoControllerUpdate();
 
-  const { mutate: uploadPhotoImage, isPending: isUploadPhotoImagePending } = $api.useMutation(
-    'post',
-    '/api/v1/photos/image',
-    {
+  const { mutate: uploadPhotoImage, isPending: isUploadPhotoImagePending } = usePhotoControllerUpload({
+    mutation: {
       onSuccess: (image) => {
         setValue('image', image, { shouldValidate: true });
       },
@@ -55,13 +53,13 @@ function PhotoForm({ photo }: Props) {
         /** @TODO alert error */
       },
     },
-  );
+  });
 
   const debouncedCreatePhotoMutate = useMemo(
     () =>
-      debounce((body: PhotoBody) => {
+      debounce((data: PhotoCreateRequest) => {
         createPhotoMutate(
-          { body },
+          { data },
           {
             onSuccess: (data) => {
               router.push(`/@${data.author.username}/photos/${data.id}`);
@@ -74,13 +72,11 @@ function PhotoForm({ photo }: Props) {
 
   const debouncedUpdatePhotoMutate = useMemo(
     () =>
-      debounce((id: number, body: PhotoBody) => {
+      debounce((id: number, data: PhotoUpdateRequest) => {
         updatePhotoMutate(
           {
-            params: {
-              path: { id },
-            },
-            body,
+            id,
+            data,
           },
           {
             onSuccess: (data) => {
@@ -92,7 +88,7 @@ function PhotoForm({ photo }: Props) {
     [router, updatePhotoMutate],
   );
 
-  const onSubmit: SubmitHandler<PhotoBody> = (body) => {
+  const onSubmit: SubmitHandler<PhotoCreateRequest> = (body) => {
     if (!isEdit) {
       debouncedCreatePhotoMutate(body);
     } else {
@@ -109,12 +105,7 @@ function PhotoForm({ photo }: Props) {
     if (!image) return;
 
     uploadPhotoImage({
-      body: { image },
-      bodySerializer: (body) => {
-        const formData = new FormData();
-        formData.append('image', body.image);
-        return formData;
-      },
+      data: { image },
     });
   };
 

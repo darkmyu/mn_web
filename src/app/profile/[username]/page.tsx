@@ -1,4 +1,8 @@
-import { $api } from '@/api';
+import {
+  getProfileControllerAnimalsQueryOptions,
+  getProfileControllerPhotosInfiniteQueryOptions,
+  getProfileControllerReadQueryOptions,
+} from '@/api/profile';
 import Profile from '@/components/profile/Profile';
 import ProfileAnimalList from '@/components/profile/ProfileAnimalList';
 import ProfileAnimalPhotoGrid from '@/components/profile/ProfileAnimalPhotoGrid';
@@ -15,23 +19,21 @@ export default async function ProfilePage({ params }: Props) {
   const queryClient = getQueryClient();
 
   try {
-    await queryClient.fetchQuery(
-      $api.queryOptions('get', '/api/v1/profiles/{username}', {
-        params: {
-          path: { username },
-        },
-      }),
-    );
+    await queryClient.fetchQuery(getProfileControllerReadQueryOptions(username));
   } catch {
     notFound();
   }
 
   try {
-    await queryClient.fetchQuery(
-      $api.queryOptions('get', '/api/v1/profiles/{username}/animals', {
-        params: {
-          path: { username },
-        },
+    await queryClient.fetchQuery(getProfileControllerAnimalsQueryOptions(username));
+  } catch {
+    notFound(); /** @TODO redirect error page */
+  }
+
+  try {
+    await queryClient.fetchInfiniteQuery(
+      getProfileControllerPhotosInfiniteQueryOptions(username, {
+        limit: 20,
       }),
     );
   } catch {

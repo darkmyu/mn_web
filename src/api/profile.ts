@@ -31,11 +31,22 @@ import type {
   ProfileResponse,
 } from './index.schemas';
 
+export type profileControllerReadResponse200 = {
+  data: ProfileResponse;
+  status: 200;
+};
+
+export type profileControllerReadResponseSuccess = profileControllerReadResponse200 & {
+  headers: Headers;
+};
 export const getProfileControllerReadUrl = (username: string) => {
   return `http://localhost:4000/api/v1/profiles/${username}`;
 };
 
-export const profileControllerRead = async (username: string, options?: RequestInit): Promise<ProfileResponse> => {
+export const profileControllerRead = async (
+  username: string,
+  options?: RequestInit,
+): Promise<profileControllerReadResponseSuccess> => {
   const res = await fetch(getProfileControllerReadUrl(username), {
     credentials: 'include',
     ...options,
@@ -43,9 +54,15 @@ export const profileControllerRead = async (username: string, options?: RequestI
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: ProfileResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: profileControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as profileControllerReadResponseSuccess;
 };
 
 export const getProfileControllerReadInfiniteQueryKey = (username?: string) => {
@@ -446,6 +463,14 @@ export function useProfileControllerReadSuspenseInfinite<
   return query;
 }
 
+export type profileControllerAnimalsResponse200 = {
+  data: ProfileControllerAnimals200;
+  status: 200;
+};
+
+export type profileControllerAnimalsResponseSuccess = profileControllerAnimalsResponse200 & {
+  headers: Headers;
+};
 export const getProfileControllerAnimalsUrl = (username: string) => {
   return `http://localhost:4000/api/v1/profiles/${username}/animals`;
 };
@@ -453,7 +478,7 @@ export const getProfileControllerAnimalsUrl = (username: string) => {
 export const profileControllerAnimals = async (
   username: string,
   options?: RequestInit,
-): Promise<ProfileControllerAnimals200> => {
+): Promise<profileControllerAnimalsResponseSuccess> => {
   const res = await fetch(getProfileControllerAnimalsUrl(username), {
     credentials: 'include',
     ...options,
@@ -461,9 +486,15 @@ export const profileControllerAnimals = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: ProfileControllerAnimals200 = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: profileControllerAnimalsResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as profileControllerAnimalsResponseSuccess;
 };
 
 export const getProfileControllerAnimalsInfiniteQueryKey = (username?: string) => {
@@ -890,6 +921,14 @@ export function useProfileControllerAnimalsSuspenseInfinite<
   return query;
 }
 
+export type profileControllerPhotosResponse200 = {
+  data: ProfileControllerPhotos200;
+  status: 200;
+};
+
+export type profileControllerPhotosResponseSuccess = profileControllerPhotosResponse200 & {
+  headers: Headers;
+};
 export const getProfileControllerPhotosUrl = (username: string, params?: ProfileControllerPhotosParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -910,7 +949,7 @@ export const profileControllerPhotos = async (
   username: string,
   params?: ProfileControllerPhotosParams,
   options?: RequestInit,
-): Promise<ProfileControllerPhotos200> => {
+): Promise<profileControllerPhotosResponseSuccess> => {
   const res = await fetch(getProfileControllerPhotosUrl(username, params), {
     credentials: 'include',
     ...options,
@@ -918,9 +957,15 @@ export const profileControllerPhotos = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: ProfileControllerPhotos200 = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: profileControllerPhotosResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as profileControllerPhotosResponseSuccess;
 };
 
 export const getProfileControllerPhotosInfiniteQueryKey = (

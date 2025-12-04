@@ -42,11 +42,19 @@ import type {
   FileResponse,
 } from './index.schemas';
 
+export type animalControllerAllResponse200 = {
+  data: AnimalControllerAll200;
+  status: 200;
+};
+
+export type animalControllerAllResponseSuccess = animalControllerAllResponse200 & {
+  headers: Headers;
+};
 export const getAnimalControllerAllUrl = () => {
   return `http://localhost:4000/api/v1/animals`;
 };
 
-export const animalControllerAll = async (options?: RequestInit): Promise<AnimalControllerAll200> => {
+export const animalControllerAll = async (options?: RequestInit): Promise<animalControllerAllResponseSuccess> => {
   const res = await fetch(getAnimalControllerAllUrl(), {
     credentials: 'include',
     ...options,
@@ -54,9 +62,15 @@ export const animalControllerAll = async (options?: RequestInit): Promise<Animal
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: AnimalControllerAll200 = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: animalControllerAllResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as animalControllerAllResponseSuccess;
 };
 
 export const getAnimalControllerAllInfiniteQueryKey = () => {
@@ -427,6 +441,14 @@ export function useAnimalControllerAllSuspenseInfinite<
   return query;
 }
 
+export type animalControllerCreateResponse201 = {
+  data: AnimalResponse;
+  status: 201;
+};
+
+export type animalControllerCreateResponseSuccess = animalControllerCreateResponse201 & {
+  headers: Headers;
+};
 export const getAnimalControllerCreateUrl = () => {
   return `http://localhost:4000/api/v1/animals`;
 };
@@ -434,7 +456,7 @@ export const getAnimalControllerCreateUrl = () => {
 export const animalControllerCreate = async (
   animalCreateRequest: AnimalCreateRequest,
   options?: RequestInit,
-): Promise<AnimalResponse> => {
+): Promise<animalControllerCreateResponseSuccess> => {
   const res = await fetch(getAnimalControllerCreateUrl(), {
     credentials: 'include',
     ...options,
@@ -444,9 +466,15 @@ export const animalControllerCreate = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: AnimalResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: animalControllerCreateResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as animalControllerCreateResponseSuccess;
 };
 
 export const getAnimalControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -507,11 +535,22 @@ export const useAnimalControllerCreate = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type animalControllerReadResponse200 = {
+  data: AnimalResponse;
+  status: 200;
+};
+
+export type animalControllerReadResponseSuccess = animalControllerReadResponse200 & {
+  headers: Headers;
+};
 export const getAnimalControllerReadUrl = (id: number) => {
   return `http://localhost:4000/api/v1/animals/${id}`;
 };
 
-export const animalControllerRead = async (id: number, options?: RequestInit): Promise<AnimalResponse> => {
+export const animalControllerRead = async (
+  id: number,
+  options?: RequestInit,
+): Promise<animalControllerReadResponseSuccess> => {
   const res = await fetch(getAnimalControllerReadUrl(id), {
     credentials: 'include',
     ...options,
@@ -519,9 +558,15 @@ export const animalControllerRead = async (id: number, options?: RequestInit): P
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: AnimalResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: animalControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as animalControllerReadResponseSuccess;
 };
 
 export const getAnimalControllerReadInfiniteQueryKey = (id?: number) => {
@@ -922,6 +967,14 @@ export function useAnimalControllerReadSuspenseInfinite<
   return query;
 }
 
+export type animalControllerUpdateResponse200 = {
+  data: AnimalResponse;
+  status: 200;
+};
+
+export type animalControllerUpdateResponseSuccess = animalControllerUpdateResponse200 & {
+  headers: Headers;
+};
 export const getAnimalControllerUpdateUrl = (id: number) => {
   return `http://localhost:4000/api/v1/animals/${id}`;
 };
@@ -930,7 +983,7 @@ export const animalControllerUpdate = async (
   id: number,
   animalUpdateRequest: AnimalUpdateRequest,
   options?: RequestInit,
-): Promise<AnimalResponse> => {
+): Promise<animalControllerUpdateResponseSuccess> => {
   const res = await fetch(getAnimalControllerUpdateUrl(id), {
     credentials: 'include',
     ...options,
@@ -940,9 +993,15 @@ export const animalControllerUpdate = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: AnimalResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: animalControllerUpdateResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as animalControllerUpdateResponseSuccess;
 };
 
 export const getAnimalControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -1003,11 +1062,22 @@ export const useAnimalControllerUpdate = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type animalControllerDeleteResponse200 = {
+  data: AnimalResponse;
+  status: 200;
+};
+
+export type animalControllerDeleteResponseSuccess = animalControllerDeleteResponse200 & {
+  headers: Headers;
+};
 export const getAnimalControllerDeleteUrl = (id: number) => {
   return `http://localhost:4000/api/v1/animals/${id}`;
 };
 
-export const animalControllerDelete = async (id: number, options?: RequestInit): Promise<AnimalResponse> => {
+export const animalControllerDelete = async (
+  id: number,
+  options?: RequestInit,
+): Promise<animalControllerDeleteResponseSuccess> => {
   const res = await fetch(getAnimalControllerDeleteUrl(id), {
     credentials: 'include',
     ...options,
@@ -1015,9 +1085,15 @@ export const animalControllerDelete = async (id: number, options?: RequestInit):
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: AnimalResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: animalControllerDeleteResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as animalControllerDeleteResponseSuccess;
 };
 
 export const getAnimalControllerDeleteMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -1055,6 +1131,14 @@ export const useAnimalControllerDelete = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type animalControllerUploadResponse201 = {
+  data: FileResponse;
+  status: 201;
+};
+
+export type animalControllerUploadResponseSuccess = animalControllerUploadResponse201 & {
+  headers: Headers;
+};
 export const getAnimalControllerUploadUrl = () => {
   return `http://localhost:4000/api/v1/animals/thumbnail`;
 };
@@ -1062,7 +1146,7 @@ export const getAnimalControllerUploadUrl = () => {
 export const animalControllerUpload = async (
   animalControllerUploadBody: AnimalControllerUploadBody,
   options?: RequestInit,
-): Promise<FileResponse> => {
+): Promise<animalControllerUploadResponseSuccess> => {
   const formData = new FormData();
   formData.append(`thumbnail`, animalControllerUploadBody.thumbnail);
 
@@ -1074,9 +1158,15 @@ export const animalControllerUpload = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: FileResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: animalControllerUploadResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as animalControllerUploadResponseSuccess;
 };
 
 export const getAnimalControllerUploadMutationOptions = <TError = unknown, TContext = unknown>(options?: {

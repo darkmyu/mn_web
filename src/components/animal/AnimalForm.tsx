@@ -59,8 +59,8 @@ function AnimalForm({ animal }: Props) {
 
   const { mutate: uploadAnimalThumbnail, isPending: isUploadAnimalThumbnailPending } = useAnimalControllerUpload({
     mutation: {
-      onSuccess: ({ path }) => {
-        setValue('thumbnail', path);
+      onSuccess: (response) => {
+        setValue('thumbnail', response.data.path);
       },
       onError: () => {
         /** @TODO alert error */
@@ -74,8 +74,8 @@ function AnimalForm({ animal }: Props) {
         createAnimalMutate(
           { data },
           {
-            onSuccess: (data) => {
-              router.push(`/@${data.owner.username}`);
+            onSuccess: (response) => {
+              router.push(`/@${response.data.owner.username}`);
             },
           },
         );
@@ -92,8 +92,8 @@ function AnimalForm({ animal }: Props) {
             data,
           },
           {
-            onSuccess: (data) => {
-              router.push(`/@${data.owner.username}`);
+            onSuccess: (response) => {
+              router.push(`/@${response.data.owner.username}`);
             },
           },
         );

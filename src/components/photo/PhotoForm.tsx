@@ -46,8 +46,8 @@ function PhotoForm({ photo }: Props) {
 
   const { mutate: uploadPhotoImage, isPending: isUploadPhotoImagePending } = usePhotoControllerUpload({
     mutation: {
-      onSuccess: (image) => {
-        setValue('image', image, { shouldValidate: true });
+      onSuccess: (response) => {
+        setValue('image', response.data, { shouldValidate: true });
       },
       onError: () => {
         /** @TODO alert error */
@@ -61,8 +61,8 @@ function PhotoForm({ photo }: Props) {
         createPhotoMutate(
           { data },
           {
-            onSuccess: (data) => {
-              router.push(`/@${data.author.username}/photos/${data.id}`);
+            onSuccess: (response) => {
+              router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
             },
           },
         );
@@ -79,8 +79,8 @@ function PhotoForm({ photo }: Props) {
             data,
           },
           {
-            onSuccess: (data) => {
-              router.push(`/@${data.author.username}/photos/${data.id}`);
+            onSuccess: (response) => {
+              router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
             },
           },
         );

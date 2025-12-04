@@ -12,13 +12,13 @@ export default async function AnimalsEditPage({ params }: Props) {
   const cookieStore = await cookies();
   const cookie = cookieStore.toString();
 
-  const animal = await animalControllerRead(id, {
+  const response = await animalControllerRead(id, {
     headers: {
       cookie,
     },
   });
 
-  if (!animal) notFound();
+  if (response.status !== 200) notFound();
 
-  return <AnimalForm animal={animal} />;
+  return <AnimalForm animal={response.data} />;
 }

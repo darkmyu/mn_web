@@ -11,7 +11,9 @@ interface Props {
 }
 
 function AnimalList({ value, onChange }: Props) {
-  const { data: animals } = useAnimalControllerAllSuspense();
+  const {
+    data: { data: animals },
+  } = useAnimalControllerAllSuspense();
 
   return (
     <ul className="flex flex-col gap-2">

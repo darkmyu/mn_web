@@ -26,6 +26,14 @@ import type {
 
 import type { BreedControllerRead200, BreedControllerReadParams } from './index.schemas';
 
+export type breedControllerReadResponse200 = {
+  data: BreedControllerRead200;
+  status: 200;
+};
+
+export type breedControllerReadResponseSuccess = breedControllerReadResponse200 & {
+  headers: Headers;
+};
 export const getBreedControllerReadUrl = (params?: BreedControllerReadParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -45,7 +53,7 @@ export const getBreedControllerReadUrl = (params?: BreedControllerReadParams) =>
 export const breedControllerRead = async (
   params?: BreedControllerReadParams,
   options?: RequestInit,
-): Promise<BreedControllerRead200> => {
+): Promise<breedControllerReadResponseSuccess> => {
   const res = await fetch(getBreedControllerReadUrl(params), {
     credentials: 'include',
     ...options,
@@ -53,9 +61,15 @@ export const breedControllerRead = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: BreedControllerRead200 = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: breedControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as breedControllerReadResponseSuccess;
 };
 
 export const getBreedControllerReadInfiniteQueryKey = (params?: BreedControllerReadParams) => {

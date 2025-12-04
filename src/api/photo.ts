@@ -41,11 +41,22 @@ import type {
   PhotoUpdateRequest,
 } from './index.schemas';
 
+export type photoControllerReadResponse200 = {
+  data: PhotoResponse;
+  status: 200;
+};
+
+export type photoControllerReadResponseSuccess = photoControllerReadResponse200 & {
+  headers: Headers;
+};
 export const getPhotoControllerReadUrl = (id: number) => {
   return `http://localhost:4000/api/v1/photos/${id}`;
 };
 
-export const photoControllerRead = async (id: number, options?: RequestInit): Promise<PhotoResponse> => {
+export const photoControllerRead = async (
+  id: number,
+  options?: RequestInit,
+): Promise<photoControllerReadResponseSuccess> => {
   const res = await fetch(getPhotoControllerReadUrl(id), {
     credentials: 'include',
     ...options,
@@ -53,9 +64,15 @@ export const photoControllerRead = async (id: number, options?: RequestInit): Pr
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: PhotoResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerReadResponseSuccess;
 };
 
 export const getPhotoControllerReadInfiniteQueryKey = (id?: number) => {
@@ -456,6 +473,14 @@ export function usePhotoControllerReadSuspenseInfinite<
   return query;
 }
 
+export type photoControllerUpdateResponse200 = {
+  data: PhotoResponse;
+  status: 200;
+};
+
+export type photoControllerUpdateResponseSuccess = photoControllerUpdateResponse200 & {
+  headers: Headers;
+};
 export const getPhotoControllerUpdateUrl = (id: number) => {
   return `http://localhost:4000/api/v1/photos/${id}`;
 };
@@ -464,7 +489,7 @@ export const photoControllerUpdate = async (
   id: number,
   photoUpdateRequest: PhotoUpdateRequest,
   options?: RequestInit,
-): Promise<PhotoResponse> => {
+): Promise<photoControllerUpdateResponseSuccess> => {
   const res = await fetch(getPhotoControllerUpdateUrl(id), {
     credentials: 'include',
     ...options,
@@ -474,9 +499,15 @@ export const photoControllerUpdate = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: PhotoResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerUpdateResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerUpdateResponseSuccess;
 };
 
 export const getPhotoControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -537,6 +568,14 @@ export const usePhotoControllerUpdate = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type photoControllerCreateResponse201 = {
+  data: PhotoResponse;
+  status: 201;
+};
+
+export type photoControllerCreateResponseSuccess = photoControllerCreateResponse201 & {
+  headers: Headers;
+};
 export const getPhotoControllerCreateUrl = () => {
   return `http://localhost:4000/api/v1/photos`;
 };
@@ -544,7 +583,7 @@ export const getPhotoControllerCreateUrl = () => {
 export const photoControllerCreate = async (
   photoCreateRequest: PhotoCreateRequest,
   options?: RequestInit,
-): Promise<PhotoResponse> => {
+): Promise<photoControllerCreateResponseSuccess> => {
   const res = await fetch(getPhotoControllerCreateUrl(), {
     credentials: 'include',
     ...options,
@@ -554,9 +593,15 @@ export const photoControllerCreate = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: PhotoResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerCreateResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerCreateResponseSuccess;
 };
 
 export const getPhotoControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -617,6 +662,14 @@ export const usePhotoControllerCreate = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type photoControllerUploadResponse201 = {
+  data: FileResponse;
+  status: 201;
+};
+
+export type photoControllerUploadResponseSuccess = photoControllerUploadResponse201 & {
+  headers: Headers;
+};
 export const getPhotoControllerUploadUrl = () => {
   return `http://localhost:4000/api/v1/photos/image`;
 };
@@ -624,7 +677,7 @@ export const getPhotoControllerUploadUrl = () => {
 export const photoControllerUpload = async (
   photoControllerUploadBody: PhotoControllerUploadBody,
   options?: RequestInit,
-): Promise<FileResponse> => {
+): Promise<photoControllerUploadResponseSuccess> => {
   const formData = new FormData();
   formData.append(`image`, photoControllerUploadBody.image);
 
@@ -636,9 +689,15 @@ export const photoControllerUpload = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: FileResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerUploadResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerUploadResponseSuccess;
 };
 
 export const getPhotoControllerUploadMutationOptions = <TError = unknown, TContext = unknown>(options?: {

@@ -40,11 +40,19 @@ import type {
   ProfileResponse,
 } from './index.schemas';
 
+export type authControllerInfoResponse200 = {
+  data: AuthInfoResponse;
+  status: 200;
+};
+
+export type authControllerInfoResponseSuccess = authControllerInfoResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerInfoUrl = () => {
   return `http://localhost:4000/api/v1/auth/info`;
 };
 
-export const authControllerInfo = async (options?: RequestInit): Promise<AuthInfoResponse> => {
+export const authControllerInfo = async (options?: RequestInit): Promise<authControllerInfoResponseSuccess> => {
   const res = await fetch(getAuthControllerInfoUrl(), {
     credentials: 'include',
     ...options,
@@ -52,9 +60,15 @@ export const authControllerInfo = async (options?: RequestInit): Promise<AuthInf
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: AuthInfoResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerInfoResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerInfoResponseSuccess;
 };
 
 export const getAuthControllerInfoInfiniteQueryKey = () => {
@@ -411,11 +425,19 @@ export function useAuthControllerInfoSuspenseInfinite<
   return query;
 }
 
+export type authControllerGoogleResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerGoogleResponseSuccess = authControllerGoogleResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerGoogleUrl = () => {
   return `http://localhost:4000/api/v1/auth/google`;
 };
 
-export const authControllerGoogle = async (options?: RequestInit): Promise<void> => {
+export const authControllerGoogle = async (options?: RequestInit): Promise<authControllerGoogleResponseSuccess> => {
   const res = await fetch(getAuthControllerGoogleUrl(), {
     credentials: 'include',
     ...options,
@@ -423,9 +445,15 @@ export const authControllerGoogle = async (options?: RequestInit): Promise<void>
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerGoogleResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerGoogleResponseSuccess;
 };
 
 export const getAuthControllerGoogleInfiniteQueryKey = () => {
@@ -796,11 +824,21 @@ export function useAuthControllerGoogleSuspenseInfinite<
   return query;
 }
 
+export type authControllerGoogleCallbackResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerGoogleCallbackResponseSuccess = authControllerGoogleCallbackResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerGoogleCallbackUrl = () => {
   return `http://localhost:4000/api/v1/auth/google/callback`;
 };
 
-export const authControllerGoogleCallback = async (options?: RequestInit): Promise<void> => {
+export const authControllerGoogleCallback = async (
+  options?: RequestInit,
+): Promise<authControllerGoogleCallbackResponseSuccess> => {
   const res = await fetch(getAuthControllerGoogleCallbackUrl(), {
     credentials: 'include',
     ...options,
@@ -808,9 +846,15 @@ export const authControllerGoogleCallback = async (options?: RequestInit): Promi
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerGoogleCallbackResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerGoogleCallbackResponseSuccess;
 };
 
 export const getAuthControllerGoogleCallbackInfiniteQueryKey = () => {
@@ -1209,11 +1253,19 @@ export function useAuthControllerGoogleCallbackSuspenseInfinite<
   return query;
 }
 
+export type authControllerNaverResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerNaverResponseSuccess = authControllerNaverResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerNaverUrl = () => {
   return `http://localhost:4000/api/v1/auth/naver`;
 };
 
-export const authControllerNaver = async (options?: RequestInit): Promise<void> => {
+export const authControllerNaver = async (options?: RequestInit): Promise<authControllerNaverResponseSuccess> => {
   const res = await fetch(getAuthControllerNaverUrl(), {
     credentials: 'include',
     ...options,
@@ -1221,9 +1273,15 @@ export const authControllerNaver = async (options?: RequestInit): Promise<void> 
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerNaverResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerNaverResponseSuccess;
 };
 
 export const getAuthControllerNaverInfiniteQueryKey = () => {
@@ -1594,11 +1652,21 @@ export function useAuthControllerNaverSuspenseInfinite<
   return query;
 }
 
+export type authControllerNaverCallbackResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerNaverCallbackResponseSuccess = authControllerNaverCallbackResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerNaverCallbackUrl = () => {
   return `http://localhost:4000/api/v1/auth/naver/callback`;
 };
 
-export const authControllerNaverCallback = async (options?: RequestInit): Promise<void> => {
+export const authControllerNaverCallback = async (
+  options?: RequestInit,
+): Promise<authControllerNaverCallbackResponseSuccess> => {
   const res = await fetch(getAuthControllerNaverCallbackUrl(), {
     credentials: 'include',
     ...options,
@@ -1606,9 +1674,15 @@ export const authControllerNaverCallback = async (options?: RequestInit): Promis
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerNaverCallbackResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerNaverCallbackResponseSuccess;
 };
 
 export const getAuthControllerNaverCallbackInfiniteQueryKey = () => {
@@ -2007,11 +2081,19 @@ export function useAuthControllerNaverCallbackSuspenseInfinite<
   return query;
 }
 
+export type authControllerKakaoResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerKakaoResponseSuccess = authControllerKakaoResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerKakaoUrl = () => {
   return `http://localhost:4000/api/v1/auth/kakao`;
 };
 
-export const authControllerKakao = async (options?: RequestInit): Promise<void> => {
+export const authControllerKakao = async (options?: RequestInit): Promise<authControllerKakaoResponseSuccess> => {
   const res = await fetch(getAuthControllerKakaoUrl(), {
     credentials: 'include',
     ...options,
@@ -2019,9 +2101,15 @@ export const authControllerKakao = async (options?: RequestInit): Promise<void> 
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerKakaoResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerKakaoResponseSuccess;
 };
 
 export const getAuthControllerKakaoInfiniteQueryKey = () => {
@@ -2392,11 +2480,21 @@ export function useAuthControllerKakaoSuspenseInfinite<
   return query;
 }
 
+export type authControllerKakaoCallbackResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerKakaoCallbackResponseSuccess = authControllerKakaoCallbackResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerKakaoCallbackUrl = () => {
   return `http://localhost:4000/api/v1/auth/kakao/callback`;
 };
 
-export const authControllerKakaoCallback = async (options?: RequestInit): Promise<void> => {
+export const authControllerKakaoCallback = async (
+  options?: RequestInit,
+): Promise<authControllerKakaoCallbackResponseSuccess> => {
   const res = await fetch(getAuthControllerKakaoCallbackUrl(), {
     credentials: 'include',
     ...options,
@@ -2404,9 +2502,15 @@ export const authControllerKakaoCallback = async (options?: RequestInit): Promis
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerKakaoCallbackResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerKakaoCallbackResponseSuccess;
 };
 
 export const getAuthControllerKakaoCallbackInfiniteQueryKey = () => {
@@ -2805,6 +2909,14 @@ export function useAuthControllerKakaoCallbackSuspenseInfinite<
   return query;
 }
 
+export type authControllerRegisterResponse200 = {
+  data: ProfileResponse;
+  status: 200;
+};
+
+export type authControllerRegisterResponseSuccess = authControllerRegisterResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerRegisterUrl = () => {
   return `http://localhost:4000/api/v1/auth/register`;
 };
@@ -2812,7 +2924,7 @@ export const getAuthControllerRegisterUrl = () => {
 export const authControllerRegister = async (
   authRegisterRequest: AuthRegisterRequest,
   options?: RequestInit,
-): Promise<ProfileResponse> => {
+): Promise<authControllerRegisterResponseSuccess> => {
   const res = await fetch(getAuthControllerRegisterUrl(), {
     credentials: 'include',
     ...options,
@@ -2822,9 +2934,15 @@ export const authControllerRegister = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: ProfileResponse = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerRegisterResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerRegisterResponseSuccess;
 };
 
 export const getAuthControllerRegisterMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -2885,6 +3003,14 @@ export const useAuthControllerRegister = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type authControllerCheckDuplicateUsernameResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerCheckDuplicateUsernameResponseSuccess = authControllerCheckDuplicateUsernameResponse200 & {
+  headers: Headers;
+};
 export const getAuthControllerCheckDuplicateUsernameUrl = () => {
   return `http://localhost:4000/api/v1/auth/check-duplicate-username`;
 };
@@ -2892,7 +3018,7 @@ export const getAuthControllerCheckDuplicateUsernameUrl = () => {
 export const authControllerCheckDuplicateUsername = async (
   authCheckDuplicateUsernameRequest: AuthCheckDuplicateUsernameRequest,
   options?: RequestInit,
-): Promise<void> => {
+): Promise<authControllerCheckDuplicateUsernameResponseSuccess> => {
   const res = await fetch(getAuthControllerCheckDuplicateUsernameUrl(), {
     credentials: 'include',
     ...options,
@@ -2902,9 +3028,15 @@ export const authControllerCheckDuplicateUsername = async (
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerCheckDuplicateUsernameResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerCheckDuplicateUsernameResponseSuccess;
 };
 
 export const getAuthControllerCheckDuplicateUsernameMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -2967,11 +3099,19 @@ export const useAuthControllerCheckDuplicateUsername = <TError = unknown, TConte
 
   return useMutation(mutationOptions, queryClient);
 };
+export type authControllerLogoutResponse201 = {
+  data: void;
+  status: 201;
+};
+
+export type authControllerLogoutResponseSuccess = authControllerLogoutResponse201 & {
+  headers: Headers;
+};
 export const getAuthControllerLogoutUrl = () => {
   return `http://localhost:4000/api/v1/auth/logout`;
 };
 
-export const authControllerLogout = async (options?: RequestInit): Promise<void> => {
+export const authControllerLogout = async (options?: RequestInit): Promise<authControllerLogoutResponseSuccess> => {
   const res = await fetch(getAuthControllerLogoutUrl(), {
     credentials: 'include',
     ...options,
@@ -2979,9 +3119,15 @@ export const authControllerLogout = async (options?: RequestInit): Promise<void>
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: void = body ? JSON.parse(body) : {};
-  return data;
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: authControllerLogoutResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as authControllerLogoutResponseSuccess;
 };
 
 export const getAuthControllerLogoutMutationOptions = <TError = unknown, TContext = unknown>(options?: {

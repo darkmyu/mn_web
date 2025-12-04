@@ -27,8 +27,8 @@ function OnboardingForm() {
 
   const { mutate: registerMutate } = useAuthControllerRegister({
     mutation: {
-      onSuccess: (data) => {
-        setProfile(data);
+      onSuccess: (response) => {
+        setProfile(response.data);
       },
     },
   });

@@ -16,12 +16,12 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
     },
     {
       query: {
-        getNextPageParam: (lastPage) => (!lastPage.isLast ? lastPage.page + 1 : undefined),
+        getNextPageParam: (lastPage) => (!lastPage.data.isLast ? lastPage.data.page + 1 : undefined),
       },
     },
   );
 
-  const items = data.pages.flatMap((page) => page.items);
+  const items = data.pages.flatMap((page) => page.data.items);
 
   const { containerRef, layout } = useMasonryLayout({
     dimensions: items.map((item) => ({

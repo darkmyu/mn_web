@@ -11,7 +11,7 @@ function AuthProvider() {
     if (profile) return;
 
     authControllerInfo().then((response) => {
-      setProfile(response.profile);
+      setProfile(response.data.profile);
     });
   }, [setProfile, profile]);
 

@@ -15,7 +15,7 @@ export default defineConfig({
       tsconfig: './tsconfig.json',
       override: {
         fetch: {
-          includeHttpResponseReturnType: false,
+          forceSuccessResponse: true,
         },
         query: {
           useQuery: true,

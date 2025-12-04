@@ -11,7 +11,9 @@ interface Props {
 }
 
 function Profile({ username }: Props) {
-  const { data: target } = useProfileControllerReadSuspense(username);
+  const {
+    data: { data: target },
+  } = useProfileControllerReadSuspense(username);
 
   return (
     <div className="flex gap-16">

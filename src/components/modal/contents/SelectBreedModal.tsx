@@ -18,7 +18,9 @@ interface BreedListProps extends Props {
 function BreedList({ species, value, onChange, searchQuery }: BreedListProps) {
   const selectedItemRef = useRef<HTMLLIElement>(null);
 
-  const { data: breeds } = useBreedControllerReadSuspense(
+  const {
+    data: { data: breeds },
+  } = useBreedControllerReadSuspense(
     {
       species,
     },

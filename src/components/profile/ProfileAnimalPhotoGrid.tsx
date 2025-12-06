@@ -3,15 +3,18 @@
 import { useProfileControllerPhotosSuspenseInfinite } from '@/api/profile';
 import { useMasonryLayout } from '@/hooks/useMasonryLayout';
 import Image from 'next/image';
+import { useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 interface Props {
   username: string;
 }
 
 function ProfileAnimalPhotoGrid({ username }: Props) {
-  const { data } = useProfileControllerPhotosSuspenseInfinite(
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useProfileControllerPhotosSuspenseInfinite(
     username,
     {
+      page: 1,
       limit: 20,
     },
     {
@@ -30,6 +33,14 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
       height: item.image.height,
     })),
   });
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, inView, isFetchingNextPage]);
 
   return (
     <div className="w-full" ref={containerRef}>
@@ -52,6 +63,7 @@ function ProfileAnimalPhotoGrid({ username }: Props) {
           );
         })}
       </div>
+      {layout.height > 0 && <div ref={ref} />}
     </div>
   );
 }

@@ -24,6 +24,7 @@ export default defineConfig({
           usePrefetch: true,
           useSuspenseQuery: true,
           useSuspenseInfiniteQuery: true,
+          useInfiniteQueryParam: 'page',
         },
         requestOptions: {
           credentials: 'include',

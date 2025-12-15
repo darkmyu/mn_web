@@ -25,6 +25,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  PhotoResponse,
   ProfileControllerAnimals200,
   ProfileControllerPhotos200,
   ProfileControllerPhotosParams,
@@ -1499,6 +1500,461 @@ export function useProfileControllerPhotosSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getProfileControllerPhotosSuspenseInfiniteQueryOptions(username, params, options);
+
+  const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export type profileControllerPhotoResponse200 = {
+  data: PhotoResponse;
+  status: 200;
+};
+
+export type profileControllerPhotoResponseSuccess = profileControllerPhotoResponse200 & {
+  headers: Headers;
+};
+export const getProfileControllerPhotoUrl = (username: string, id: number) => {
+  return `http://localhost:4000/api/v1/profiles/${username}/photos/${id}`;
+};
+
+export const profileControllerPhoto = async (
+  username: string,
+  id: number,
+  options?: RequestInit,
+): Promise<profileControllerPhotoResponseSuccess> => {
+  const res = await fetch(getProfileControllerPhotoUrl(username, id), {
+    credentials: 'include',
+    ...options,
+    method: 'GET',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: profileControllerPhotoResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as profileControllerPhotoResponseSuccess;
+};
+
+export const getProfileControllerPhotoInfiniteQueryKey = (username?: string, id?: number) => {
+  return ['infinite', `http://localhost:4000/api/v1/profiles/${username}/photos/${id}`] as const;
+};
+
+export const getProfileControllerPhotoQueryKey = (username?: string, id?: number) => {
+  return [`http://localhost:4000/api/v1/profiles/${username}/photos/${id}`] as const;
+};
+
+export const getProfileControllerPhotoInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoInfiniteQueryKey(username, id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
+    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, enabled: !!(username && id), ...queryOptions } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof profileControllerPhoto>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerPhotoInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof profileControllerPhoto>>>;
+export type ProfileControllerPhotoInfiniteQueryError = unknown;
+
+export function useProfileControllerPhotoInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options: {
+    query: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerPhoto>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerPhoto>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhotoInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerPhoto>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerPhoto>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhotoInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerPhotoInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerPhotoInfiniteQueryOptions(username, id, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchProfileControllerPhotoInfiniteQuery = async <
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getProfileControllerPhotoInfiniteQueryOptions(username, id, options);
+
+  await queryClient.prefetchInfiniteQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getProfileControllerPhotoQueryOptions = <
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoQueryKey(username, id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
+    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, enabled: !!(username && id), ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof profileControllerPhoto>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerPhotoQueryResult = NonNullable<Awaited<ReturnType<typeof profileControllerPhoto>>>;
+export type ProfileControllerPhotoQueryError = unknown;
+
+export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof profileControllerPhoto>>, TError = unknown>(
+  username: string,
+  id: number,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerPhoto>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerPhoto>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof profileControllerPhoto>>, TError = unknown>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerPhoto>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerPhoto>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof profileControllerPhoto>>, TError = unknown>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof profileControllerPhoto>>, TError = unknown>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerPhotoQueryOptions(username, id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchProfileControllerPhotoQuery = async <
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getProfileControllerPhotoQueryOptions(username, id, options);
+
+  await queryClient.prefetchQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getProfileControllerPhotoSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoQueryKey(username, id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
+    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof profileControllerPhoto>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerPhotoSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof profileControllerPhoto>>>;
+export type ProfileControllerPhotoSuspenseQueryError = unknown;
+
+export function useProfileControllerPhotoSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options: {
+    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhotoSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhotoSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerPhotoSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerPhoto>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerPhotoSuspenseQueryOptions(username, id, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getProfileControllerPhotoSuspenseInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoInfiniteQueryKey(username, id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
+    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof profileControllerPhoto>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerPhotoSuspenseInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerPhoto>>
+>;
+export type ProfileControllerPhotoSuspenseInfiniteQueryError = unknown;
+
+export function useProfileControllerPhotoSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options: {
+    query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhotoSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerPhotoSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerPhotoSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhoto>>>,
+  TError = unknown,
+>(
+  username: string,
+  id: number,
+  options?: {
+    query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerPhotoSuspenseInfiniteQueryOptions(username, id, options);
 
   const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

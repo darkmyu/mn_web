@@ -29,7 +29,7 @@ function PhotoMasonry({ photos, children }: Props) {
             <div
               key={photo.id}
               onClick={() => router.push(`/@${photo.author.username}/photos/${photo.id}`)}
-              className="absolute cursor-pointer overflow-hidden rounded-2xl bg-neutral-100"
+              className="absolute cursor-pointer overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800"
               style={{
                 width: position?.width ?? 0,
                 height: position?.height ?? 0,

@@ -158,17 +158,10 @@ function PhotoForm({ photo }: Props) {
               {image && (
                 <div
                   onClick={handleImageClick}
-                  className="relative cursor-pointer items-center justify-center rounded-lg"
+                  className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
+                  style={{ aspectRatio: image.width / image.height }}
                 >
-                  <Image
-                    className="h-auto w-full rounded-lg object-cover"
-                    src={image.path}
-                    alt=""
-                    width={0}
-                    height={0}
-                    sizes="25vw"
-                    priority
-                  />
+                  <Image className="object-cover" src={image.path} alt="" sizes="50vw" fill priority />
                 </div>
               )}
               {!image && (

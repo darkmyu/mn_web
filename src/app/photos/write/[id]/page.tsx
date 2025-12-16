@@ -12,13 +12,15 @@ export default async function PhotosEditPage({ params }: Props) {
   const cookieStore = await cookies();
   const cookie = cookieStore.toString();
 
-  const response = await photoControllerRead(id, {
-    headers: {
-      cookie,
-    },
-  });
+  try {
+    const response = await photoControllerRead(id, {
+      headers: {
+        cookie,
+      },
+    });
 
-  if (response.status !== 200) notFound();
-
-  return <PhotoForm photo={response.data} />;
+    return <PhotoForm photo={response.data} />;
+  } catch {
+    notFound();
+  }
 }

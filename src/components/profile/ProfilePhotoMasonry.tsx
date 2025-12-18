@@ -12,7 +12,7 @@ interface Props {
 function ProfilePhotoMasonry({ username }: Props) {
   const { ref, inView } = useInView();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useProfileControllerPhotosSuspenseInfinite(
+  const { data, fetchNextPage, hasNextPage, isFetched } = useProfileControllerPhotosSuspenseInfinite(
     username,
     {
       page: 1,
@@ -28,10 +28,10 @@ function ProfilePhotoMasonry({ username }: Props) {
   const photos = data.pages.flatMap((page) => page.data.items);
 
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (inView && hasNextPage && isFetched) {
       fetchNextPage();
     }
-  }, [fetchNextPage, hasNextPage, inView, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, inView, isFetched]);
 
   return (
     <PhotoMasonry photos={photos}>

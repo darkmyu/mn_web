@@ -16,17 +16,22 @@ function ProfilePhotoViewer({ id, username }: Props) {
   } = useProfileControllerPhotoSuspense(username, id);
 
   return (
-    <div className="grid grid-cols-12 gap-8">
-      <div className="col-span-3">
-        <div
-          className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
-          style={{ aspectRatio: photo.image.width / photo.image.height }}
-        >
+    <div className="flex flex-col gap-24">
+      <div className="relative grid grid-cols-10 gap-4">
+        <div className="absolute inset-0 opacity-35 blur-3xl">
           <Image className="object-cover" src={photo.image.path} alt="" sizes="50vw" fill priority />
         </div>
+        <div className="col-span-2 col-start-5">
+          <div
+            className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
+            style={{ aspectRatio: photo.image.width / photo.image.height }}
+          >
+            <Image className="object-contain" src={photo.image.path} alt="" sizes="50vw" fill priority />
+          </div>
+        </div>
       </div>
-      <div className="col-span-5">
-        <div className="flex flex-col">
+      <div className="grid grid-cols-10 gap-4">
+        <div className="col-span-4 col-start-4 flex flex-col">
           {photo.title && <p className="mb-6 border-b-1 border-zinc-200 pb-2 text-2xl font-semibold">{photo.title}</p>}
           <div className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-3">

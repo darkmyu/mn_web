@@ -35,12 +35,640 @@ import type {
 
 import type {
   FileResponse,
+  PhotoControllerAll200,
+  PhotoControllerAllParams,
   PhotoControllerUploadBody,
   PhotoCreateRequest,
   PhotoResponse,
   PhotoUpdateRequest,
 } from './index.schemas';
 
+export type photoControllerAllResponse200 = {
+  data: PhotoControllerAll200;
+  status: 200;
+};
+
+export type photoControllerAllResponseSuccess = photoControllerAllResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerAllUrl = (params?: PhotoControllerAllParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `http://localhost:4000/api/v1/photos?${stringifiedParams}`
+    : `http://localhost:4000/api/v1/photos`;
+};
+
+export const photoControllerAll = async (
+  params?: PhotoControllerAllParams,
+  options?: RequestInit,
+): Promise<photoControllerAllResponseSuccess> => {
+  const res = await fetch(getPhotoControllerAllUrl(params), {
+    credentials: 'include',
+    ...options,
+    method: 'GET',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerAllResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerAllResponseSuccess;
+};
+
+export const getPhotoControllerAllInfiniteQueryKey = (params?: PhotoControllerAllParams) => {
+  return ['infinite', `http://localhost:4000/api/v1/photos`, ...(params ? [params] : [])] as const;
+};
+
+export const getPhotoControllerAllQueryKey = (params?: PhotoControllerAllParams) => {
+  return [`http://localhost:4000/api/v1/photos`, ...(params ? [params] : [])] as const;
+};
+
+export const getPhotoControllerAllInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof photoControllerAll>>,
+    QueryKey,
+    PhotoControllerAllParams['cursor']
+  > = ({ signal, pageParam }) =>
+    photoControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof photoControllerAll>>,
+    TError,
+    TData,
+    QueryKey,
+    PhotoControllerAllParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerAllInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof photoControllerAll>>>;
+export type PhotoControllerAllInfiniteQueryError = unknown;
+
+export function usePhotoControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params: undefined | PhotoControllerAllParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerAll>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerAll>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerAll>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerAll>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerAllInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchPhotoControllerAllInfiniteQuery = async <
+  TData = Awaited<ReturnType<typeof photoControllerAll>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getPhotoControllerAllInfiniteQueryOptions(params, options);
+
+  await queryClient.prefetchInfiniteQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getPhotoControllerAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof photoControllerAll>>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerAll>>> = ({ signal }) =>
+    photoControllerAll(params, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof photoControllerAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerAllQueryResult = NonNullable<Awaited<ReturnType<typeof photoControllerAll>>>;
+export type PhotoControllerAllQueryError = unknown;
+
+export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params: undefined | PhotoControllerAllParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerAll>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerAll>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerAll>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerAll>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerAllQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchPhotoControllerAllQuery = async <
+  TData = Awaited<ReturnType<typeof photoControllerAll>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getPhotoControllerAllQueryOptions(params, options);
+
+  await queryClient.prefetchQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getPhotoControllerAllSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof photoControllerAll>>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerAll>>> = ({ signal }) =>
+    photoControllerAll(params, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof photoControllerAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerAllSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof photoControllerAll>>>;
+export type PhotoControllerAllSuspenseQueryError = unknown;
+
+export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params: undefined | PhotoControllerAllParams,
+  options: {
+    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof photoControllerAll>>, TError = unknown>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerAllSuspenseQueryOptions(params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getPhotoControllerAllSuspenseInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof photoControllerAll>>,
+    QueryKey,
+    PhotoControllerAllParams['cursor']
+  > = ({ signal, pageParam }) =>
+    photoControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof photoControllerAll>>,
+    TError,
+    TData,
+    QueryKey,
+    PhotoControllerAllParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerAllSuspenseInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof photoControllerAll>>>;
+export type PhotoControllerAllSuspenseInfiniteQueryError = unknown;
+
+export function usePhotoControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params: undefined | PhotoControllerAllParams,
+  options: {
+    query: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof photoControllerAll>>, PhotoControllerAllParams['cursor']>,
+  TError = unknown,
+>(
+  params?: PhotoControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerAllParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerAllSuspenseInfiniteQueryOptions(params, options);
+
+  const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export type photoControllerCreateResponse201 = {
+  data: PhotoResponse;
+  status: 201;
+};
+
+export type photoControllerCreateResponseSuccess = photoControllerCreateResponse201 & {
+  headers: Headers;
+};
+export const getPhotoControllerCreateUrl = () => {
+  return `http://localhost:4000/api/v1/photos`;
+};
+
+export const photoControllerCreate = async (
+  photoCreateRequest: PhotoCreateRequest,
+  options?: RequestInit,
+): Promise<photoControllerCreateResponseSuccess> => {
+  const res = await fetch(getPhotoControllerCreateUrl(), {
+    credentials: 'include',
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(photoCreateRequest),
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerCreateResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerCreateResponseSuccess;
+};
+
+export const getPhotoControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof photoControllerCreate>>,
+    TError,
+    { data: PhotoCreateRequest },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof photoControllerCreate>>,
+  TError,
+  { data: PhotoCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['photoControllerCreate'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof photoControllerCreate>>,
+    { data: PhotoCreateRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return photoControllerCreate(data, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PhotoControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof photoControllerCreate>>>;
+export type PhotoControllerCreateMutationBody = PhotoCreateRequest;
+export type PhotoControllerCreateMutationError = unknown;
+
+export const usePhotoControllerCreate = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof photoControllerCreate>>,
+      TError,
+      { data: PhotoCreateRequest },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof photoControllerCreate>>,
+  TError,
+  { data: PhotoCreateRequest },
+  TContext
+> => {
+  const mutationOptions = getPhotoControllerCreateMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 export type photoControllerReadResponse200 = {
   data: PhotoResponse;
   status: 200;
@@ -565,100 +1193,6 @@ export const usePhotoControllerUpdate = <TError = unknown, TContext = unknown>(
   TContext
 > => {
   const mutationOptions = getPhotoControllerUpdateMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type photoControllerCreateResponse201 = {
-  data: PhotoResponse;
-  status: 201;
-};
-
-export type photoControllerCreateResponseSuccess = photoControllerCreateResponse201 & {
-  headers: Headers;
-};
-export const getPhotoControllerCreateUrl = () => {
-  return `http://localhost:4000/api/v1/photos`;
-};
-
-export const photoControllerCreate = async (
-  photoCreateRequest: PhotoCreateRequest,
-  options?: RequestInit,
-): Promise<photoControllerCreateResponseSuccess> => {
-  const res = await fetch(getPhotoControllerCreateUrl(), {
-    credentials: 'include',
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(photoCreateRequest),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerCreateResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerCreateResponseSuccess;
-};
-
-export const getPhotoControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof photoControllerCreate>>,
-    TError,
-    { data: PhotoCreateRequest },
-    TContext
-  >;
-  fetch?: RequestInit;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof photoControllerCreate>>,
-  TError,
-  { data: PhotoCreateRequest },
-  TContext
-> => {
-  const mutationKey = ['photoControllerCreate'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof photoControllerCreate>>,
-    { data: PhotoCreateRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return photoControllerCreate(data, fetchOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PhotoControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof photoControllerCreate>>>;
-export type PhotoControllerCreateMutationBody = PhotoCreateRequest;
-export type PhotoControllerCreateMutationError = unknown;
-
-export const usePhotoControllerCreate = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof photoControllerCreate>>,
-      TError,
-      { data: PhotoCreateRequest },
-      TContext
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof photoControllerCreate>>,
-  TError,
-  { data: PhotoCreateRequest },
-  TContext
-> => {
-  const mutationOptions = getPhotoControllerCreateMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

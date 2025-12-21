@@ -33,7 +33,6 @@ export default async function ProfilePage({ params }: Props) {
   try {
     await queryClient.fetchInfiniteQuery(
       getProfileControllerPhotosInfiniteQueryOptions(username, {
-        page: 1,
         limit: 20,
       }),
     );

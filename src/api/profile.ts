@@ -981,7 +981,7 @@ export const getProfileControllerPhotosQueryKey = (username?: string, params?: P
 };
 
 export const getProfileControllerPhotosInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -993,7 +993,7 @@ export const getProfileControllerPhotosInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1006,16 +1006,20 @@ export const getProfileControllerPhotosInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof profileControllerPhotos>>,
     QueryKey,
-    ProfileControllerPhotosParams['page']
+    ProfileControllerPhotosParams['cursor']
   > = ({ signal, pageParam }) =>
-    profileControllerPhotos(username, { ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    profileControllerPhotos(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...fetchOptions },
+    );
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhotos>>,
     TError,
     TData,
     QueryKey,
-    ProfileControllerPhotosParams['page']
+    ProfileControllerPhotosParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -1025,7 +1029,7 @@ export type ProfileControllerPhotosInfiniteQueryResult = NonNullable<
 export type ProfileControllerPhotosInfiniteQueryError = unknown;
 
 export function useProfileControllerPhotosInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1037,7 +1041,7 @@ export function useProfileControllerPhotosInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     > &
       Pick<
@@ -1054,7 +1058,7 @@ export function useProfileControllerPhotosInfinite<
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerPhotosInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1066,7 +1070,7 @@ export function useProfileControllerPhotosInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     > &
       Pick<
@@ -1083,7 +1087,7 @@ export function useProfileControllerPhotosInfinite<
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerPhotosInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1095,7 +1099,7 @@ export function useProfileControllerPhotosInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1104,7 +1108,7 @@ export function useProfileControllerPhotosInfinite<
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useProfileControllerPhotosInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1116,7 +1120,7 @@ export function useProfileControllerPhotosInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1148,7 +1152,7 @@ export const prefetchProfileControllerPhotosInfiniteQuery = async <
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1375,7 +1379,7 @@ export function useProfileControllerPhotosSuspense<
 }
 
 export const getProfileControllerPhotosSuspenseInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1387,7 +1391,7 @@ export const getProfileControllerPhotosSuspenseInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1400,16 +1404,20 @@ export const getProfileControllerPhotosSuspenseInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof profileControllerPhotos>>,
     QueryKey,
-    ProfileControllerPhotosParams['page']
+    ProfileControllerPhotosParams['cursor']
   > = ({ signal, pageParam }) =>
-    profileControllerPhotos(username, { ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    profileControllerPhotos(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...fetchOptions },
+    );
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhotos>>,
     TError,
     TData,
     QueryKey,
-    ProfileControllerPhotosParams['page']
+    ProfileControllerPhotosParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -1419,7 +1427,7 @@ export type ProfileControllerPhotosSuspenseInfiniteQueryResult = NonNullable<
 export type ProfileControllerPhotosSuspenseInfiniteQueryError = unknown;
 
 export function useProfileControllerPhotosSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1431,7 +1439,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1439,7 +1447,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerPhotosSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1451,7 +1459,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1459,7 +1467,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerPhotosSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1471,7 +1479,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1480,7 +1488,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useProfileControllerPhotosSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerPhotos>>, ProfileControllerPhotosParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1492,7 +1500,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerPhotosParams['page']
+        ProfileControllerPhotosParams['cursor']
       >
     >;
     fetch?: RequestInit;

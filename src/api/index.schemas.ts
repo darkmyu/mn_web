@@ -34,7 +34,7 @@ export interface Pagination {
   page: number;
   total: number;
   limit: number;
-  isLast: boolean;
+  hasNextPage: boolean;
 }
 
 export type BreedResponseSpecies = (typeof BreedResponseSpecies)[keyof typeof BreedResponseSpecies];
@@ -110,6 +110,14 @@ export interface FileResponse {
   mimetype: string;
 }
 
+export interface CursorPagination {
+  /** @nullable */
+  cursor: number | null;
+  total: number;
+  limit: number;
+  hasNextPage: boolean;
+}
+
 export interface TagResponse {
   name: string;
   slug: string;
@@ -168,10 +176,7 @@ export type ProfileControllerAnimals200AllOf = {
 export type ProfileControllerAnimals200 = Pagination & ProfileControllerAnimals200AllOf;
 
 export type ProfileControllerPhotosParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
+  cursor?: number;
   /**
    * @minimum 1
    */
@@ -182,7 +187,7 @@ export type ProfileControllerPhotos200AllOf = {
   items: PhotoResponse[];
 };
 
-export type ProfileControllerPhotos200 = Pagination & ProfileControllerPhotos200AllOf;
+export type ProfileControllerPhotos200 = CursorPagination & ProfileControllerPhotos200AllOf;
 
 export type BreedControllerReadParams = {
   species?: BreedControllerReadSpecies;
@@ -201,6 +206,20 @@ export type BreedControllerRead200AllOf = {
 };
 
 export type BreedControllerRead200 = Pagination & BreedControllerRead200AllOf;
+
+export type PhotoControllerAllParams = {
+  cursor?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+};
+
+export type PhotoControllerAll200AllOf = {
+  items: PhotoResponse[];
+};
+
+export type PhotoControllerAll200 = CursorPagination & PhotoControllerAll200AllOf;
 
 export type PhotoControllerUploadBody = {
   image: Blob;

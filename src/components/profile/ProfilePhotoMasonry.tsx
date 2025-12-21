@@ -15,12 +15,11 @@ function ProfilePhotoMasonry({ username }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetched } = useProfileControllerPhotosSuspenseInfinite(
     username,
     {
-      page: 1,
       limit: 20,
     },
     {
       query: {
-        getNextPageParam: (lastPage) => (!lastPage.data.isLast ? lastPage.data.page + 1 : undefined),
+        getNextPageParam: (lastPage) => (lastPage.data.hasNextPage ? lastPage.data.cursor : undefined),
       },
     },
   );

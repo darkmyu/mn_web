@@ -6,7 +6,7 @@ interface Props {
 
 export default function HomeLayout({ children }: Props) {
   return (
-    <div className="flex flex-col gap-8 p-8">
+    <div className="flex flex-col gap-8 p-4">
       <HomeTab />
       {children}
     </div>

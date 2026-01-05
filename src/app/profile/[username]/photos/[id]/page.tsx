@@ -20,7 +20,7 @@ export default async function ProfilePhotosViewerPage({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex flex-col gap-16 p-16">
+      <div className="mx-auto flex max-w-7xl flex-col gap-16 py-16">
         <ProfilePhotoViewer id={id} username={username} />
         {/* <div>Masonry Layout</div> */}
       </div>

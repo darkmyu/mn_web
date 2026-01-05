@@ -36,7 +36,7 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex flex-col gap-20 px-8 py-16">
+      <div className="mx-auto flex max-w-7xl flex-col gap-20 py-16">
         <div className="flex flex-col gap-16">
           <Profile username={username} />
           <ProfileAnimalList username={username} />

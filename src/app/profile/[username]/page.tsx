@@ -24,25 +24,19 @@ export default async function ProfilePage({ params }: Props) {
     notFound();
   }
 
-  try {
-    await queryClient.fetchQuery(getProfileControllerAnimalsQueryOptions(username));
-  } catch {
-    notFound(); /** @TODO redirect error page */
-  }
+  /** @TODO redirect error page */
+  await queryClient.prefetchQuery(getProfileControllerAnimalsQueryOptions(username));
 
-  try {
-    await queryClient.fetchInfiniteQuery(
-      getProfileControllerPhotosInfiniteQueryOptions(username, {
-        limit: 20,
-      }),
-    );
-  } catch {
-    notFound(); /** @TODO redirect error page */
-  }
+  /** @TODO redirect error page */
+  await queryClient.prefetchInfiniteQuery(
+    getProfileControllerPhotosInfiniteQueryOptions(username, {
+      limit: 20,
+    }),
+  );
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex flex-col gap-20 p-16">
+      <div className="flex flex-col gap-20 px-8 py-16">
         <div className="flex flex-col gap-16">
           <Profile username={username} />
           <ProfileAnimalList username={username} />

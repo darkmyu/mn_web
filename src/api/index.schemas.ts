@@ -213,7 +213,16 @@ export type PhotoControllerAllParams = {
    * @minimum 1
    */
   limit?: number;
+  sort?: PhotoControllerAllSort;
 };
+
+export type PhotoControllerAllSort = (typeof PhotoControllerAllSort)[keyof typeof PhotoControllerAllSort];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PhotoControllerAllSort = {
+  POPULAR: 'POPULAR',
+  LATEST: 'LATEST',
+} as const;
 
 export type PhotoControllerAll200AllOf = {
   items: PhotoResponse[];

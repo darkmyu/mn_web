@@ -1,4 +1,4 @@
-import { ROUTE_HOME_PAGE } from '@/constants/route';
+import { ROUTE_HOME_LATEST_PAGE, ROUTE_HOME_PAGE } from '@/constants/route';
 import { LucideArrowLeft, LucidePawPrint } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -6,7 +6,7 @@ function SidebarHeader() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isHomePage = pathname === ROUTE_HOME_PAGE;
+  const isHomePage = pathname === ROUTE_HOME_PAGE || pathname === ROUTE_HOME_LATEST_PAGE;
 
   const handleButtonClick = () => {
     if (isHomePage) {

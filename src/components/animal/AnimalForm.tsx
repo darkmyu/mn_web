@@ -265,7 +265,7 @@ function AnimalForm({ animal }: Props) {
                     <input
                       type="text"
                       readOnly
-                      defaultValue={selectedBreed?.name}
+                      value={selectedBreed?.name ?? ''}
                       placeholder="반려동물의 품종을 선택해주세요"
                       className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
                     />

@@ -1,7 +1,7 @@
 import { PhotoResponse } from '@/api/index.schemas';
 import { useMasonryLayout } from '@/hooks/useMasonryLayout';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface Props {
   photos: PhotoResponse[];
@@ -9,8 +9,6 @@ interface Props {
 }
 
 function PhotoMasonry({ photos, children }: Props) {
-  const router = useRouter();
-
   const { containerRef, layout } = useMasonryLayout({
     dimensions: photos.map((photo) => ({
       id: photo.id,
@@ -26,9 +24,9 @@ function PhotoMasonry({ photos, children }: Props) {
           const position = layout.positions[photo.id];
 
           return (
-            <div
+            <Link
               key={photo.id}
-              onClick={() => router.push(`/@${photo.author.username}/photos/${photo.id}`)}
+              href={`/@${photo.author.username}/photos/${photo.id}`}
               className="absolute cursor-pointer overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800"
               style={{
                 width: position?.width ?? 0,
@@ -37,7 +35,7 @@ function PhotoMasonry({ photos, children }: Props) {
               }}
             >
               <Image src={photo.image.path} alt="" fill sizes="25vw" className="object-cover" />
-            </div>
+            </Link>
           );
         })}
       </div>

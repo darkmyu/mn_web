@@ -6,6 +6,7 @@ import {
 import Profile from '@/components/profile/Profile';
 import ProfileAnimalList from '@/components/profile/ProfileAnimalList';
 import ProfilePhotoMasonry from '@/components/profile/ProfilePhotoMasonry';
+import { extractUsername } from '@/utils/extractors';
 import { getQueryClient } from '@/utils/getQueryClient';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
@@ -15,8 +16,8 @@ interface Props {
 }
 
 export default async function ProfilePage({ params }: Props) {
-  const { username } = await params;
   const queryClient = getQueryClient();
+  const username = await extractUsername(params);
 
   try {
     await queryClient.fetchQuery(getProfileControllerReadQueryOptions(username));

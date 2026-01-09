@@ -1,9 +1,17 @@
 'use client';
 
-import { useProfileControllerPhotoSuspense } from '@/api/profile';
+import { usePhotoControllerLike, usePhotoControllerUnlike } from '@/api/photo';
+import {
+  getProfileControllerPhotoQueryKey,
+  profileControllerPhotoResponseSuccess,
+  useProfileControllerPhotoSuspense,
+} from '@/api/profile';
 import { formatAge } from '@/utils/formatters';
+import { useQueryClient } from '@tanstack/react-query';
+import { debounce } from 'es-toolkit';
 import { LucideCat, LucideDog, LucideEllipsisVertical, LucideHeart, LucideShare2 } from 'lucide-react';
 import Image from 'next/image';
+import { useMemo, useRef } from 'react';
 
 interface Props {
   id: number;
@@ -15,23 +23,63 @@ function ProfilePhotoViewer({ id, username }: Props) {
     data: { data: photo },
   } = useProfileControllerPhotoSuspense(username, id);
 
+  const queryClient = useQueryClient();
+  const queryKey = getProfileControllerPhotoQueryKey(username, id);
+
+  const initialLikedRef = useRef(photo.liked);
+
+  const { mutate: likeMutate } = usePhotoControllerLike();
+  const { mutate: unlikeMutate } = usePhotoControllerUnlike();
+
+  const debouncedToggleLike = useMemo(
+    () =>
+      debounce((isLiked: boolean) => {
+        if (isLiked === initialLikedRef.current) return;
+
+        if (isLiked) {
+          likeMutate({ id });
+        } else {
+          unlikeMutate({ id });
+        }
+
+        initialLikedRef.current = isLiked;
+      }, 500),
+    [id, likeMutate, unlikeMutate],
+  );
+
+  const handleClickLikeButton = () => {
+    const isLiked = !photo.liked;
+
+    queryClient.setQueryData<profileControllerPhotoResponseSuccess>(queryKey, (prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          liked: isLiked,
+          likes: isLiked ? prev.data.likes + 1 : prev.data.likes - 1,
+        },
+      };
+    });
+
+    debouncedToggleLike(isLiked);
+  };
+
   return (
-    <div className="flex flex-col gap-24">
-      <div className="relative grid grid-cols-3 gap-4">
-        <div className="absolute inset-0 opacity-35 blur-3xl">
-          <Image className="object-cover" src={photo.image.path} alt="" sizes="50vw" fill priority />
-        </div>
-        <div className="col-span-1 col-start-2">
+    <div className="mx-auto flex max-w-3xl flex-col gap-16 py-16">
+      <div className="flex flex-col gap-24">
+        <div className="relative grid grid-cols-4">
+          <div className="absolute inset-0 opacity-35 blur-3xl">
+            <Image className="object-cover" src={photo.image.path} alt="" sizes="50vw" fill priority />
+          </div>
           <div
-            className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
+            className="relative col-span-2 col-start-2"
             style={{ aspectRatio: photo.image.width / photo.image.height }}
           >
-            <Image className="object-contain" src={photo.image.path} alt="" sizes="50vw" fill priority />
+            <Image className="rounded-lg object-contain" src={photo.image.path} alt="" sizes="50vw" fill priority />
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-6 gap-4">
-        <div className="col-span-4 col-start-2 flex flex-col">
+        <div className="flex flex-col">
           {photo.title && <p className="mb-6 border-b-1 border-zinc-200 pb-2 text-2xl font-semibold">{photo.title}</p>}
           <div className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -53,12 +101,14 @@ function ProfilePhotoViewer({ id, username }: Props) {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <button className="cursor-pointer rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800">
-                  <LucideHeart className="text-zinc-500 dark:text-zinc-400" />
-                </button>
-                <p className="font-medium text-zinc-500 dark:text-zinc-400">24</p>
-              </div>
+              <button
+                className="flex cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800"
+                onClick={handleClickLikeButton}
+              >
+                {!photo.liked && <LucideHeart className="text-zinc-500 dark:text-zinc-400" />}
+                {photo.liked && <LucideHeart className="fill-red-500" strokeWidth={0} />}
+                <p className="font-medium text-zinc-500 dark:text-zinc-400">{photo.likes}</p>
+              </button>
               <button className="cursor-pointer rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800">
                 <LucideShare2 className="text-zinc-500 dark:text-zinc-400" />
               </button>

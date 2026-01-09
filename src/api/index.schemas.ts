@@ -130,6 +130,8 @@ export interface PhotoResponse {
   title: string | null;
   /** @nullable */
   description: string | null;
+  likes: number;
+  liked: boolean;
   tags: TagResponse[];
   author: ProfileResponse;
   animal: AnimalResponse;

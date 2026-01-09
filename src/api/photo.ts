@@ -1196,6 +1196,144 @@ export const usePhotoControllerUpdate = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type photoControllerLikeResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type photoControllerLikeResponseSuccess = photoControllerLikeResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerLikeUrl = (id: number) => {
+  return `http://localhost:4000/api/v1/photos/${id}/likes`;
+};
+
+export const photoControllerLike = async (
+  id: number,
+  options?: RequestInit,
+): Promise<photoControllerLikeResponseSuccess> => {
+  const res = await fetch(getPhotoControllerLikeUrl(id), {
+    credentials: 'include',
+    ...options,
+    method: 'POST',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerLikeResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerLikeResponseSuccess;
+};
+
+export const getPhotoControllerLikeMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext>;
+  fetch?: RequestInit;
+}): UseMutationOptions<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext> => {
+  const mutationKey = ['photoControllerLike'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof photoControllerLike>>, { id: number }> = (props) => {
+    const { id } = props ?? {};
+
+    return photoControllerLike(id, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PhotoControllerLikeMutationResult = NonNullable<Awaited<ReturnType<typeof photoControllerLike>>>;
+
+export type PhotoControllerLikeMutationError = unknown;
+
+export const usePhotoControllerLike = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext> => {
+  const mutationOptions = getPhotoControllerLikeMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export type photoControllerUnlikeResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type photoControllerUnlikeResponseSuccess = photoControllerUnlikeResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerUnlikeUrl = (id: number) => {
+  return `http://localhost:4000/api/v1/photos/${id}/likes`;
+};
+
+export const photoControllerUnlike = async (
+  id: number,
+  options?: RequestInit,
+): Promise<photoControllerUnlikeResponseSuccess> => {
+  const res = await fetch(getPhotoControllerUnlikeUrl(id), {
+    credentials: 'include',
+    ...options,
+    method: 'DELETE',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerUnlikeResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerUnlikeResponseSuccess;
+};
+
+export const getPhotoControllerUnlikeMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext>;
+  fetch?: RequestInit;
+}): UseMutationOptions<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext> => {
+  const mutationKey = ['photoControllerUnlike'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof photoControllerUnlike>>, { id: number }> = (props) => {
+    const { id } = props ?? {};
+
+    return photoControllerUnlike(id, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PhotoControllerUnlikeMutationResult = NonNullable<Awaited<ReturnType<typeof photoControllerUnlike>>>;
+
+export type PhotoControllerUnlikeMutationError = unknown;
+
+export const usePhotoControllerUnlike = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext> => {
+  const mutationOptions = getPhotoControllerUnlikeMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 export type photoControllerUploadResponse201 = {
   data: FileResponse;
   status: 201;

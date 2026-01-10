@@ -10,7 +10,7 @@ export const Modal = {
 function ModalContent({ children, ...props }: Dialog.DialogContentProps) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80">
+      <Dialog.Overlay className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/10 backdrop-blur-xs">
         <Dialog.Content {...props}>
           <VisuallyHidden.Root>
             <Dialog.Title />

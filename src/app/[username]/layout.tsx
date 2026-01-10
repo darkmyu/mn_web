@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import React from 'react';
 
 interface Props {
   children: React.ReactNode;

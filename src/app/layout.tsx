@@ -9,20 +9,24 @@ import React from 'react';
 
 interface Props {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }
 
 const pretendardFonts = localFont({
   src: '../assets/fonts/PretendardVariable.woff2',
 });
 
-export default function RootLayout({ children }: Props) {
+export default function RootLayout({ children, modal }: Props) {
   return (
     <html lang="ko" className={pretendardFonts.className} suppressHydrationWarning>
       <body>
         <TanStackQueryProvider>
           <ThemeProvider>
             <AuthProvider />
-            <Layout>{children}</Layout>
+            <Layout>
+              {children}
+              {modal}
+            </Layout>
           </ThemeProvider>
         </TanStackQueryProvider>
       </body>

@@ -1,5 +1,5 @@
 import { getProfileControllerPhotoQueryOptions } from '@/api/profile';
-import InterceptModal from '@/components/modal/contents/InterceptModal';
+import InterceptDialog from '@/components/dialog/contents/InterceptModal';
 import ProfilePhotoViewer from '@/components/profile/ProfilePhotoViewer';
 import { extractUsername } from '@/utils/extractors';
 import { getQueryClient } from '@/utils/getQueryClient';
@@ -23,9 +23,9 @@ export default async function ProfilePhotosViewerModal({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <InterceptModal>
+      <InterceptDialog>
         <ProfilePhotoViewer id={id} username={username} />
-      </InterceptModal>
+      </InterceptDialog>
     </HydrationBoundary>
   );
 }

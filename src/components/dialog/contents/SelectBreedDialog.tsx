@@ -3,7 +3,7 @@ import { BreedResponse, BreedResponseSpecies } from '@/api/index.schemas';
 import { getChoseong } from 'es-hangul';
 import { Check, Search, X } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { Modal } from '..';
+import { Dialog } from '..';
 
 interface Props {
   value: BreedResponse | null;
@@ -46,18 +46,21 @@ function BreedList({ species, value, onChange, searchQuery }: BreedListProps) {
         const isSelected = breed.id === value?.id;
 
         return (
-          <Modal.Close key={breed.id} asChild>
-            <li
-              ref={isSelected ? selectedItemRef : null}
-              onClick={() => onChange(breed)}
-              className={`cursor-pointer rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
-                isSelected && 'flex items-center justify-between'
-              }`}
-            >
-              <span>{breed.name}</span>
-              {isSelected && <Check size={20} className="text-emerald-600" />}
-            </li>
-          </Modal.Close>
+          <Dialog.Close
+            key={breed.id}
+            render={
+              <li
+                ref={isSelected ? selectedItemRef : null}
+                onClick={() => onChange(breed)}
+                className={`cursor-pointer rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
+                  isSelected && 'flex items-center justify-between'
+                }`}
+              >
+                <span>{breed.name}</span>
+                {isSelected && <Check size={20} className="text-emerald-600" />}
+              </li>
+            }
+          />
         );
       })}
     </ul>
@@ -74,19 +77,21 @@ function BreedListSkeleton() {
   );
 }
 
-function SelectBreedModal({ species, value, onChange }: Props) {
+function SelectBreedDialog({ species, value, onChange }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <Modal.Content className="w-[28rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
+    <Dialog.Popup className="w-[28rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="font-medium">품종 선택</h1>
-          <Modal.Close asChild>
-            <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-              <X size={20} />
-            </button>
-          </Modal.Close>
+          <Dialog.Close
+            render={
+              <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                <X size={20} />
+              </button>
+            }
+          />
         </div>
         <div className="relative">
           <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400" size={18} />
@@ -104,8 +109,8 @@ function SelectBreedModal({ species, value, onChange }: Props) {
           </Suspense>
         </div>
       </div>
-    </Modal.Content>
+    </Dialog.Popup>
   );
 }
 
-export default SelectBreedModal;
+export default SelectBreedDialog;

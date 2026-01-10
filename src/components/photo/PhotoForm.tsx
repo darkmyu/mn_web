@@ -9,8 +9,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { Modal } from '../modal';
-import SelectAnimalModal from '../modal/contents/SelectAnimalModal';
+import { Dialog } from '../dialog';
+import SelectAnimalDialog from '../dialog/contents/SelectAnimalDialog';
 
 interface Props {
   photo?: PhotoResponse;
@@ -195,58 +195,62 @@ function PhotoForm({ photo }: Props) {
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 반려동물 <span className="text-sm text-red-700">*</span>
               </label>
-              <Modal.Root>
+              <Dialog.Root>
                 {!selectedAnimal && (
-                  <Modal.Trigger asChild>
-                    <div className="relative w-full">
-                      <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
-                        <LucideSearch className="h-4 w-4 text-zinc-700" />
+                  <Dialog.Trigger
+                    render={
+                      <div className="relative w-full">
+                        <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
+                          <LucideSearch className="h-4 w-4 text-zinc-700" />
+                        </div>
+                        <input
+                          type="text"
+                          readOnly
+                          placeholder="사진 속 반려동물을 선택해주세요"
+                          className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
+                        />
                       </div>
-                      <input
-                        type="text"
-                        readOnly
-                        placeholder="사진 속 반려동물을 선택해주세요"
-                        className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
-                      />
-                    </div>
-                  </Modal.Trigger>
+                    }
+                  />
                 )}
                 {selectedAnimal && (
-                  <Modal.Trigger asChild>
-                    <div className="flex cursor-pointer items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 dark:bg-zinc-800">
-                      <div className="flex items-center gap-3">
-                        {selectedAnimal.thumbnail && (
-                          <Image
-                            className="h-8 w-8 rounded-full object-cover"
-                            src={selectedAnimal.thumbnail}
-                            alt=""
-                            width={32}
-                            height={32}
-                          />
-                        )}
-                        {!selectedAnimal.thumbnail && (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full border-1 border-dashed border-zinc-300 dark:border-zinc-600">
-                            {selectedAnimal.breed.species === 'DOG' && (
-                              <LucideDog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-                            )}
-                            {selectedAnimal.breed.species === 'CAT' && (
-                              <LucideCat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-                            )}
+                  <Dialog.Trigger
+                    render={
+                      <div className="flex cursor-pointer items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 dark:bg-zinc-800">
+                        <div className="flex items-center gap-3">
+                          {selectedAnimal.thumbnail && (
+                            <Image
+                              className="h-8 w-8 rounded-full object-cover"
+                              src={selectedAnimal.thumbnail}
+                              alt=""
+                              width={32}
+                              height={32}
+                            />
+                          )}
+                          {!selectedAnimal.thumbnail && (
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full border-1 border-dashed border-zinc-300 dark:border-zinc-600">
+                              {selectedAnimal.breed.species === 'DOG' && (
+                                <LucideDog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                              )}
+                              {selectedAnimal.breed.species === 'CAT' && (
+                                <LucideCat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                              )}
+                            </div>
+                          )}
+                          <div className="flex flex-col">
+                            <p className="text-sm font-semibold">{selectedAnimal.name}</p>
+                            <p className="text-xs text-zinc-600 dark:text-zinc-400">{selectedAnimal.breed.name}</p>
                           </div>
-                        )}
-                        <div className="flex flex-col">
-                          <p className="text-sm font-semibold">{selectedAnimal.name}</p>
-                          <p className="text-xs text-zinc-600 dark:text-zinc-400">{selectedAnimal.breed.name}</p>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <LucideSearch className="h-4 w-4 text-zinc-700" />
                         </div>
                       </div>
-                      <div className="flex items-center justify-center">
-                        <LucideSearch className="h-4 w-4 text-zinc-700" />
-                      </div>
-                    </div>
-                  </Modal.Trigger>
+                    }
+                  />
                 )}
-                <SelectAnimalModal value={selectedAnimal} onChange={handleAnimalChange} />
-              </Modal.Root>
+                <SelectAnimalDialog value={selectedAnimal} onChange={handleAnimalChange} />
+              </Dialog.Root>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">제목</label>

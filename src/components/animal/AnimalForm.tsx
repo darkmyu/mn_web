@@ -17,8 +17,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { Modal } from '../modal';
-import SelectBreedModal from '../modal/contents/SelectBreedModal';
+import { Dialog } from '../dialog';
+import SelectBreedDialog from '../dialog/contents/SelectBreedDialog';
 
 interface Props {
   animal?: AnimalResponse;
@@ -256,23 +256,25 @@ function AnimalForm({ animal }: Props) {
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 품종 <span className="text-sm text-red-700">*</span>
               </label>
-              <Modal.Root>
-                <Modal.Trigger asChild>
-                  <div className="relative w-full">
-                    <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
-                      <Search className="h-4 w-4 text-zinc-700" />
+              <Dialog.Root>
+                <Dialog.Trigger
+                  render={
+                    <div className="relative w-full">
+                      <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
+                        <Search className="h-4 w-4 text-zinc-700" />
+                      </div>
+                      <input
+                        type="text"
+                        readOnly
+                        value={selectedBreed?.name ?? ''}
+                        placeholder="반려동물의 품종을 선택해주세요"
+                        className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
+                      />
                     </div>
-                    <input
-                      type="text"
-                      readOnly
-                      value={selectedBreed?.name ?? ''}
-                      placeholder="반려동물의 품종을 선택해주세요"
-                      className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
-                    />
-                  </div>
-                </Modal.Trigger>
-                <SelectBreedModal value={selectedBreed} species={selectedSpecies} onChange={handleBreedChange} />
-              </Modal.Root>
+                  }
+                />
+                <SelectBreedDialog value={selectedBreed} species={selectedSpecies} onChange={handleBreedChange} />
+              </Dialog.Root>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">

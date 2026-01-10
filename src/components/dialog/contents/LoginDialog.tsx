@@ -5,7 +5,7 @@ import { API_ROUTE_OAUTH_GOOGLE, API_ROUTE_OAUTH_KAKAO, API_ROUTE_OAUTH_NAVER } 
 import Image from 'next/image';
 import Link from 'next/link';
 
-function LoginModal() {
+function LoginDialog() {
   const handleGoogleLogin = () => {
     window.location.href = API_ROUTE_OAUTH_GOOGLE;
   };
@@ -67,4 +67,4 @@ function LoginModal() {
   );
 }
 
-export default LoginModal;
+export default LoginDialog;

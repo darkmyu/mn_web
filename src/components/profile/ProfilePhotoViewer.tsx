@@ -66,7 +66,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
   };
 
   return (
-    <div className="mx-auto flex w-3xl flex-col gap-16 py-16">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 py-16">
       <div className="flex flex-col gap-24">
         <div className="relative grid grid-cols-4">
           <div className="absolute inset-0 opacity-35 blur-3xl">

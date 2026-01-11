@@ -1,6 +1,5 @@
 import { getProfileControllerPhotoQueryOptions } from '@/api/profile';
-import InterceptDialog from '@/components/dialog/contents/InterceptModal';
-import ProfilePhotoViewer from '@/components/profile/ProfilePhotoViewer';
+import ProfilePhotoViewerDialog from '@/components/profile/ProfilePhotoViewerDialog';
 import { extractUsername } from '@/utils/extractors';
 import { getQueryClient } from '@/utils/getQueryClient';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
@@ -23,9 +22,7 @@ export default async function ProfilePhotosViewerModal({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <InterceptDialog>
-        <ProfilePhotoViewer id={id} username={username} />
-      </InterceptDialog>
+      <ProfilePhotoViewerDialog id={id} username={username} />
     </HydrationBoundary>
   );
 }

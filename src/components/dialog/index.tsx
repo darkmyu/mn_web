@@ -7,12 +7,16 @@ export const Dialog = {
   Popup: DialogPopup,
 };
 
-function DialogPopup({ children, ...props }: BaseDialog.Popup.Props) {
+function DialogPopup({ children, className, ...props }: BaseDialog.Popup.Props) {
   return (
     <BaseDialog.Portal>
-      <BaseDialog.Backdrop className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/10 backdrop-blur-xs">
-        <BaseDialog.Popup {...props}>{children}</BaseDialog.Popup>
-      </BaseDialog.Backdrop>
+      <BaseDialog.Backdrop className="fixed inset-0 min-h-dvh bg-black/10 backdrop-blur-xs" />
+      <BaseDialog.Popup
+        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-zinc-300 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 ${className}`}
+        {...props}
+      >
+        {children}
+      </BaseDialog.Popup>
     </BaseDialog.Portal>
   );
 }

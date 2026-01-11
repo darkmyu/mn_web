@@ -19,7 +19,7 @@ function LoginDialog() {
   };
 
   return (
-    <div className="w-[24rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
+    <div className="w-[24rem] p-6">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-lg font-medium">당신의 반려동물을 보여주세요! 🐶🐱</h1>

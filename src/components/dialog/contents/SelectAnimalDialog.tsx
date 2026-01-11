@@ -83,7 +83,7 @@ function AnimalListSkeleton() {
 
 function SelectAnimalDialog({ value, onChange }: Props) {
   return (
-    <Dialog.Popup className="w-[28rem] rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
+    <Dialog.Popup className="w-[28rem] p-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="font-medium">반려동물 선택</h1>

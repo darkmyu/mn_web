@@ -1,4 +1,4 @@
-import { useBreedControllerReadSuspense } from '@/api/breed';
+import { useBreedControllerAllSuspense } from '@/api/breed';
 import { BreedResponse, BreedResponseSpecies } from '@/api/index.schemas';
 import { getChoseong } from 'es-hangul';
 import { Check, Search, X } from 'lucide-react';
@@ -20,9 +20,10 @@ function BreedList({ species, value, onChange, searchQuery }: BreedListProps) {
 
   const {
     data: { data: breeds },
-  } = useBreedControllerReadSuspense(
+  } = useBreedControllerAllSuspense(
     {
       species,
+      limit: 9999,
     },
     {
       query: {

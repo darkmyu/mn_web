@@ -17,6 +17,9 @@ export default defineConfig({
         fetch: {
           forceSuccessResponse: true,
         },
+        requestOptions: {
+          credentials: 'include',
+        },
         query: {
           useQuery: true,
           useInfinite: true,
@@ -24,10 +27,19 @@ export default defineConfig({
           usePrefetch: true,
           useSuspenseQuery: true,
           useSuspenseInfiniteQuery: true,
-          useInfiniteQueryParam: 'cursor',
+          useInfiniteQueryParam: 'page',
         },
-        requestOptions: {
-          credentials: 'include',
+        operations: {
+          PhotoController_all: {
+            query: {
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
+          ProfileController_photos: {
+            query: {
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
         },
       },
     },

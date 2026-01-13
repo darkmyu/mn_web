@@ -35,6 +35,7 @@ import type {
 
 import type {
   AnimalControllerAll200,
+  AnimalControllerAllParams,
   AnimalControllerUploadBody,
   AnimalCreateRequest,
   AnimalResponse,
@@ -50,12 +51,27 @@ export type animalControllerAllResponse200 = {
 export type animalControllerAllResponseSuccess = animalControllerAllResponse200 & {
   headers: Headers;
 };
-export const getAnimalControllerAllUrl = () => {
-  return `http://localhost:4000/api/v1/animals`;
+export const getAnimalControllerAllUrl = (params?: AnimalControllerAllParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `http://localhost:4000/api/v1/animals?${stringifiedParams}`
+    : `http://localhost:4000/api/v1/animals`;
 };
 
-export const animalControllerAll = async (options?: RequestInit): Promise<animalControllerAllResponseSuccess> => {
-  const res = await fetch(getAnimalControllerAllUrl(), {
+export const animalControllerAll = async (
+  params?: AnimalControllerAllParams,
+  options?: RequestInit,
+): Promise<animalControllerAllResponseSuccess> => {
+  const res = await fetch(getAnimalControllerAllUrl(params), {
     credentials: 'include',
     ...options,
     method: 'GET',
@@ -73,32 +89,49 @@ export const animalControllerAll = async (options?: RequestInit): Promise<animal
   return { data, status: res.status, headers: res.headers } as animalControllerAllResponseSuccess;
 };
 
-export const getAnimalControllerAllInfiniteQueryKey = () => {
-  return ['infinite', `http://localhost:4000/api/v1/animals`] as const;
+export const getAnimalControllerAllInfiniteQueryKey = (params?: AnimalControllerAllParams) => {
+  return ['infinite', `http://localhost:4000/api/v1/animals`, ...(params ? [params] : [])] as const;
 };
 
-export const getAnimalControllerAllQueryKey = () => {
-  return [`http://localhost:4000/api/v1/animals`] as const;
+export const getAnimalControllerAllQueryKey = (params?: AnimalControllerAllParams) => {
+  return [`http://localhost:4000/api/v1/animals`, ...(params ? [params] : [])] as const;
 };
 
 export const getAnimalControllerAllInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
->(options?: {
-  query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-  fetch?: RequestInit;
-}) => {
+>(
+  params?: AnimalControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllInfiniteQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllInfiniteQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerAll>>> = ({ signal }) =>
-    animalControllerAll({ signal, ...fetchOptions });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof animalControllerAll>>,
+    QueryKey,
+    AnimalControllerAllParams['page']
+  > = ({ signal, pageParam }) =>
+    animalControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
     TError,
-    TData
+    TData,
+    QueryKey,
+    AnimalControllerAllParams['page']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -106,16 +139,26 @@ export type AnimalControllerAllInfiniteQueryResult = NonNullable<Awaited<ReturnT
 export type AnimalControllerAllInfiniteQueryError = unknown;
 
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params: undefined | AnimalControllerAllParams,
   options: {
-    query: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>> &
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    > &
       Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof animalControllerAll>>,
           TError,
-          Awaited<ReturnType<typeof animalControllerAll>>
+          Awaited<ReturnType<typeof animalControllerAll>>,
+          QueryKey
         >,
         'initialData'
       >;
@@ -124,16 +167,26 @@ export function useAnimalControllerAllInfinite<
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>> &
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    > &
       Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof animalControllerAll>>,
           TError,
-          Awaited<ReturnType<typeof animalControllerAll>>
+          Awaited<ReturnType<typeof animalControllerAll>>,
+          QueryKey
         >,
         'initialData'
       >;
@@ -142,27 +195,45 @@ export function useAnimalControllerAllInfinite<
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAnimalControllerAllInfiniteQueryOptions(options);
+  const queryOptions = getAnimalControllerAllInfiniteQueryOptions(params, options);
 
   const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -178,12 +249,21 @@ export const prefetchAnimalControllerAllInfiniteQuery = async <
   TError = unknown,
 >(
   queryClient: QueryClient,
+  params?: AnimalControllerAllParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
 ): Promise<QueryClient> => {
-  const queryOptions = getAnimalControllerAllInfiniteQueryOptions(options);
+  const queryOptions = getAnimalControllerAllInfiniteQueryOptions(params, options);
 
   await queryClient.prefetchInfiniteQuery(queryOptions);
 
@@ -193,16 +273,19 @@ export const prefetchAnimalControllerAllInfiniteQuery = async <
 export const getAnimalControllerAllQueryOptions = <
   TData = Awaited<ReturnType<typeof animalControllerAll>>,
   TError = unknown,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-  fetch?: RequestInit;
-}) => {
+>(
+  params?: AnimalControllerAllParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerAll>>> = ({ signal }) =>
-    animalControllerAll({ signal, ...fetchOptions });
+    animalControllerAll(params, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
@@ -215,6 +298,7 @@ export type AnimalControllerAllQueryResult = NonNullable<Awaited<ReturnType<type
 export type AnimalControllerAllQueryError = unknown;
 
 export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalControllerAll>>, TError = unknown>(
+  params: undefined | AnimalControllerAllParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>> &
       Pick<
@@ -230,6 +314,7 @@ export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalC
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalControllerAll>>, TError = unknown>(
+  params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>> &
       Pick<
@@ -245,6 +330,7 @@ export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalC
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalControllerAll>>, TError = unknown>(
+  params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
@@ -253,13 +339,14 @@ export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalC
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalControllerAll>>, TError = unknown>(
+  params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAnimalControllerAllQueryOptions(options);
+  const queryOptions = getAnimalControllerAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -275,12 +362,13 @@ export const prefetchAnimalControllerAllQuery = async <
   TError = unknown,
 >(
   queryClient: QueryClient,
+  params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
 ): Promise<QueryClient> => {
-  const queryOptions = getAnimalControllerAllQueryOptions(options);
+  const queryOptions = getAnimalControllerAllQueryOptions(params, options);
 
   await queryClient.prefetchQuery(queryOptions);
 
@@ -290,16 +378,19 @@ export const prefetchAnimalControllerAllQuery = async <
 export const getAnimalControllerAllSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof animalControllerAll>>,
   TError = unknown,
->(options?: {
-  query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-  fetch?: RequestInit;
-}) => {
+>(
+  params?: AnimalControllerAllParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerAll>>> = ({ signal }) =>
-    animalControllerAll({ signal, ...fetchOptions });
+    animalControllerAll(params, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
@@ -315,6 +406,7 @@ export function useAnimalControllerAllSuspense<
   TData = Awaited<ReturnType<typeof animalControllerAll>>,
   TError = unknown,
 >(
+  params: undefined | AnimalControllerAllParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
@@ -325,6 +417,7 @@ export function useAnimalControllerAllSuspense<
   TData = Awaited<ReturnType<typeof animalControllerAll>>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
@@ -335,6 +428,7 @@ export function useAnimalControllerAllSuspense<
   TData = Awaited<ReturnType<typeof animalControllerAll>>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
@@ -346,13 +440,14 @@ export function useAnimalControllerAllSuspense<
   TData = Awaited<ReturnType<typeof animalControllerAll>>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAnimalControllerAllSuspenseQueryOptions(options);
+  const queryOptions = getAnimalControllerAllSuspenseQueryOptions(params, options);
 
   const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -364,23 +459,40 @@ export function useAnimalControllerAllSuspense<
 }
 
 export const getAnimalControllerAllSuspenseInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
->(options?: {
-  query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-  fetch?: RequestInit;
-}) => {
+>(
+  params?: AnimalControllerAllParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllInfiniteQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllInfiniteQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerAll>>> = ({ signal }) =>
-    animalControllerAll({ signal, ...fetchOptions });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof animalControllerAll>>,
+    QueryKey,
+    AnimalControllerAllParams['page']
+  > = ({ signal, pageParam }) =>
+    animalControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
     TError,
-    TData
+    TData,
+    QueryKey,
+    AnimalControllerAllParams['page']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -390,47 +502,83 @@ export type AnimalControllerAllSuspenseInfiniteQueryResult = NonNullable<
 export type AnimalControllerAllSuspenseInfiniteQueryError = unknown;
 
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params: undefined | AnimalControllerAllParams,
   options: {
-    query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    query: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
-    query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
-    query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
   TError = unknown,
 >(
+  params?: AnimalControllerAllParams,
   options?: {
-    query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof animalControllerAll>>,
+        TError,
+        TData,
+        QueryKey,
+        AnimalControllerAllParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAnimalControllerAllSuspenseInfiniteQueryOptions(options);
+  const queryOptions = getAnimalControllerAllSuspenseInfiniteQueryOptions(params, options);
 
   const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

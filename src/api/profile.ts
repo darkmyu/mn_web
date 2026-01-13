@@ -36,6 +36,7 @@ import type {
 import type {
   PhotoResponse,
   ProfileControllerAnimals200,
+  ProfileControllerAnimalsParams,
   ProfileControllerPhotos200,
   ProfileControllerPhotosParams,
   ProfileResponse,
@@ -481,15 +482,28 @@ export type profileControllerAnimalsResponse200 = {
 export type profileControllerAnimalsResponseSuccess = profileControllerAnimalsResponse200 & {
   headers: Headers;
 };
-export const getProfileControllerAnimalsUrl = (username: string) => {
-  return `http://localhost:4000/api/v1/profiles/${username}/animals`;
+export const getProfileControllerAnimalsUrl = (username: string, params?: ProfileControllerAnimalsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `http://localhost:4000/api/v1/profiles/${username}/animals?${stringifiedParams}`
+    : `http://localhost:4000/api/v1/profiles/${username}/animals`;
 };
 
 export const profileControllerAnimals = async (
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: RequestInit,
 ): Promise<profileControllerAnimalsResponseSuccess> => {
-  const res = await fetch(getProfileControllerAnimalsUrl(username), {
+  const res = await fetch(getProfileControllerAnimalsUrl(username, params), {
     credentials: 'include',
     ...options,
     method: 'GET',
@@ -507,35 +521,57 @@ export const profileControllerAnimals = async (
   return { data, status: res.status, headers: res.headers } as profileControllerAnimalsResponseSuccess;
 };
 
-export const getProfileControllerAnimalsInfiniteQueryKey = (username?: string) => {
-  return ['infinite', `http://localhost:4000/api/v1/profiles/${username}/animals`] as const;
+export const getProfileControllerAnimalsInfiniteQueryKey = (
+  username?: string,
+  params?: ProfileControllerAnimalsParams,
+) => {
+  return [
+    'infinite',
+    `http://localhost:4000/api/v1/profiles/${username}/animals`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
-export const getProfileControllerAnimalsQueryKey = (username?: string) => {
-  return [`http://localhost:4000/api/v1/profiles/${username}/animals`] as const;
+export const getProfileControllerAnimalsQueryKey = (username?: string, params?: ProfileControllerAnimalsParams) => {
+  return [`http://localhost:4000/api/v1/profiles/${username}/animals`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfileControllerAnimalsInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsInfiniteQueryKey(username);
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsInfiniteQueryKey(username, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerAnimals>>> = ({ signal }) =>
-    profileControllerAnimals(username, { signal, ...fetchOptions });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof profileControllerAnimals>>,
+    QueryKey,
+    ProfileControllerAnimalsParams['page']
+  > = ({ signal, pageParam }) =>
+    profileControllerAnimals(username, { ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
     TError,
-    TData
+    TData,
+    QueryKey,
+    ProfileControllerAnimalsParams['page']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -545,17 +581,27 @@ export type ProfileControllerAnimalsInfiniteQueryResult = NonNullable<
 export type ProfileControllerAnimalsInfiniteQueryError = unknown;
 
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params: undefined | ProfileControllerAnimalsParams,
   options: {
-    query: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>> &
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
+    > &
       Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof profileControllerAnimals>>,
           TError,
-          Awaited<ReturnType<typeof profileControllerAnimals>>
+          Awaited<ReturnType<typeof profileControllerAnimals>>,
+          QueryKey
         >,
         'initialData'
       >;
@@ -564,17 +610,27 @@ export function useProfileControllerAnimalsInfinite<
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>> &
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
+    > &
       Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof profileControllerAnimals>>,
           TError,
-          Awaited<ReturnType<typeof profileControllerAnimals>>
+          Awaited<ReturnType<typeof profileControllerAnimals>>,
+          QueryKey
         >,
         'initialData'
       >;
@@ -583,29 +639,47 @@ export function useProfileControllerAnimalsInfinite<
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfileControllerAnimalsInfiniteQueryOptions(username, options);
+  const queryOptions = getProfileControllerAnimalsInfiniteQueryOptions(username, params, options);
 
   const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -622,12 +696,21 @@ export const prefetchProfileControllerAnimalsInfiniteQuery = async <
 >(
   queryClient: QueryClient,
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
-    query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
+    >;
     fetch?: RequestInit;
   },
 ): Promise<QueryClient> => {
-  const queryOptions = getProfileControllerAnimalsInfiniteQueryOptions(username, options);
+  const queryOptions = getProfileControllerAnimalsInfiniteQueryOptions(username, params, options);
 
   await queryClient.prefetchInfiniteQuery(queryOptions);
 
@@ -639,6 +722,7 @@ export const getProfileControllerAnimalsQueryOptions = <
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
@@ -646,10 +730,10 @@ export const getProfileControllerAnimalsQueryOptions = <
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsQueryKey(username);
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsQueryKey(username, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerAnimals>>> = ({ signal }) =>
-    profileControllerAnimals(username, { signal, ...fetchOptions });
+    profileControllerAnimals(username, params, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
@@ -666,6 +750,7 @@ export function useProfileControllerAnimals<
   TError = unknown,
 >(
   username: string,
+  params: undefined | ProfileControllerAnimalsParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>> &
       Pick<
@@ -685,6 +770,7 @@ export function useProfileControllerAnimals<
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>> &
       Pick<
@@ -704,6 +790,7 @@ export function useProfileControllerAnimals<
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
@@ -716,13 +803,14 @@ export function useProfileControllerAnimals<
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfileControllerAnimalsQueryOptions(username, options);
+  const queryOptions = getProfileControllerAnimalsQueryOptions(username, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -739,12 +827,13 @@ export const prefetchProfileControllerAnimalsQuery = async <
 >(
   queryClient: QueryClient,
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
   },
 ): Promise<QueryClient> => {
-  const queryOptions = getProfileControllerAnimalsQueryOptions(username, options);
+  const queryOptions = getProfileControllerAnimalsQueryOptions(username, params, options);
 
   await queryClient.prefetchQuery(queryOptions);
 
@@ -756,6 +845,7 @@ export const getProfileControllerAnimalsSuspenseQueryOptions = <
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
@@ -763,10 +853,10 @@ export const getProfileControllerAnimalsSuspenseQueryOptions = <
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsQueryKey(username);
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsQueryKey(username, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerAnimals>>> = ({ signal }) =>
-    profileControllerAnimals(username, { signal, ...fetchOptions });
+    profileControllerAnimals(username, params, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
@@ -785,6 +875,7 @@ export function useProfileControllerAnimalsSuspense<
   TError = unknown,
 >(
   username: string,
+  params: undefined | ProfileControllerAnimalsParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
@@ -796,6 +887,7 @@ export function useProfileControllerAnimalsSuspense<
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
@@ -807,6 +899,7 @@ export function useProfileControllerAnimalsSuspense<
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
@@ -819,13 +912,14 @@ export function useProfileControllerAnimalsSuspense<
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfileControllerAnimalsSuspenseQueryOptions(username, options);
+  const queryOptions = getProfileControllerAnimalsSuspenseQueryOptions(username, params, options);
 
   const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -837,28 +931,41 @@ export function useProfileControllerAnimalsSuspense<
 }
 
 export const getProfileControllerAnimalsSuspenseInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<
-      UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
     >;
     fetch?: RequestInit;
   },
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsInfiniteQueryKey(username);
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsInfiniteQueryKey(username, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerAnimals>>> = ({ signal }) =>
-    profileControllerAnimals(username, { signal, ...fetchOptions });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof profileControllerAnimals>>,
+    QueryKey,
+    ProfileControllerAnimalsParams['page']
+  > = ({ signal, pageParam }) =>
+    profileControllerAnimals(username, { ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
     TError,
-    TData
+    TData,
+    QueryKey,
+    ProfileControllerAnimalsParams['page']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -868,39 +975,60 @@ export type ProfileControllerAnimalsSuspenseInfiniteQueryResult = NonNullable<
 export type ProfileControllerAnimalsSuspenseInfiniteQueryError = unknown;
 
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params: undefined | ProfileControllerAnimalsParams,
   options: {
     query: Partial<
-      UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
     >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<
-      UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
     >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<
-      UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
     >;
     fetch?: RequestInit;
   },
@@ -908,19 +1036,26 @@ export function useProfileControllerAnimalsSuspenseInfinite<
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
   TError = unknown,
 >(
   username: string,
+  params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<
-      UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerAnimals>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerAnimalsParams['page']
+      >
     >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfileControllerAnimalsSuspenseInfiniteQueryOptions(username, options);
+  const queryOptions = getProfileControllerAnimalsSuspenseInfiniteQueryOptions(username, params, options);
 
   const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

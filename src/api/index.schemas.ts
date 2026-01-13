@@ -161,6 +161,17 @@ export interface PhotoUpdateRequest {
   tags?: string[];
 }
 
+export type AnimalControllerAllParams = {
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+};
+
 export type AnimalControllerAll200AllOf = {
   items: AnimalResponse[];
 };
@@ -169,6 +180,17 @@ export type AnimalControllerAll200 = Pagination & AnimalControllerAll200AllOf;
 
 export type AnimalControllerUploadBody = {
   thumbnail: Blob;
+};
+
+export type ProfileControllerAnimalsParams = {
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
 };
 
 export type ProfileControllerAnimals200AllOf = {
@@ -191,23 +213,31 @@ export type ProfileControllerPhotos200AllOf = {
 
 export type ProfileControllerPhotos200 = CursorPagination & ProfileControllerPhotos200AllOf;
 
-export type BreedControllerReadParams = {
-  species?: BreedControllerReadSpecies;
+export type BreedControllerAllParams = {
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+  species?: BreedControllerAllSpecies;
 };
 
-export type BreedControllerReadSpecies = (typeof BreedControllerReadSpecies)[keyof typeof BreedControllerReadSpecies];
+export type BreedControllerAllSpecies = (typeof BreedControllerAllSpecies)[keyof typeof BreedControllerAllSpecies];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const BreedControllerReadSpecies = {
+export const BreedControllerAllSpecies = {
   DOG: 'DOG',
   CAT: 'CAT',
 } as const;
 
-export type BreedControllerRead200AllOf = {
+export type BreedControllerAll200AllOf = {
   items: BreedResponse[];
 };
 
-export type BreedControllerRead200 = Pagination & BreedControllerRead200AllOf;
+export type BreedControllerAll200 = Pagination & BreedControllerAll200AllOf;
 
 export type PhotoControllerAllParams = {
   cursor?: number;

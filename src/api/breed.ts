@@ -24,17 +24,17 @@ import type {
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
 
-import type { BreedControllerRead200, BreedControllerReadParams } from './index.schemas';
+import type { BreedControllerAll200, BreedControllerAllParams } from './index.schemas';
 
-export type breedControllerReadResponse200 = {
-  data: BreedControllerRead200;
+export type breedControllerAllResponse200 = {
+  data: BreedControllerAll200;
   status: 200;
 };
 
-export type breedControllerReadResponseSuccess = breedControllerReadResponse200 & {
+export type breedControllerAllResponseSuccess = breedControllerAllResponse200 & {
   headers: Headers;
 };
-export const getBreedControllerReadUrl = (params?: BreedControllerReadParams) => {
+export const getBreedControllerAllUrl = (params?: BreedControllerAllParams) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -50,11 +50,11 @@ export const getBreedControllerReadUrl = (params?: BreedControllerReadParams) =>
     : `http://localhost:4000/api/v1/breeds`;
 };
 
-export const breedControllerRead = async (
-  params?: BreedControllerReadParams,
+export const breedControllerAll = async (
+  params?: BreedControllerAllParams,
   options?: RequestInit,
-): Promise<breedControllerReadResponseSuccess> => {
-  const res = await fetch(getBreedControllerReadUrl(params), {
+): Promise<breedControllerAllResponseSuccess> => {
+  const res = await fetch(getBreedControllerAllUrl(params), {
     credentials: 'include',
     ...options,
     method: 'GET',
@@ -68,31 +68,31 @@ export const breedControllerRead = async (
     err.status = res.status;
     throw err;
   }
-  const data: breedControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as breedControllerReadResponseSuccess;
+  const data: breedControllerAllResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as breedControllerAllResponseSuccess;
 };
 
-export const getBreedControllerReadInfiniteQueryKey = (params?: BreedControllerReadParams) => {
+export const getBreedControllerAllInfiniteQueryKey = (params?: BreedControllerAllParams) => {
   return ['infinite', `http://localhost:4000/api/v1/breeds`, ...(params ? [params] : [])] as const;
 };
 
-export const getBreedControllerReadQueryKey = (params?: BreedControllerReadParams) => {
+export const getBreedControllerAllQueryKey = (params?: BreedControllerAllParams) => {
   return [`http://localhost:4000/api/v1/breeds`, ...(params ? [params] : [])] as const;
 };
 
-export const getBreedControllerReadInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export const getBreedControllerAllInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
@@ -100,47 +100,47 @@ export const getBreedControllerReadInfiniteQueryOptions = <
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getBreedControllerReadInfiniteQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getBreedControllerAllInfiniteQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof breedControllerRead>>,
+    Awaited<ReturnType<typeof breedControllerAll>>,
     QueryKey,
-    BreedControllerReadParams['cursor']
+    BreedControllerAllParams['page']
   > = ({ signal, pageParam }) =>
-    breedControllerRead({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    breedControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof breedControllerRead>>,
+    Awaited<ReturnType<typeof breedControllerAll>>,
     TError,
     TData,
     QueryKey,
-    BreedControllerReadParams['cursor']
+    BreedControllerAllParams['page']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type BreedControllerReadInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof breedControllerRead>>>;
-export type BreedControllerReadInfiniteQueryError = unknown;
+export type BreedControllerAllInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof breedControllerAll>>>;
+export type BreedControllerAllInfiniteQueryError = unknown;
 
-export function useBreedControllerReadInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params: undefined | BreedControllerReadParams,
+  params: undefined | BreedControllerAllParams,
   options: {
     query: Partial<
       UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof breedControllerRead>>,
+          Awaited<ReturnType<typeof breedControllerAll>>,
           TError,
-          Awaited<ReturnType<typeof breedControllerRead>>,
+          Awaited<ReturnType<typeof breedControllerAll>>,
           QueryKey
         >,
         'initialData'
@@ -149,26 +149,26 @@ export function useBreedControllerReadInfinite<
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerReadInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof breedControllerRead>>,
+          Awaited<ReturnType<typeof breedControllerAll>>,
           TError,
-          Awaited<ReturnType<typeof breedControllerRead>>,
+          Awaited<ReturnType<typeof breedControllerAll>>,
           QueryKey
         >,
         'initialData'
@@ -177,19 +177,19 @@ export function useBreedControllerReadInfinite<
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerReadInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
@@ -197,26 +197,26 @@ export function useBreedControllerReadInfinite<
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useBreedControllerReadInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getBreedControllerReadInfiniteQueryOptions(params, options);
+  const queryOptions = getBreedControllerAllInfiniteQueryOptions(params, options);
 
   const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -227,68 +227,68 @@ export function useBreedControllerReadInfinite<
   return query;
 }
 
-export const prefetchBreedControllerReadInfiniteQuery = async <
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
+export const prefetchBreedControllerAllInfiniteQuery = async <
+  TData = Awaited<ReturnType<typeof breedControllerAll>>,
   TError = unknown,
 >(
   queryClient: QueryClient,
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
   },
 ): Promise<QueryClient> => {
-  const queryOptions = getBreedControllerReadInfiniteQueryOptions(params, options);
+  const queryOptions = getBreedControllerAllInfiniteQueryOptions(params, options);
 
   await queryClient.prefetchInfiniteQuery(queryOptions);
 
   return queryClient;
 };
 
-export const getBreedControllerReadQueryOptions = <
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
+export const getBreedControllerAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof breedControllerAll>>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getBreedControllerReadQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getBreedControllerAllQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof breedControllerRead>>> = ({ signal }) =>
-    breedControllerRead(params, { signal, ...fetchOptions });
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof breedControllerAll>>> = ({ signal }) =>
+    breedControllerAll(params, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof breedControllerRead>>,
+    Awaited<ReturnType<typeof breedControllerAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type BreedControllerReadQueryResult = NonNullable<Awaited<ReturnType<typeof breedControllerRead>>>;
-export type BreedControllerReadQueryError = unknown;
+export type BreedControllerAllQueryResult = NonNullable<Awaited<ReturnType<typeof breedControllerAll>>>;
+export type BreedControllerAllQueryError = unknown;
 
-export function useBreedControllerRead<TData = Awaited<ReturnType<typeof breedControllerRead>>, TError = unknown>(
-  params: undefined | BreedControllerReadParams,
+export function useBreedControllerAll<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params: undefined | BreedControllerAllParams,
   options: {
-    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>> &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof breedControllerRead>>,
+          Awaited<ReturnType<typeof breedControllerAll>>,
           TError,
-          Awaited<ReturnType<typeof breedControllerRead>>
+          Awaited<ReturnType<typeof breedControllerAll>>
         >,
         'initialData'
       >;
@@ -296,15 +296,15 @@ export function useBreedControllerRead<TData = Awaited<ReturnType<typeof breedCo
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerRead<TData = Awaited<ReturnType<typeof breedControllerRead>>, TError = unknown>(
-  params?: BreedControllerReadParams,
+export function useBreedControllerAll<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>> &
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>> &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof breedControllerRead>>,
+          Awaited<ReturnType<typeof breedControllerAll>>,
           TError,
-          Awaited<ReturnType<typeof breedControllerRead>>
+          Awaited<ReturnType<typeof breedControllerAll>>
         >,
         'initialData'
       >;
@@ -312,24 +312,24 @@ export function useBreedControllerRead<TData = Awaited<ReturnType<typeof breedCo
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerRead<TData = Awaited<ReturnType<typeof breedControllerRead>>, TError = unknown>(
-  params?: BreedControllerReadParams,
+export function useBreedControllerAll<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useBreedControllerRead<TData = Awaited<ReturnType<typeof breedControllerRead>>, TError = unknown>(
-  params?: BreedControllerReadParams,
+export function useBreedControllerAll<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getBreedControllerReadQueryOptions(params, options);
+  const queryOptions = getBreedControllerAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -340,97 +340,85 @@ export function useBreedControllerRead<TData = Awaited<ReturnType<typeof breedCo
   return query;
 }
 
-export const prefetchBreedControllerReadQuery = async <
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
+export const prefetchBreedControllerAllQuery = async <
+  TData = Awaited<ReturnType<typeof breedControllerAll>>,
   TError = unknown,
 >(
   queryClient: QueryClient,
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
 ): Promise<QueryClient> => {
-  const queryOptions = getBreedControllerReadQueryOptions(params, options);
+  const queryOptions = getBreedControllerAllQueryOptions(params, options);
 
   await queryClient.prefetchQuery(queryOptions);
 
   return queryClient;
 };
 
-export const getBreedControllerReadSuspenseQueryOptions = <
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
+export const getBreedControllerAllSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof breedControllerAll>>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getBreedControllerReadQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getBreedControllerAllQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof breedControllerRead>>> = ({ signal }) =>
-    breedControllerRead(params, { signal, ...fetchOptions });
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof breedControllerAll>>> = ({ signal }) =>
+    breedControllerAll(params, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
-    Awaited<ReturnType<typeof breedControllerRead>>,
+    Awaited<ReturnType<typeof breedControllerAll>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type BreedControllerReadSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof breedControllerRead>>>;
-export type BreedControllerReadSuspenseQueryError = unknown;
+export type BreedControllerAllSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof breedControllerAll>>>;
+export type BreedControllerAllSuspenseQueryError = unknown;
 
-export function useBreedControllerReadSuspense<
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
-  TError = unknown,
->(
-  params: undefined | BreedControllerReadParams,
+export function useBreedControllerAllSuspense<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params: undefined | BreedControllerAllParams,
   options: {
-    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerReadSuspense<
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
-  TError = unknown,
->(
-  params?: BreedControllerReadParams,
+export function useBreedControllerAllSuspense<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerReadSuspense<
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
-  TError = unknown,
->(
-  params?: BreedControllerReadParams,
+export function useBreedControllerAllSuspense<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useBreedControllerReadSuspense<
-  TData = Awaited<ReturnType<typeof breedControllerRead>>,
-  TError = unknown,
->(
-  params?: BreedControllerReadParams,
+export function useBreedControllerAllSuspense<TData = Awaited<ReturnType<typeof breedControllerAll>>, TError = unknown>(
+  params?: BreedControllerAllParams,
   options?: {
-    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerRead>>, TError, TData>>;
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof breedControllerAll>>, TError, TData>>;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getBreedControllerReadSuspenseQueryOptions(params, options);
+  const queryOptions = getBreedControllerAllSuspenseQueryOptions(params, options);
 
   const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -441,19 +429,19 @@ export function useBreedControllerReadSuspense<
   return query;
 }
 
-export const getBreedControllerReadSuspenseInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export const getBreedControllerAllSuspenseInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseSuspenseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
@@ -461,80 +449,78 @@ export const getBreedControllerReadSuspenseInfiniteQueryOptions = <
 ) => {
   const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getBreedControllerReadInfiniteQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getBreedControllerAllInfiniteQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof breedControllerRead>>,
+    Awaited<ReturnType<typeof breedControllerAll>>,
     QueryKey,
-    BreedControllerReadParams['cursor']
+    BreedControllerAllParams['page']
   > = ({ signal, pageParam }) =>
-    breedControllerRead({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    breedControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof breedControllerRead>>,
+    Awaited<ReturnType<typeof breedControllerAll>>,
     TError,
     TData,
     QueryKey,
-    BreedControllerReadParams['cursor']
+    BreedControllerAllParams['page']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type BreedControllerReadSuspenseInfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof breedControllerRead>>
->;
-export type BreedControllerReadSuspenseInfiniteQueryError = unknown;
+export type BreedControllerAllSuspenseInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof breedControllerAll>>>;
+export type BreedControllerAllSuspenseInfiniteQueryError = unknown;
 
-export function useBreedControllerReadSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params: undefined | BreedControllerReadParams,
+  params: undefined | BreedControllerAllParams,
   options: {
     query: Partial<
       UseSuspenseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerReadSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseSuspenseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBreedControllerReadSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseSuspenseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
@@ -542,26 +528,26 @@ export function useBreedControllerReadSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useBreedControllerReadSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerRead>>, BreedControllerReadParams['cursor']>,
+export function useBreedControllerAllSuspenseInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
   TError = unknown,
 >(
-  params?: BreedControllerReadParams,
+  params?: BreedControllerAllParams,
   options?: {
     query?: Partial<
       UseSuspenseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof breedControllerRead>>,
+        Awaited<ReturnType<typeof breedControllerAll>>,
         TError,
         TData,
         QueryKey,
-        BreedControllerReadParams['cursor']
+        BreedControllerAllParams['page']
       >
     >;
     fetch?: RequestInit;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getBreedControllerReadSuspenseInfiniteQueryOptions(params, options);
+  const queryOptions = getBreedControllerAllSuspenseInfiniteQueryOptions(params, options);
 
   const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

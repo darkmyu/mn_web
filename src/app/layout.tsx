@@ -1,5 +1,6 @@
 import '@/tailwind.css';
 
+import AuthDialog from '@/components/dialog/contents/AuthDialog';
 import Layout from '@/components/layout/Layout';
 import AuthProvider from '@/components/provider/AuthProvider';
 import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';
@@ -22,6 +23,7 @@ export default function RootLayout({ children, modal }: Props) {
       <body>
         <TanStackQueryProvider>
           <ThemeProvider>
+            <AuthDialog />
             <AuthProvider />
             <Layout>
               {children}

@@ -3,19 +3,28 @@
  * Do not edit manually.
  * OpenAPI spec version: 1.0.0
  */
-import { useInfiniteQuery, useQuery, useSuspenseInfiniteQuery, useSuspenseQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useSuspenseInfiniteQuery,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
   InfiniteData,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseInfiniteQueryOptions,
@@ -1972,3 +1981,173 @@ export function useProfileControllerPhotoSuspenseInfinite<
 
   return query;
 }
+
+export type profileControllerFollowResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type profileControllerFollowResponseSuccess = profileControllerFollowResponse200 & {
+  headers: Headers;
+};
+export const getProfileControllerFollowUrl = (username: string) => {
+  return `http://localhost:4000/api/v1/profiles/${username}/follows`;
+};
+
+export const profileControllerFollow = async (
+  username: string,
+  options?: RequestInit,
+): Promise<profileControllerFollowResponseSuccess> => {
+  const res = await fetch(getProfileControllerFollowUrl(username), {
+    credentials: 'include',
+    ...options,
+    method: 'POST',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: profileControllerFollowResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as profileControllerFollowResponseSuccess;
+};
+
+export const getProfileControllerFollowMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof profileControllerFollow>>,
+    TError,
+    { username: string },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<Awaited<ReturnType<typeof profileControllerFollow>>, TError, { username: string }, TContext> => {
+  const mutationKey = ['profileControllerFollow'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof profileControllerFollow>>, { username: string }> = (
+    props,
+  ) => {
+    const { username } = props ?? {};
+
+    return profileControllerFollow(username, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ProfileControllerFollowMutationResult = NonNullable<Awaited<ReturnType<typeof profileControllerFollow>>>;
+
+export type ProfileControllerFollowMutationError = unknown;
+
+export const useProfileControllerFollow = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof profileControllerFollow>>,
+      TError,
+      { username: string },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<Awaited<ReturnType<typeof profileControllerFollow>>, TError, { username: string }, TContext> => {
+  const mutationOptions = getProfileControllerFollowMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export type profileControllerUnfollowResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type profileControllerUnfollowResponseSuccess = profileControllerUnfollowResponse200 & {
+  headers: Headers;
+};
+export const getProfileControllerUnfollowUrl = (username: string) => {
+  return `http://localhost:4000/api/v1/profiles/${username}/follows`;
+};
+
+export const profileControllerUnfollow = async (
+  username: string,
+  options?: RequestInit,
+): Promise<profileControllerUnfollowResponseSuccess> => {
+  const res = await fetch(getProfileControllerUnfollowUrl(username), {
+    credentials: 'include',
+    ...options,
+    method: 'DELETE',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: profileControllerUnfollowResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as profileControllerUnfollowResponseSuccess;
+};
+
+export const getProfileControllerUnfollowMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof profileControllerUnfollow>>,
+    TError,
+    { username: string },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof profileControllerUnfollow>>,
+  TError,
+  { username: string },
+  TContext
+> => {
+  const mutationKey = ['profileControllerUnfollow'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof profileControllerUnfollow>>, { username: string }> = (
+    props,
+  ) => {
+    const { username } = props ?? {};
+
+    return profileControllerUnfollow(username, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ProfileControllerUnfollowMutationResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerUnfollow>>
+>;
+
+export type ProfileControllerUnfollowMutationError = unknown;
+
+export const useProfileControllerUnfollow = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof profileControllerUnfollow>>,
+      TError,
+      { username: string },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<Awaited<ReturnType<typeof profileControllerUnfollow>>, TError, { username: string }, TContext> => {
+  const mutationOptions = getProfileControllerUnfollowMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};

@@ -1,15 +1,15 @@
 import { useAuthControllerLogout } from '@/api/auth';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
+import { useDialogStore } from '@/stores/dialog';
 import { Popover } from '@base-ui/react/popover';
 import { LogOut, LucideLogIn, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Dialog } from '../dialog';
-import LoginDialog from '../dialog/contents/LoginDialog';
 
 function SidebarProfile() {
   const { profile, setProfile } = useAuthStore();
+  const { setIsAuthDialogOpen } = useDialogStore();
 
   const { mutate: logoutMutate } = useAuthControllerLogout({
     mutation: {
@@ -21,18 +21,9 @@ function SidebarProfile() {
 
   if (!profile) {
     return (
-      <Dialog.Root>
-        <Dialog.Trigger
-          render={
-            <div className="flex cursor-pointer items-center justify-center">
-              <LucideLogIn className="text-zinc-500" />
-            </div>
-          }
-        />
-        <Dialog.Popup>
-          <LoginDialog />
-        </Dialog.Popup>
-      </Dialog.Root>
+      <div className="flex cursor-pointer items-center justify-center" onClick={() => setIsAuthDialogOpen(true)}>
+        <LucideLogIn className="text-zinc-500" />
+      </div>
     );
   }
 

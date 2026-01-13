@@ -19,6 +19,6 @@ const initialState: AuthState = {
 export const useAuthStore = create<AuthStore>()(
   devtools((set) => ({
     ...initialState,
-    setProfile: (profile) => set(() => ({ profile })),
+    setProfile: (profile) => set({ profile }),
   })),
 );

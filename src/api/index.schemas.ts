@@ -3,7 +3,7 @@
  * Do not edit manually.
  * OpenAPI spec version: 1.0.0
  */
-export interface ProfileResponse {
+export interface AuthUserResponse {
   id: number;
   username: string;
   nickname: string;
@@ -14,7 +14,7 @@ export interface ProfileResponse {
 /**
  * @nullable
  */
-export type AuthInfoResponseProfile = ProfileResponse | null;
+export type AuthInfoResponseProfile = AuthUserResponse | null;
 
 export interface AuthInfoResponse {
   /** @nullable */
@@ -35,6 +35,14 @@ export interface Pagination {
   total: number;
   limit: number;
   hasNextPage: boolean;
+}
+
+export interface ProfileResponse {
+  id: number;
+  username: string;
+  nickname: string;
+  /** @nullable */
+  profileImage: string | null;
 }
 
 export type BreedResponseSpecies = (typeof BreedResponseSpecies)[keyof typeof BreedResponseSpecies];

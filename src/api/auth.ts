@@ -33,12 +33,7 @@ import type {
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
 
-import type {
-  AuthCheckDuplicateUsernameRequest,
-  AuthInfoResponse,
-  AuthRegisterRequest,
-  ProfileResponse,
-} from './index.schemas';
+import type { AuthCheckDuplicateUsernameRequest, AuthInfoResponse, AuthRegisterRequest } from './index.schemas';
 
 export type authControllerInfoResponse200 = {
   data: AuthInfoResponse;
@@ -2910,7 +2905,7 @@ export function useAuthControllerKakaoCallbackSuspenseInfinite<
 }
 
 export type authControllerRegisterResponse200 = {
-  data: ProfileResponse;
+  data: AuthInfoResponse;
   status: 200;
 };
 

@@ -8,8 +8,8 @@ interface Props {
 }
 
 function ProfileActions({ target }: Props) {
-  const { profile } = useAuthStore();
-  const isOwner = profile?.username === target.username;
+  const { user } = useAuthStore();
+  const isOwner = user?.username === target.username;
 
   if (isOwner) {
     return (

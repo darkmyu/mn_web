@@ -3,7 +3,7 @@
  * Do not edit manually.
  * OpenAPI spec version: 1.0.0
  */
-export interface AuthUserResponse {
+export interface UserResponse {
   id: number;
   username: string;
   nickname: string;
@@ -14,7 +14,7 @@ export interface AuthUserResponse {
 /**
  * @nullable
  */
-export type AuthInfoResponseProfile = AuthUserResponse | null;
+export type AuthInfoResponseProfile = UserResponse | null;
 
 export interface AuthInfoResponse {
   /** @nullable */
@@ -35,14 +35,6 @@ export interface Pagination {
   total: number;
   limit: number;
   hasNextPage: boolean;
-}
-
-export interface ProfileResponse {
-  id: number;
-  username: string;
-  nickname: string;
-  /** @nullable */
-  profileImage: string | null;
 }
 
 export type BreedResponseSpecies = (typeof BreedResponseSpecies)[keyof typeof BreedResponseSpecies];
@@ -74,7 +66,7 @@ export interface AnimalResponse {
   birthday: string;
   /** @nullable */
   thumbnail: string | null;
-  owner: ProfileResponse;
+  owner: UserResponse;
   breed: BreedResponse;
 }
 
@@ -118,6 +110,17 @@ export interface FileResponse {
   mimetype: string;
 }
 
+export interface ProfileResponse {
+  id: number;
+  username: string;
+  nickname: string;
+  /** @nullable */
+  profileImage: string | null;
+  isFollowing: boolean;
+  followers: number;
+  followings: number;
+}
+
 export interface CursorPagination {
   /** @nullable */
   cursor: number | null;
@@ -141,7 +144,7 @@ export interface PhotoResponse {
   likes: number;
   liked: boolean;
   tags: TagResponse[];
-  author: ProfileResponse;
+  author: UserResponse;
   animal: AnimalResponse;
 }
 

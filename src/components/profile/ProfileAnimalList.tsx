@@ -15,8 +15,8 @@ interface Props {
 }
 
 function ProfileAnimalList({ username }: Props) {
-  const { profile } = useAuthStore();
-  const isOwner = profile?.username === username;
+  const { user } = useAuthStore();
+  const isOwner = user?.username === username;
 
   const {
     data: { data: animals },

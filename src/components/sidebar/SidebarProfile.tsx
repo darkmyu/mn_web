@@ -8,18 +8,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 function SidebarProfile() {
-  const { profile, setProfile } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const { setIsAuthDialogOpen } = useDialogStore();
 
   const { mutate: logoutMutate } = useAuthControllerLogout({
     mutation: {
       onSuccess: () => {
-        setProfile(null);
+        setUser(null);
       },
     },
   });
 
-  if (!profile) {
+  if (!user) {
     return (
       <div className="flex cursor-pointer items-center justify-center" onClick={() => setIsAuthDialogOpen(true)}>
         <LucideLogIn className="text-zinc-500" />
@@ -33,7 +33,7 @@ function SidebarProfile() {
         render={
           <Image
             className="h-8 w-8 cursor-pointer rounded-full object-cover"
-            src={profile.profileImage ?? ''}
+            src={user.profileImage ?? ''}
             alt=""
             width={32}
             height={32}
@@ -46,21 +46,21 @@ function SidebarProfile() {
             <Popover.Close
               render={
                 <Link
-                  href={`/@${profile.username}`}
+                  href={`/@${user.username}`}
                   className="flex cursor-pointer gap-3 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700/40"
                 >
-                  {profile.profileImage && (
+                  {user.profileImage && (
                     <Image
                       className="h-12 w-12 cursor-pointer rounded-full object-cover"
-                      src={profile.profileImage}
+                      src={user.profileImage}
                       alt=""
                       width={48}
                       height={48}
                     />
                   )}
                   <div className="flex flex-col justify-center">
-                    <p className="text-sm font-bold">{profile.nickname}</p>
-                    <p className="text-sm">{`@${profile.username}`}</p>
+                    <p className="text-sm font-bold">{user.nickname}</p>
+                    <p className="text-sm">{`@${user.username}`}</p>
                   </div>
                 </Link>
               }

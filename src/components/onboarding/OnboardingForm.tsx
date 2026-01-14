@@ -12,7 +12,7 @@ import { SubmitHandler } from 'react-hook-form';
 
 function OnboardingForm() {
   const router = useRouter();
-  const { setProfile } = useAuthStore();
+  const { setUser: setProfile } = useAuthStore();
   const [isCheckDuplicateUsername, setIsCheckDuplicateUsername] = useState(false);
 
   const {

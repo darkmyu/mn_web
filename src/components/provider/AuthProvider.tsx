@@ -5,15 +5,15 @@ import { useAuthStore } from '@/stores/auth';
 import { useEffect } from 'react';
 
 function AuthProvider() {
-  const { profile, setProfile } = useAuthStore();
+  const { user, setUser } = useAuthStore();
 
   useEffect(() => {
-    if (profile) return;
+    if (user) return;
 
     authControllerInfo().then((response) => {
-      setProfile(response.data.profile);
+      setUser(response.data.profile);
     });
-  }, [setProfile, profile]);
+  }, [user, setUser]);
 
   return null;
 }

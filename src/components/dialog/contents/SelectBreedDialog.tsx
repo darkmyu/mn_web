@@ -49,6 +49,7 @@ function BreedList({ species, value, onChange, searchQuery }: BreedListProps) {
         return (
           <Dialog.Close
             key={breed.id}
+            nativeButton={false}
             render={
               <li
                 ref={isSelected ? selectedItemRef : null}
@@ -87,6 +88,7 @@ function SelectBreedDialog({ species, value, onChange }: Props) {
         <div className="flex items-center justify-between">
           <h1 className="font-medium">품종 선택</h1>
           <Dialog.Close
+            nativeButton={false}
             render={
               <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
                 <X size={20} />

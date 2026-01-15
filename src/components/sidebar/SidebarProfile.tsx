@@ -30,6 +30,7 @@ function SidebarProfile() {
   return (
     <Popover.Root>
       <Popover.Trigger
+        nativeButton={false}
         render={
           <Image
             className="h-8 w-8 cursor-pointer rounded-full object-cover"
@@ -44,6 +45,7 @@ function SidebarProfile() {
         <Popover.Positioner side="right" sideOffset={32} align="end" alignOffset={32}>
           <Popover.Popup className="flex w-80 flex-col rounded-lg bg-zinc-50 p-4 shadow-2xl/50 outline-none dark:bg-zinc-800">
             <Popover.Close
+              nativeButton={false}
               render={
                 <Link
                   href={`/@${user.username}`}

@@ -258,6 +258,7 @@ function AnimalForm({ animal }: Props) {
               </label>
               <Dialog.Root>
                 <Dialog.Trigger
+                  nativeButton={false}
                   render={
                     <div className="relative w-full">
                       <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">

@@ -23,6 +23,7 @@ function AnimalList({ value, onChange }: Props) {
         return (
           <Dialog.Close
             key={animal.id}
+            nativeButton={false}
             render={
               <li
                 onClick={() => onChange(animal)}
@@ -88,6 +89,7 @@ function SelectAnimalDialog({ value, onChange }: Props) {
         <div className="flex items-center justify-between">
           <h1 className="font-medium">반려동물 선택</h1>
           <Dialog.Close
+            nativeButton={false}
             render={
               <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
                 <X size={20} />

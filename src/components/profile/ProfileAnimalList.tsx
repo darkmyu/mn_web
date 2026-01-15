@@ -29,6 +29,7 @@ function ProfileAnimalList({ username }: Props) {
       {animals.items.map((animal) => (
         <Popover.Root key={animal.id}>
           <Popover.Trigger
+            nativeButton={false}
             render={
               <div className="flex cursor-pointer items-center gap-3 rounded-full bg-zinc-100 p-1.5 pr-4 dark:bg-zinc-800">
                 <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">

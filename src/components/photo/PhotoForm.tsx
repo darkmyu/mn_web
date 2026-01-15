@@ -198,6 +198,7 @@ function PhotoForm({ photo }: Props) {
               <Dialog.Root>
                 {!selectedAnimal && (
                   <Dialog.Trigger
+                    nativeButton={false}
                     render={
                       <div className="relative w-full">
                         <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
@@ -215,6 +216,7 @@ function PhotoForm({ photo }: Props) {
                 )}
                 {selectedAnimal && (
                   <Dialog.Trigger
+                    nativeButton={false}
                     render={
                       <div className="flex cursor-pointer items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 dark:bg-zinc-800">
                         <div className="flex items-center gap-3">

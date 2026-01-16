@@ -39,7 +39,7 @@ function AnimalForm({ animal }: Props) {
       name: animal.name,
       gender: animal.gender,
       birthday: dayjs(animal.birthday).format('YYYY-MM-DD'),
-      ...(animal.thumbnail && { thumbnail: animal.thumbnail }),
+      thumbnail: animal.thumbnail,
     },
   );
 
@@ -152,7 +152,7 @@ function AnimalForm({ animal }: Props) {
   };
 
   const handleThumbnailCancel = () => {
-    setValue('thumbnail', undefined);
+    setValue('thumbnail', null, { shouldValidate: true });
   };
 
   return (

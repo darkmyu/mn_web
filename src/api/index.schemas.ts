@@ -83,7 +83,8 @@ export interface AnimalCreateRequest {
   name: string;
   gender: AnimalCreateRequestGender;
   birthday: string;
-  thumbnail?: string;
+  /** @nullable */
+  thumbnail?: string | null;
 }
 
 export type AnimalUpdateRequestGender = (typeof AnimalUpdateRequestGender)[keyof typeof AnimalUpdateRequestGender];
@@ -99,7 +100,8 @@ export interface AnimalUpdateRequest {
   name: string;
   gender: AnimalUpdateRequestGender;
   birthday: string;
-  thumbnail?: string;
+  /** @nullable */
+  thumbnail?: string | null;
 }
 
 export interface FileResponse {

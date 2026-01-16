@@ -121,23 +121,23 @@ function ProfilePhotoViewer({ id, username }: Props) {
             <div className="flex items-center">
               <div className="flex items-center rounded-lg rounded-b-none bg-zinc-200/40 pt-1.5 pr-4 pb-1 pl-2.5 dark:bg-zinc-800">
                 <div className="flex items-center gap-1.5">
-                  {photo.animal.thumbnail && (
+                  {photo.animals[0]?.thumbnail && (
                     <div className="h-5 w-5 overflow-hidden rounded-full">
-                      <Image src={photo.animal.thumbnail} alt="" width={20} height={20} />
+                      <Image src={photo.animals[0]?.thumbnail} alt="" width={20} height={20} />
                     </div>
                   )}
-                  {!photo.animal.thumbnail && (
+                  {!photo.animals[0]?.thumbnail && (
                     <div className="h-4 w-4 overflow-hidden rounded-full">
-                      {photo.animal.breed.species === 'DOG' && (
+                      {photo.animals[0]?.breed.species === 'DOG' && (
                         <LucideDog className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
                       )}
-                      {photo.animal.breed.species === 'CAT' && (
+                      {photo.animals[0]?.breed.species === 'CAT' && (
                         <LucideCat className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
                       )}
                     </div>
                   )}
                   <span className="text-xs font-medium text-zinc-700 dark:text-zinc-200">
-                    {`${photo.animal.name} • ${formatAge(photo.animal.birthday)} • ${photo.animal.breed.name}`}
+                    {`${photo.animals[0]?.name} • ${formatAge(photo.animals[0]!.birthday)} • ${photo.animals[0]?.breed.name}`}
                   </span>
                 </div>
               </div>

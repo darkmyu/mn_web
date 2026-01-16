@@ -21,7 +21,7 @@ export function useAnimalForm(defaultValues?: AnimalCreateRequest) {
 
             return !date.isSameOrAfter(dayjs(), 'day');
           }),
-        thumbnail: z.string().optional(),
+        thumbnail: z.string().optional().nullable(),
       }),
     ),
     defaultValues: {

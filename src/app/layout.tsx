@@ -1,6 +1,6 @@
 import '@/tailwind.css';
 
-import AuthDialog from '@/components/dialog/contents/AuthDialog';
+import AuthDialog from '@/components/dialog/AuthDialog';
 import Layout from '@/components/layout/Layout';
 import AuthProvider from '@/components/provider/AuthProvider';
 import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';

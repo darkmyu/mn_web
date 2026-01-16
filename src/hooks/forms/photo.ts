@@ -8,7 +8,7 @@ export function usePhotoForm(defaultValues?: PhotoCreateRequest) {
     mode: 'onChange',
     resolver: zodResolver(
       z.object({
-        animalId: z.number().min(1),
+        animalIds: z.number().array().min(1),
         image: z.object({
           path: z.string().min(1),
           size: z.number().min(1),

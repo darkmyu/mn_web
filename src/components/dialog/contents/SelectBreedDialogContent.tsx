@@ -79,41 +79,39 @@ function BreedListSkeleton() {
   );
 }
 
-function SelectBreedDialog({ species, value, onChange }: Props) {
+function SelectBreedDialogContent({ species, value, onChange }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <Dialog.Popup className="w-[28rem] p-6">
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <h1 className="font-medium">품종 선택</h1>
-          <Dialog.Close
-            nativeButton={false}
-            render={
-              <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-                <X size={20} />
-              </button>
-            }
-          />
-        </div>
-        <div className="relative">
-          <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400" size={18} />
-          <input
-            type="text"
-            placeholder="품종 검색"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-zinc-200 px-4 py-3 pl-10 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
-          />
-        </div>
-        <div className="scrollbar-hide h-80 overflow-y-auto">
-          <Suspense fallback={<BreedListSkeleton />}>
-            <BreedList value={value} species={species} searchQuery={searchQuery} onChange={onChange} />
-          </Suspense>
-        </div>
+    <div className="flex w-[28rem] flex-col gap-6 p-6">
+      <div className="flex items-center justify-between">
+        <h1 className="font-medium">품종 선택</h1>
+        <Dialog.Close
+          nativeButton={false}
+          render={
+            <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+              <X size={20} />
+            </button>
+          }
+        />
       </div>
-    </Dialog.Popup>
+      <div className="relative">
+        <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400" size={18} />
+        <input
+          type="text"
+          placeholder="품종 검색"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full rounded-lg border border-zinc-200 px-4 py-3 pl-10 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
+        />
+      </div>
+      <div className="scrollbar-hide h-80 overflow-y-auto">
+        <Suspense fallback={<BreedListSkeleton />}>
+          <BreedList value={value} species={species} searchQuery={searchQuery} onChange={onChange} />
+        </Suspense>
+      </div>
+    </div>
   );
 }
 
-export default SelectBreedDialog;
+export default SelectBreedDialogContent;

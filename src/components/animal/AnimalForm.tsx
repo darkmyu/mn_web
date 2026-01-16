@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Dialog } from '../dialog';
-import SelectBreedDialog from '../dialog/contents/SelectBreedDialog';
+import SelectBreedDialogContent from '../dialog/contents/SelectBreedDialogContent';
 
 interface Props {
   animal?: AnimalResponse;
@@ -274,7 +274,13 @@ function AnimalForm({ animal }: Props) {
                     </div>
                   }
                 />
-                <SelectBreedDialog value={selectedBreed} species={selectedSpecies} onChange={handleBreedChange} />
+                <Dialog.Popup>
+                  <SelectBreedDialogContent
+                    value={selectedBreed}
+                    species={selectedSpecies}
+                    onChange={handleBreedChange}
+                  />
+                </Dialog.Popup>
               </Dialog.Root>
             </div>
             <div className="flex flex-col gap-2">

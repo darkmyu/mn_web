@@ -145,7 +145,7 @@ export interface PhotoResponse {
   liked: boolean;
   tags: TagResponse[];
   author: UserResponse;
-  animal: AnimalResponse;
+  animals: AnimalResponse[];
 }
 
 export interface FileRequest {
@@ -157,7 +157,7 @@ export interface FileRequest {
 }
 
 export interface PhotoCreateRequest {
-  animalId: number;
+  animalIds: number[];
   image: FileRequest;
   title?: string;
   description?: string;
@@ -165,7 +165,7 @@ export interface PhotoCreateRequest {
 }
 
 export interface PhotoUpdateRequest {
-  animalId: number;
+  animalIds: number[];
   image: FileRequest;
   title?: string;
   description?: string;

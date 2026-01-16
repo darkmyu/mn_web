@@ -7,7 +7,7 @@ import { API_ROUTE_OAUTH_GOOGLE, API_ROUTE_OAUTH_KAKAO, API_ROUTE_OAUTH_NAVER } 
 import { useDialogStore } from '@/stores/dialog';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Dialog } from '..';
+import { Dialog } from '.';
 
 function AuthDialog() {
   const { isAuthDialogOpen, setIsAuthDialogOpen } = useDialogStore((state) => state);

@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Dialog } from '../dialog';
-import SelectAnimalDialog from '../dialog/contents/SelectAnimalDialog';
+import SelectAnimalDialogContent from '../dialog/contents/SelectAnimalDialogContent';
 
 interface Props {
   photo?: PhotoResponse;
@@ -25,7 +25,7 @@ function PhotoForm({ photo }: Props) {
     formState: { isValid },
   } = usePhotoForm(
     photo && {
-      animalId: photo.animal.id,
+      animalIds: photo.animals.map((animal) => animal.id),
       image: photo.image,
       tags: photo.tags.map((tag) => tag.name),
       ...(photo.title && { title: photo.title }),
@@ -39,7 +39,7 @@ function PhotoForm({ photo }: Props) {
 
   const router = useRouter();
   const imageRef = useRef<HTMLInputElement>(null);
-  const [selectedAnimal, setSelectedAnimal] = useState<AnimalResponse | null>(photo?.animal ?? null);
+  const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(photo?.animals ?? []);
 
   const { mutate: createPhotoMutate } = usePhotoControllerCreate();
   const { mutate: updatePhotoMutate } = usePhotoControllerUpdate();
@@ -109,9 +109,13 @@ function PhotoForm({ photo }: Props) {
     });
   };
 
-  const handleAnimalChange = (animal: AnimalResponse) => {
-    setValue('animalId', animal.id, { shouldValidate: true });
-    setSelectedAnimal(animal);
+  const handleAnimalChange = (animals: AnimalResponse[]) => {
+    setValue(
+      'animalIds',
+      animals.map((animal) => animal.id),
+      { shouldValidate: true },
+    );
+    setSelectedAnimals(animals);
   };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -196,7 +200,7 @@ function PhotoForm({ photo }: Props) {
                 반려동물 <span className="text-sm text-red-700">*</span>
               </label>
               <Dialog.Root>
-                {!selectedAnimal && (
+                {selectedAnimals.length === 0 && (
                   <Dialog.Trigger
                     nativeButton={false}
                     render={
@@ -214,34 +218,34 @@ function PhotoForm({ photo }: Props) {
                     }
                   />
                 )}
-                {selectedAnimal && (
+                {selectedAnimals.length > 0 && (
                   <Dialog.Trigger
                     nativeButton={false}
                     render={
                       <div className="flex cursor-pointer items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 dark:bg-zinc-800">
                         <div className="flex items-center gap-3">
-                          {selectedAnimal.thumbnail && (
+                          {selectedAnimals[0]?.thumbnail && (
                             <Image
                               className="h-8 w-8 rounded-full object-cover"
-                              src={selectedAnimal.thumbnail}
+                              src={selectedAnimals[0]?.thumbnail}
                               alt=""
                               width={32}
                               height={32}
                             />
                           )}
-                          {!selectedAnimal.thumbnail && (
+                          {!selectedAnimals[0]?.thumbnail && (
                             <div className="flex h-8 w-8 items-center justify-center rounded-full border-1 border-dashed border-zinc-300 dark:border-zinc-600">
-                              {selectedAnimal.breed.species === 'DOG' && (
+                              {selectedAnimals[0]?.breed.species === 'DOG' && (
                                 <LucideDog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
                               )}
-                              {selectedAnimal.breed.species === 'CAT' && (
+                              {selectedAnimals[0]?.breed.species === 'CAT' && (
                                 <LucideCat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
                               )}
                             </div>
                           )}
                           <div className="flex flex-col">
-                            <p className="text-sm font-semibold">{selectedAnimal.name}</p>
-                            <p className="text-xs text-zinc-600 dark:text-zinc-400">{selectedAnimal.breed.name}</p>
+                            <p className="text-sm font-semibold">{selectedAnimals[0]?.name}</p>
+                            <p className="text-xs text-zinc-600 dark:text-zinc-400">{selectedAnimals[0]?.breed.name}</p>
                           </div>
                         </div>
                         <div className="flex items-center justify-center">
@@ -251,7 +255,9 @@ function PhotoForm({ photo }: Props) {
                     }
                   />
                 )}
-                <SelectAnimalDialog value={selectedAnimal} onChange={handleAnimalChange} />
+                <Dialog.Popup>
+                  <SelectAnimalDialogContent value={selectedAnimals} onChange={handleAnimalChange} />
+                </Dialog.Popup>
               </Dialog.Root>
             </div>
             <div className="flex flex-col gap-2">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useProfileControllerReadSuspense } from '@/api/profile';
+import { formatNumber } from '@/utils/formatters';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 
@@ -36,11 +37,11 @@ function Profile({ username }: Props) {
           <p className="text-base font-semibold">{`@${target.username}`}</p>
           <span className="mx-3 text-xs text-zinc-600">•</span>
           <p className="text-base">
-            <span className="font-semibold">1,203</span> 팔로워
+            <span className="font-semibold">{formatNumber(target.followers)}</span> 팔로워
           </p>
           <span className="mx-3 text-xs text-zinc-600">•</span>
           <p className="text-base">
-            <span className="font-semibold">4,002</span> 팔로우
+            <span className="font-semibold">{formatNumber(target.followings)}</span> 팔로우
           </p>
         </div>
         <p className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-400">

@@ -9,6 +9,7 @@ import ProfilePhotoMasonry from '@/components/profile/ProfilePhotoMasonry';
 import { extractUsername } from '@/utils/extractors';
 import { getQueryClient } from '@/utils/getQueryClient';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 interface Props {
@@ -18,17 +19,25 @@ interface Props {
 export default async function ProfilePage({ params }: Props) {
   const queryClient = getQueryClient();
   const username = await extractUsername(params);
+  const cookieStore = await cookies();
+  const cookie = cookieStore.toString();
 
   try {
-    await queryClient.fetchQuery(getProfileControllerReadQueryOptions(username));
+    await queryClient.fetchQuery(
+      getProfileControllerReadQueryOptions(username, {
+        fetch: {
+          headers: {
+            cookie,
+          },
+        },
+      }),
+    );
   } catch {
     notFound();
   }
 
-  /** @TODO redirect error page */
   await queryClient.prefetchQuery(getProfileControllerAnimalsQueryOptions(username));
 
-  /** @TODO redirect error page */
   await queryClient.prefetchInfiniteQuery(
     getProfileControllerPhotosInfiniteQueryOptions(username, {
       limit: 20,

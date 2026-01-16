@@ -33,22 +33,22 @@ function ProfilePhotoViewer({ id, username }: Props) {
 
   const debouncedToggleLike = useMemo(
     () =>
-      debounce((isLiked: boolean) => {
-        if (isLiked === initialLikedRef.current) return;
+      debounce((nextIsLiked: boolean) => {
+        if (nextIsLiked === initialLikedRef.current) return;
 
-        if (isLiked) {
+        if (nextIsLiked) {
           likeMutate({ id });
         } else {
           unlikeMutate({ id });
         }
 
-        initialLikedRef.current = isLiked;
+        initialLikedRef.current = nextIsLiked;
       }, 500),
     [id, likeMutate, unlikeMutate],
   );
 
   const handleClickLikeButton = () => {
-    const isLiked = !photo.liked;
+    const nextIsLiked = !photo.liked;
 
     queryClient.setQueryData<profileControllerPhotoResponseSuccess>(queryKey, (prev) => {
       if (!prev) return prev;
@@ -56,13 +56,13 @@ function ProfilePhotoViewer({ id, username }: Props) {
         ...prev,
         data: {
           ...prev.data,
-          liked: isLiked,
-          likes: isLiked ? prev.data.likes + 1 : prev.data.likes - 1,
+          liked: nextIsLiked,
+          likes: nextIsLiked ? prev.data.likes + 1 : prev.data.likes - 1,
         },
       };
     });
 
-    debouncedToggleLike(isLiked);
+    debouncedToggleLike(nextIsLiked);
   };
 
   return (

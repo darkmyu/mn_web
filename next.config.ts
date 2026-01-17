@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  rewrites: async () => [
+    {
+      source: '/@:username/:path*',
+      destination: '/profile/:username/:path*',
+    },
+  ],
 };
 
 export default nextConfig;

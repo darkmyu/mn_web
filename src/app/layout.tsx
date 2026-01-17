@@ -10,14 +10,13 @@ import React from 'react';
 
 interface Props {
   children: React.ReactNode;
-  dialog: React.ReactNode;
 }
 
 const pretendardFonts = localFont({
   src: '../assets/fonts/PretendardVariable.woff2',
 });
 
-export default function RootLayout({ children, dialog }: Props) {
+export default function RootLayout({ children }: Props) {
   return (
     <html lang="ko" className={pretendardFonts.className} suppressHydrationWarning>
       <body>
@@ -25,10 +24,7 @@ export default function RootLayout({ children, dialog }: Props) {
           <ThemeProvider>
             <AuthDialog />
             <AuthProvider />
-            <Layout>
-              {children}
-              {dialog}
-            </Layout>
+            <Layout>{children}</Layout>
           </ThemeProvider>
         </TanStackQueryProvider>
       </body>

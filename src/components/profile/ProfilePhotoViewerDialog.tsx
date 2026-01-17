@@ -29,9 +29,13 @@ function ProfilePhotoViewerDialog({ id, username }: Props) {
           <button className="flex cursor-pointer items-center justify-center" onClick={handleMaximizeClick}>
             <LucideMaximize2 className="h-5 w-5" />
           </button>
-          <Dialog.Close className="flex cursor-pointer items-center justify-center">
-            <LucideX className="h-5 w-5" />
-          </Dialog.Close>
+          <Dialog.Close
+            render={
+              <button className="flex cursor-pointer items-center justify-center">
+                <LucideX className="h-5 w-5" />
+              </button>
+            }
+          />
         </header>
         <ScrollArea.Root className="h-full overflow-hidden">
           <ScrollArea.Viewport className="h-full">

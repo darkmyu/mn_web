@@ -161,16 +161,20 @@ export interface FileRequest {
 export interface PhotoCreateRequest {
   animalIds: number[];
   image: FileRequest;
-  title?: string;
-  description?: string;
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  description?: string | null;
   tags?: string[];
 }
 
 export interface PhotoUpdateRequest {
   animalIds: number[];
   image: FileRequest;
-  title?: string;
-  description?: string;
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  description?: string | null;
   tags?: string[];
 }
 

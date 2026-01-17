@@ -28,14 +28,16 @@ function PhotoForm({ photo }: Props) {
       animalIds: photo.animals.map((animal) => animal.id),
       image: photo.image,
       tags: photo.tags.map((tag) => tag.name),
-      ...(photo.title && { title: photo.title }),
-      ...(photo.description && { description: photo.description }),
+      title: photo.title,
+      description: photo.description,
     },
   );
 
   const isEdit = !!photo;
   const tags = watch('tags');
   const image = watch('image');
+  const title = watch('title');
+  const description = watch('description');
 
   const router = useRouter();
   const imageRef = useRef<HTMLInputElement>(null);
@@ -320,6 +322,7 @@ function PhotoForm({ photo }: Props) {
                 type="text"
                 spellCheck="false"
                 autoComplete="off"
+                defaultValue={title ?? ''}
                 placeholder="사진 제목을 입력해주세요"
                 className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
               />
@@ -331,6 +334,7 @@ function PhotoForm({ photo }: Props) {
                 rows={5}
                 spellCheck="false"
                 autoComplete="off"
+                defaultValue={description ?? ''}
                 placeholder="사진에 대한 설명을 입력해주세요"
                 className="resize-none rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
               />

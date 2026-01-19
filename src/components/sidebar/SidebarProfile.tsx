@@ -1,13 +1,15 @@
 import { useAuthControllerLogout } from '@/api/auth';
-import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
+import { ROUTE_HOME_PAGE, ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useDialogStore } from '@/stores/dialog';
 import { Popover } from '@base-ui/react/popover';
 import { LogOut, LucideLogIn, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 function SidebarProfile() {
+  const router = useRouter();
   const { user, setUser } = useAuthStore();
   const { setIsAuthDialogOpen } = useDialogStore();
 
@@ -15,6 +17,7 @@ function SidebarProfile() {
     mutation: {
       onSuccess: () => {
         setUser(null);
+        router.push(ROUTE_HOME_PAGE);
       },
     },
   });

@@ -7,6 +7,7 @@ import {
 } from '@/api/profile';
 import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
+import { useDialogStore } from '@/stores/dialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'es-toolkit';
 import Link from 'next/link';
@@ -18,6 +19,8 @@ interface Props {
 
 function ProfileActions({ target }: Props) {
   const { user } = useAuthStore();
+  const { setIsAuthDialogOpen } = useDialogStore();
+
   const isOwner = user?.username === target.username;
 
   const queryClient = useQueryClient();
@@ -45,6 +48,8 @@ function ProfileActions({ target }: Props) {
   );
 
   const handleFollowButtonClick = () => {
+    if (!user) return setIsAuthDialogOpen(true);
+
     const nextIsFollowing = !target.isFollowing;
 
     queryClient.setQueryData<profileControllerReadResponse200>(queryKey, (prev) => {

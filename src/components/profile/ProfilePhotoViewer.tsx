@@ -9,6 +9,7 @@ import {
   useProfileControllerUnfollow,
 } from '@/api/profile';
 import { useAuthStore } from '@/stores/auth';
+import { useDialogStore } from '@/stores/dialog';
 import { formatAge, formatNumber } from '@/utils/formatters';
 import { useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'es-toolkit';
@@ -27,6 +28,8 @@ function ProfilePhotoViewer({ id, username }: Props) {
   } = useProfileControllerPhotoSuspense(username, id);
 
   const { user } = useAuthStore();
+  const { setIsAuthDialogOpen } = useDialogStore();
+
   const isOwner = user?.username === username;
 
   const queryClient = useQueryClient();
@@ -73,6 +76,8 @@ function ProfilePhotoViewer({ id, username }: Props) {
   );
 
   const handleClickLikeButton = () => {
+    if (!user) return setIsAuthDialogOpen(true);
+
     const nextIsLiked = !photo.liked;
 
     queryClient.setQueryData<profileControllerPhotoResponseSuccess>(queryKey, (prev) => {
@@ -91,6 +96,8 @@ function ProfilePhotoViewer({ id, username }: Props) {
   };
 
   const handleClickFollowButton = () => {
+    if (!user) return setIsAuthDialogOpen(true);
+
     const nextIsFollowing = !photo.author.isFollowing;
 
     queryClient.setQueryData<profileControllerPhotoResponseSuccess>(queryKey, (prev) => {

@@ -118,9 +118,9 @@ export interface ProfileResponse {
   nickname: string;
   /** @nullable */
   profileImage: string | null;
-  isFollowing: boolean;
   followers: number;
   followings: number;
+  isFollowing: boolean;
 }
 
 export interface CursorPagination {
@@ -146,8 +146,8 @@ export interface PhotoResponse {
   likes: number;
   liked: boolean;
   tags: TagResponse[];
-  author: UserResponse;
   animals: AnimalResponse[];
+  author: ProfileResponse;
 }
 
 export interface FileRequest {

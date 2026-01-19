@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
       {
         hostname: 'ssl.pstatic.net',
       },
+      {
+        hostname: 'k.kakaocdn.net',
+      },
     ],
   },
   rewrites: async () => [

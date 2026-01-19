@@ -4,9 +4,12 @@ import { usePhotoControllerLike, usePhotoControllerUnlike } from '@/api/photo';
 import {
   getProfileControllerPhotoQueryKey,
   profileControllerPhotoResponseSuccess,
+  useProfileControllerFollow,
   useProfileControllerPhotoSuspense,
+  useProfileControllerUnfollow,
 } from '@/api/profile';
-import { formatAge } from '@/utils/formatters';
+import { useAuthStore } from '@/stores/auth';
+import { formatAge, formatNumber } from '@/utils/formatters';
 import { useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'es-toolkit';
 import { LucideCat, LucideDog, LucideEllipsisVertical, LucideHeart, LucideShare2 } from 'lucide-react';
@@ -23,13 +26,19 @@ function ProfilePhotoViewer({ id, username }: Props) {
     data: { data: photo },
   } = useProfileControllerPhotoSuspense(username, id);
 
+  const { user } = useAuthStore();
+  const isOwner = user?.username === username;
+
   const queryClient = useQueryClient();
   const queryKey = getProfileControllerPhotoQueryKey(username, id);
 
   const initialLikedRef = useRef(photo.liked);
+  const initialIsFollowingRef = useRef(photo.author.isFollowing);
 
   const { mutate: likeMutate } = usePhotoControllerLike();
   const { mutate: unlikeMutate } = usePhotoControllerUnlike();
+  const { mutate: followMutate } = useProfileControllerFollow();
+  const { mutate: unfollowMutate } = useProfileControllerUnfollow();
 
   const debouncedToggleLike = useMemo(
     () =>
@@ -45,6 +54,22 @@ function ProfilePhotoViewer({ id, username }: Props) {
         initialLikedRef.current = nextIsLiked;
       }, 500),
     [id, likeMutate, unlikeMutate],
+  );
+
+  const debouncedToggleFollow = useMemo(
+    () =>
+      debounce((nextIsFollowing: boolean) => {
+        if (nextIsFollowing === initialIsFollowingRef.current) return;
+
+        if (nextIsFollowing) {
+          followMutate({ username });
+        } else {
+          unfollowMutate({ username });
+        }
+
+        initialLikedRef.current = nextIsFollowing;
+      }, 500),
+    [followMutate, unfollowMutate, username],
   );
 
   const handleClickLikeButton = () => {
@@ -63,6 +88,27 @@ function ProfilePhotoViewer({ id, username }: Props) {
     });
 
     debouncedToggleLike(nextIsLiked);
+  };
+
+  const handleClickFollowButton = () => {
+    const nextIsFollowing = !photo.author.isFollowing;
+
+    queryClient.setQueryData<profileControllerPhotoResponseSuccess>(queryKey, (prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          author: {
+            ...prev.data.author,
+            isFollowing: nextIsFollowing,
+            followers: nextIsFollowing ? prev.data.author.followers + 1 : prev.data.author.followers - 1,
+          },
+        },
+      };
+    });
+
+    debouncedToggleFollow(nextIsFollowing);
   };
 
   return (
@@ -88,15 +134,22 @@ function ProfilePhotoViewer({ id, username }: Props) {
                   <Image className="object-cover" src={photo.author.profileImage} alt="" width={40} height={40} />
                 </div>
               )}
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{photo.author.nickname}</span>
-                  <span className="cursor-pointer text-sm font-medium text-emerald-600">팔로우</span>
+                  {!isOwner && (
+                    <button
+                      className="cursor-pointer rounded-lg border border-zinc-300 px-1.5 py-0.5 text-xs font-medium text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
+                      onClick={handleClickFollowButton}
+                    >
+                      {photo.author.isFollowing ? '팔로우 중' : '팔로우'}
+                    </button>
+                  )}
                 </div>
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">{`@${photo.author.username}`}</span>
                   <span className="mx-1 text-sm text-zinc-500 dark:text-zinc-400">•</span>
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400">팔로워 4.7만명</span>
+                  <span className="text-sm text-zinc-500 dark:text-zinc-400">{`${formatNumber(photo.author.followers)} 팔로워`}</span>
                 </div>
               </div>
             </div>

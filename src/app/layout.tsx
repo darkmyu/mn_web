@@ -7,6 +7,7 @@ import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';
 import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
 import React from 'react';
+import { Toaster } from 'react-hot-toast';
 
 interface Props {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: Props) {
             <AuthDialog />
             <AuthProvider />
             <Layout>{children}</Layout>
+            <Toaster toastOptions={{ style: { fontSize: 14 } }} />
           </ThemeProvider>
         </TanStackQueryProvider>
       </body>

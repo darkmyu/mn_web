@@ -16,6 +16,7 @@ import { debounce } from 'es-toolkit';
 import { LucideCat, LucideDog, LucideEllipsisVertical, LucideHeart, LucideShare2 } from 'lucide-react';
 import Image from 'next/image';
 import { useMemo, useRef } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
   id: number;
@@ -75,7 +76,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
     [followMutate, unfollowMutate, username],
   );
 
-  const handleClickLikeButton = () => {
+  const handleLikeButtonClick = () => {
     if (!user) return setIsAuthDialogOpen(true);
 
     const nextIsLiked = !photo.liked;
@@ -95,7 +96,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
     debouncedToggleLike(nextIsLiked);
   };
 
-  const handleClickFollowButton = () => {
+  const handleFollowButtonClick = () => {
     if (!user) return setIsAuthDialogOpen(true);
 
     const nextIsFollowing = !photo.author.isFollowing;
@@ -116,6 +117,11 @@ function ProfilePhotoViewer({ id, username }: Props) {
     });
 
     debouncedToggleFollow(nextIsFollowing);
+  };
+
+  const handleShareButtonClick = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('주소가 복사되었어요!');
   };
 
   return (
@@ -147,7 +153,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
                   {!isOwner && (
                     <button
                       className="cursor-pointer rounded-lg border border-zinc-300 px-1.5 py-0.5 text-xs font-medium text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
-                      onClick={handleClickFollowButton}
+                      onClick={handleFollowButtonClick}
                     >
                       {photo.author.isFollowing ? '팔로우 중' : '팔로우'}
                     </button>
@@ -163,13 +169,16 @@ function ProfilePhotoViewer({ id, username }: Props) {
             <div className="flex items-center gap-4">
               <button
                 className="flex cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800"
-                onClick={handleClickLikeButton}
+                onClick={handleLikeButtonClick}
               >
                 {!photo.liked && <LucideHeart className="text-zinc-500 dark:text-zinc-400" />}
                 {photo.liked && <LucideHeart className="fill-red-500" strokeWidth={0} />}
                 <p className="font-medium text-zinc-500 dark:text-zinc-400">{photo.likes}</p>
               </button>
-              <button className="cursor-pointer rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800">
+              <button
+                className="cursor-pointer rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800"
+                onClick={handleShareButtonClick}
+              >
                 <LucideShare2 className="text-zinc-500 dark:text-zinc-400" />
               </button>
               <button className="cursor-pointer rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800">

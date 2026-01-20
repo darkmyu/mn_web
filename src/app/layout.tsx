@@ -26,7 +26,12 @@ export default function RootLayout({ children }: Props) {
             <AuthDialog />
             <AuthProvider />
             <Layout>{children}</Layout>
-            <Toaster toastOptions={{ style: { fontSize: 14 } }} />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                className: '!text-sm !text-zinc-900 !bg-zinc-100 dark:!text-zinc-50 dark:!bg-zinc-800',
+              }}
+            />
           </ThemeProvider>
         </TanStackQueryProvider>
       </body>

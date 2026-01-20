@@ -28,7 +28,7 @@ function AnimalList({ value, onChange }: Props) {
           <li
             key={animal.id}
             onClick={handleClick}
-            className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+            className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
           >
             <div className="flex items-center gap-3">
               <div className="relative flex h-12 w-12 items-center justify-center">

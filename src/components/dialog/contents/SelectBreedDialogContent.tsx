@@ -54,7 +54,7 @@ function BreedList({ species, value, onChange, searchQuery }: BreedListProps) {
               <li
                 ref={isSelected ? selectedItemRef : null}
                 onClick={() => onChange(breed)}
-                className={`cursor-pointer rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
+                className={`cursor-pointer rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700/40 ${
                   isSelected && 'flex items-center justify-between'
                 }`}
               >

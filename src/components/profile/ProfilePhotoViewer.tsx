@@ -8,13 +8,25 @@ import {
   useProfileControllerPhotoSuspense,
   useProfileControllerUnfollow,
 } from '@/api/profile';
+import { ROUTE_PHOTOS_WRITE_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useDialogStore } from '@/stores/dialog';
 import { formatAge, formatNumber } from '@/utils/formatters';
+import { Popover } from '@base-ui/react/popover';
 import { useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'es-toolkit';
-import { LucideCat, LucideDog, LucideEllipsisVertical, LucideHeart, LucideShare2 } from 'lucide-react';
+import {
+  LucideCat,
+  LucideDog,
+  LucideEllipsisVertical,
+  LucideFlag,
+  LucideHeart,
+  LucideShare2,
+  LucideSquarePen,
+  LucideTrash2,
+} from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useMemo, useRef } from 'react';
 import toast from 'react-hot-toast';
 
@@ -28,6 +40,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
     data: { data: photo },
   } = useProfileControllerPhotoSuspense(username, id);
 
+  const router = useRouter();
   const { user } = useAuthStore();
   const { setIsAuthDialogOpen } = useDialogStore();
 
@@ -140,7 +153,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
         </div>
         <div className="flex flex-col">
           {photo.title && <p className="mb-6 border-b-1 border-zinc-200 pb-2 text-2xl font-semibold">{photo.title}</p>}
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-12 flex items-center justify-between">
             <div className="flex items-center gap-3">
               {photo.author.profileImage && (
                 <div className="h-10 w-10 overflow-hidden rounded-full">
@@ -181,9 +194,46 @@ function ProfilePhotoViewer({ id, username }: Props) {
               >
                 <LucideShare2 className="text-zinc-500 dark:text-zinc-400" />
               </button>
-              <button className="cursor-pointer rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800">
-                <LucideEllipsisVertical className="text-zinc-500 dark:text-zinc-400" />
-              </button>
+              <Popover.Root>
+                <Popover.Trigger
+                  render={
+                    <button className="cursor-pointer rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800">
+                      <LucideEllipsisVertical className="text-zinc-500 dark:text-zinc-400" />
+                    </button>
+                  }
+                />
+                <Popover.Portal>
+                  <Popover.Positioner align="end" sideOffset={8}>
+                    <Popover.Popup>
+                      <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2 shadow-2xl/20 outline-none dark:border-zinc-700 dark:bg-zinc-800">
+                        <ul className="flex flex-col">
+                          {isOwner && (
+                            <>
+                              <li
+                                className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
+                                onClick={() => router.push(`${ROUTE_PHOTOS_WRITE_PAGE}/${id}`)}
+                              >
+                                <LucideSquarePen className="h-3.5 w-3.5" />
+                                <span className="text-sm">수정하기</span>
+                              </li>
+                              <li className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40">
+                                <LucideTrash2 className="h-3.5 w-3.5" />
+                                <span className="text-sm">삭제하기</span>
+                              </li>
+                            </>
+                          )}
+                          {!isOwner && (
+                            <li className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40">
+                              <LucideFlag className="h-3.5 w-3.5" />
+                              <span className="text-sm">신고하기</span>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    </Popover.Popup>
+                  </Popover.Positioner>
+                </Popover.Portal>
+              </Popover.Root>
             </div>
           </div>
           <div className="flex flex-col gap-3">

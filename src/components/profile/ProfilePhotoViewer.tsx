@@ -84,7 +84,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
           unfollowMutate({ username });
         }
 
-        initialLikedRef.current = nextIsFollowing;
+        initialIsFollowingRef.current = nextIsFollowing;
       }, 500),
     [followMutate, unfollowMutate, username],
   );

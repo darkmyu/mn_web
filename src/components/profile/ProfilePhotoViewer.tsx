@@ -1,6 +1,6 @@
 'use client';
 
-import { usePhotoControllerLike, usePhotoControllerUnlike } from '@/api/photo';
+import { usePhotoControllerDelete, usePhotoControllerLike, usePhotoControllerUnlike } from '@/api/photo';
 import {
   getProfileControllerPhotoQueryKey,
   profileControllerPhotoResponseSuccess,
@@ -10,6 +10,7 @@ import {
 } from '@/api/profile';
 import { ROUTE_PHOTOS_WRITE_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
+import { useConfirmStore } from '@/stores/confirm';
 import { useDialogStore } from '@/stores/dialog';
 import { formatAge, formatNumber } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
@@ -43,6 +44,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
   const router = useRouter();
   const { user } = useAuthStore();
   const { setIsAuthDialogOpen } = useDialogStore();
+  const { openConfirm, closeConfirm } = useConfirmStore();
 
   const isOwner = user?.username === username;
 
@@ -56,6 +58,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
   const { mutate: unlikeMutate } = usePhotoControllerUnlike();
   const { mutate: followMutate } = useProfileControllerFollow();
   const { mutate: unfollowMutate } = useProfileControllerUnfollow();
+  const { mutateAsync: deletePhotoMutateAsync } = usePhotoControllerDelete();
 
   const debouncedToggleLike = useMemo(
     () =>
@@ -130,6 +133,30 @@ function ProfilePhotoViewer({ id, username }: Props) {
     });
 
     debouncedToggleFollow(nextIsFollowing);
+  };
+
+  const handleDeleteButtonClick = () => {
+    openConfirm({
+      title: '사진을 삭제할까요?',
+      description: '삭제된 사진은 복구할 수 없어요.',
+      onConfirm: () =>
+        toast.promise(
+          deletePhotoMutateAsync(
+            { id },
+            {
+              onSuccess: () => {
+                closeConfirm();
+                router.push(`/@${username}`);
+              },
+            },
+          ),
+          {
+            loading: '사진을 삭제하고 있어요...',
+            success: '사진이 삭제되었어요!',
+            error: '사진 삭제에 실패했어요.',
+          },
+        ),
+    });
   };
 
   const handleShareButtonClick = () => {
@@ -216,10 +243,18 @@ function ProfilePhotoViewer({ id, username }: Props) {
                                 <LucideSquarePen className="h-3.5 w-3.5" />
                                 <span className="text-sm">수정하기</span>
                               </li>
-                              <li className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40">
-                                <LucideTrash2 className="h-3.5 w-3.5" />
-                                <span className="text-sm">삭제하기</span>
-                              </li>
+                              <Popover.Close
+                                nativeButton={false}
+                                render={
+                                  <li
+                                    className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
+                                    onClick={handleDeleteButtonClick}
+                                  >
+                                    <LucideTrash2 className="h-3.5 w-3.5" />
+                                    <span className="text-sm">삭제하기</span>
+                                  </li>
+                                }
+                              />
                             </>
                           )}
                           {!isOwner && (

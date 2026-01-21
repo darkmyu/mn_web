@@ -1196,6 +1196,75 @@ export const usePhotoControllerUpdate = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type photoControllerDeleteResponse200 = {
+  data: PhotoResponse;
+  status: 200;
+};
+
+export type photoControllerDeleteResponseSuccess = photoControllerDeleteResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerDeleteUrl = (id: number) => {
+  return `http://localhost:4000/api/v1/photos/${id}`;
+};
+
+export const photoControllerDelete = async (
+  id: number,
+  options?: RequestInit,
+): Promise<photoControllerDeleteResponseSuccess> => {
+  const res = await fetch(getPhotoControllerDeleteUrl(id), {
+    credentials: 'include',
+    ...options,
+    method: 'DELETE',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerDeleteResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerDeleteResponseSuccess;
+};
+
+export const getPhotoControllerDeleteMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext>;
+  fetch?: RequestInit;
+}): UseMutationOptions<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext> => {
+  const mutationKey = ['photoControllerDelete'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof photoControllerDelete>>, { id: number }> = (props) => {
+    const { id } = props ?? {};
+
+    return photoControllerDelete(id, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PhotoControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof photoControllerDelete>>>;
+
+export type PhotoControllerDeleteMutationError = unknown;
+
+export const usePhotoControllerDelete = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext> => {
+  const mutationOptions = getPhotoControllerDeleteMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 export type photoControllerLikeResponse200 = {
   data: void;
   status: 200;

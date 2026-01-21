@@ -1,6 +1,7 @@
 import '@/tailwind.css';
 
 import AuthDialog from '@/components/dialog/AuthDialog';
+import ConfirmDialog from '@/components/dialog/ConfirmDialog';
 import Layout from '@/components/layout/Layout';
 import AuthProvider from '@/components/provider/AuthProvider';
 import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';
@@ -23,7 +24,6 @@ export default function RootLayout({ children }: Props) {
       <body>
         <TanStackQueryProvider>
           <ThemeProvider>
-            <AuthDialog />
             <AuthProvider />
             <Layout>{children}</Layout>
             <Toaster
@@ -32,6 +32,8 @@ export default function RootLayout({ children }: Props) {
                 className: '!text-sm !text-zinc-900 !bg-zinc-100 dark:!text-zinc-50 dark:!bg-zinc-800',
               }}
             />
+            <AuthDialog />
+            <ConfirmDialog />
           </ThemeProvider>
         </TanStackQueryProvider>
       </body>

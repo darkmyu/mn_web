@@ -30,6 +30,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef } from 'react';
 import toast from 'react-hot-toast';
+import ProfilePhotoViewerDescription from './ProfilePhotoViewerDescription';
 
 interface Props {
   id: number;
@@ -297,8 +298,8 @@ function ProfilePhotoViewer({ id, username }: Props) {
                 </div>
               ))}
             </div>
-            <div className="rounded-lg bg-zinc-200/40 p-4 dark:bg-zinc-800">
-              <div className="mb-3 flex flex-col gap-1">
+            <div className="flex flex-col gap-4 rounded-lg bg-zinc-200/40 p-4 dark:bg-zinc-800">
+              <div className="flex flex-col gap-1">
                 <div className="flex items-center">
                   <p className="text-sm font-medium">조회수 8.5만회</p>
                   <p className="mx-1 text-sm font-medium">•</p>
@@ -314,7 +315,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
                   </div>
                 )}
               </div>
-              {photo.description && <div className="text-sm whitespace-pre-wrap">{photo.description}</div>}
+              <ProfilePhotoViewerDescription description={photo.description} />
             </div>
           </div>
         </div>

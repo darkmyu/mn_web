@@ -1,11 +1,21 @@
 'use client';
 
-import { useProfileControllerReadSuspense } from '@/api/profile';
+import {
+  getProfileControllerReadQueryKey,
+  profileControllerReadResponse200,
+  useProfileControllerFollow,
+  useProfileControllerReadSuspense,
+  useProfileControllerUnfollow,
+} from '@/api/profile';
+import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
+import { useAuthStore } from '@/stores/auth';
+import { useDialogStore } from '@/stores/dialog';
 import { formatNumber } from '@/utils/formatters';
-import dynamic from 'next/dynamic';
+import { useQueryClient } from '@tanstack/react-query';
+import { debounce } from 'es-toolkit';
 import Image from 'next/image';
-
-const ProfileActions = dynamic(() => import('./ProfileActions'), { ssr: false });
+import Link from 'next/link';
+import { useMemo, useRef } from 'react';
 
 interface Props {
   username: string;
@@ -15,6 +25,53 @@ function Profile({ username }: Props) {
   const {
     data: { data: target },
   } = useProfileControllerReadSuspense(username);
+
+  const { user } = useAuthStore();
+  const { setIsAuthDialogOpen } = useDialogStore();
+
+  const queryClient = useQueryClient();
+  const queryKey = getProfileControllerReadQueryKey(target.username);
+
+  const initialIsFollowingRef = useRef(target.isFollowing);
+
+  const { mutate: followMutate } = useProfileControllerFollow();
+  const { mutate: unfollowMutate } = useProfileControllerUnfollow();
+
+  const debounceToggleFollow = useMemo(
+    () =>
+      debounce((nextIsFollowing: boolean) => {
+        if (nextIsFollowing === initialIsFollowingRef.current) return;
+
+        if (nextIsFollowing) {
+          followMutate({ username: target.username });
+        } else {
+          unfollowMutate({ username: target.username });
+        }
+
+        initialIsFollowingRef.current = nextIsFollowing;
+      }, 500),
+    [followMutate, target.username, unfollowMutate],
+  );
+
+  const handleFollowButtonClick = () => {
+    if (!user) return setIsAuthDialogOpen(true);
+
+    const nextIsFollowing = !target.isFollowing;
+
+    queryClient.setQueryData<profileControllerReadResponse200>(queryKey, (prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          isFollowing: nextIsFollowing,
+          followers: nextIsFollowing ? prev.data.followers + 1 : prev.data.followers - 1,
+        },
+      };
+    });
+
+    debounceToggleFollow(nextIsFollowing);
+  };
 
   return (
     <div className="flex gap-16">
@@ -31,7 +88,22 @@ function Profile({ username }: Props) {
       <div className="flex flex-col py-2">
         <div className="mb-2 flex items-center gap-4">
           <p className="text-2xl font-medium">{target.nickname}</p>
-          <ProfileActions target={target} />
+          {target.isOwner && (
+            <Link
+              href={ROUTE_SETTINGS_PAGE}
+              className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+            >
+              프로필 편집
+            </Link>
+          )}
+          {!target.isOwner && (
+            <button
+              className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+              onClick={handleFollowButtonClick}
+            >
+              {target.isFollowing ? '팔로우 중' : '팔로우'}
+            </button>
+          )}
         </div>
         <div className="mb-6 flex items-center">
           <p className="text-base font-semibold">{`@${target.username}`}</p>

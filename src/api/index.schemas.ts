@@ -121,6 +121,7 @@ export interface ProfileResponse {
   followers: number;
   followings: number;
   isFollowing: boolean;
+  isOwner: boolean;
 }
 
 export interface CursorPagination {

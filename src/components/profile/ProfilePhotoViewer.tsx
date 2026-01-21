@@ -46,8 +46,6 @@ function ProfilePhotoViewer({ id, username }: Props) {
   const { setIsAuthDialogOpen } = useDialogStore();
   const { openConfirm, closeConfirm } = useConfirmStore();
 
-  const isOwner = user?.username === username;
-
   const queryClient = useQueryClient();
   const queryKey = getProfileControllerPhotoQueryKey(username, id);
 
@@ -190,7 +188,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{photo.author.nickname}</span>
-                  {!isOwner && (
+                  {!photo.author.isOwner && (
                     <button
                       className="cursor-pointer rounded-lg border border-zinc-300 px-1.5 py-0.5 text-xs font-medium text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
                       onClick={handleFollowButtonClick}
@@ -234,7 +232,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
                     <Popover.Popup>
                       <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2 shadow-2xl/20 outline-none dark:border-zinc-700 dark:bg-zinc-800">
                         <ul className="flex flex-col">
-                          {isOwner && (
+                          {photo.author.isOwner && (
                             <>
                               <li
                                 className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
@@ -257,7 +255,7 @@ function ProfilePhotoViewer({ id, username }: Props) {
                               />
                             </>
                           )}
-                          {!isOwner && (
+                          {!photo.author.isOwner && (
                             <li className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40">
                               <LucideFlag className="h-3.5 w-3.5" />
                               <span className="text-sm">신고하기</span>

@@ -2,8 +2,8 @@ import { getProfileControllerPhotosInfiniteQueryOptions } from '@/api/profile';
 import { getQueryClient } from '@/utils/getQueryClient';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
+import PhotoMasonrySkeleton from '../photo/PhotoMasonrySkeleton';
 import ProfilePhotoMasonry from './ProfilePhotoMasonry';
-import ProfilePhotoMasonrySkeleton from './ProfilePhotoMasonrySkeleton';
 
 interface Props {
   username: string;
@@ -19,7 +19,7 @@ function ProfilePhotoMasonrySuspense({ username }: Props) {
   );
 
   return (
-    <Suspense fallback={<ProfilePhotoMasonrySkeleton count={20} />}>
+    <Suspense fallback={<PhotoMasonrySkeleton count={20} />}>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ProfilePhotoMasonry username={username} />
       </HydrationBoundary>

@@ -3,7 +3,7 @@
 import { usePhotoControllerDelete, usePhotoControllerLike, usePhotoControllerUnlike } from '@/api/photo';
 import {
   getProfileControllerPhotoQueryKey,
-  profileControllerPhotoResponseSuccess,
+  profileControllerPhotoResponse200,
   useProfileControllerFollow,
   useProfileControllerPhotoSuspense,
   useProfileControllerUnfollow,
@@ -14,8 +14,6 @@ import { useConfirmStore } from '@/stores/confirm';
 import { useDialogStore } from '@/stores/dialog';
 import { formatAge, formatNumber } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
-import { useQueryClient } from '@tanstack/react-query';
-import { debounce } from 'es-toolkit';
 import {
   LucideCat,
   LucideDog,
@@ -28,7 +26,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useRef } from 'react';
 import toast from 'react-hot-toast';
 import ProfilePhotoViewerDescription from './ProfilePhotoViewerDescription';
 
@@ -47,91 +44,130 @@ function ProfilePhotoViewer({ id, username }: Props) {
   const { setIsAuthDialogOpen } = useDialogStore();
   const { openConfirm, closeConfirm } = useConfirmStore();
 
-  const queryClient = useQueryClient();
   const queryKey = getProfileControllerPhotoQueryKey(username, id);
 
-  const initialLikedRef = useRef(photo.liked);
-  const initialIsFollowingRef = useRef(photo.author.isFollowing);
-
-  const { mutate: likeMutate } = usePhotoControllerLike();
-  const { mutate: unlikeMutate } = usePhotoControllerUnlike();
-  const { mutate: followMutate } = useProfileControllerFollow();
-  const { mutate: unfollowMutate } = useProfileControllerUnfollow();
   const { mutateAsync: deletePhotoMutateAsync } = usePhotoControllerDelete();
 
-  const debouncedToggleLike = useMemo(
-    () =>
-      debounce((nextIsLiked: boolean) => {
-        if (nextIsLiked === initialLikedRef.current) return;
+  const { mutate: likeMutate } = usePhotoControllerLike({
+    mutation: {
+      onMutate: async (_, context) => {
+        await context.client.cancelQueries({ queryKey });
 
-        if (nextIsLiked) {
-          likeMutate({ id });
-        } else {
-          unlikeMutate({ id });
-        }
+        const previousPhoto = context.client.getQueryData<profileControllerPhotoResponse200>(queryKey);
 
-        initialLikedRef.current = nextIsLiked;
-      }, 500),
-    [id, likeMutate, unlikeMutate],
-  );
+        context.client.setQueryData<profileControllerPhotoResponse200>(queryKey, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              isLike: true,
+              likes: prev.data.isLike ? prev.data.likes : prev.data.likes + 1,
+            },
+          };
+        });
 
-  const debouncedToggleFollow = useMemo(
-    () =>
-      debounce((nextIsFollowing: boolean) => {
-        if (nextIsFollowing === initialIsFollowingRef.current) return;
+        return { previousPhoto };
+      },
+    },
+  });
 
-        if (nextIsFollowing) {
-          followMutate({ username });
-        } else {
-          unfollowMutate({ username });
-        }
+  const { mutate: unlikeMutate } = usePhotoControllerUnlike({
+    mutation: {
+      onMutate: async (_, context) => {
+        await context.client.cancelQueries({ queryKey });
 
-        initialIsFollowingRef.current = nextIsFollowing;
-      }, 500),
-    [followMutate, unfollowMutate, username],
-  );
+        const previousPhoto = context.client.getQueryData<profileControllerPhotoResponse200>(queryKey);
+
+        context.client.setQueryData<profileControllerPhotoResponse200>(queryKey, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              isLike: false,
+              likes: !prev.data.isLike ? prev.data.likes : prev.data.likes - 1,
+            },
+          };
+        });
+
+        return { previousPhoto };
+      },
+    },
+  });
+
+  const { mutate: followMutate } = useProfileControllerFollow({
+    mutation: {
+      onMutate: async (_, context) => {
+        await context.client.cancelQueries({ queryKey });
+
+        const previousPhoto = context.client.getQueryData<profileControllerPhotoResponse200>(queryKey);
+
+        context.client.setQueryData<profileControllerPhotoResponse200>(queryKey, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              author: {
+                ...prev.data.author,
+                isFollowing: true,
+                followers: prev.data.author.isFollowing ? prev.data.author.followers : prev.data.author.followers + 1,
+              },
+            },
+          };
+        });
+
+        return { previousPhoto };
+      },
+    },
+  });
+
+  const { mutate: unfollowMutate } = useProfileControllerUnfollow({
+    mutation: {
+      onMutate: async (_, context) => {
+        await context.client.cancelQueries({ queryKey });
+
+        const previousPhoto = context.client.getQueryData<profileControllerPhotoResponse200>(queryKey);
+
+        context.client.setQueryData<profileControllerPhotoResponse200>(queryKey, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              author: {
+                ...prev.data.author,
+                isFollowing: false,
+                followers: !prev.data.author.isFollowing ? prev.data.author.followers : prev.data.author.followers - 1,
+              },
+            },
+          };
+        });
+
+        return { previousPhoto };
+      },
+    },
+  });
 
   const handleLikeButtonClick = () => {
     if (!user) return setIsAuthDialogOpen(true);
 
-    const nextIsLiked = !photo.liked;
-
-    queryClient.setQueryData<profileControllerPhotoResponseSuccess>(queryKey, (prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        data: {
-          ...prev.data,
-          liked: nextIsLiked,
-          likes: nextIsLiked ? prev.data.likes + 1 : prev.data.likes - 1,
-        },
-      };
-    });
-
-    debouncedToggleLike(nextIsLiked);
+    if (!photo.isLike) {
+      likeMutate({ id });
+    } else {
+      unlikeMutate({ id });
+    }
   };
 
   const handleFollowButtonClick = () => {
     if (!user) return setIsAuthDialogOpen(true);
 
-    const nextIsFollowing = !photo.author.isFollowing;
-
-    queryClient.setQueryData<profileControllerPhotoResponseSuccess>(queryKey, (prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        data: {
-          ...prev.data,
-          author: {
-            ...prev.data.author,
-            isFollowing: nextIsFollowing,
-            followers: nextIsFollowing ? prev.data.author.followers + 1 : prev.data.author.followers - 1,
-          },
-        },
-      };
-    });
-
-    debouncedToggleFollow(nextIsFollowing);
+    if (!photo.author.isFollowing) {
+      followMutate({ username });
+    } else {
+      unfollowMutate({ username });
+    }
   };
 
   const handleDeleteButtonClick = () => {
@@ -210,8 +246,8 @@ function ProfilePhotoViewer({ id, username }: Props) {
                 className="flex cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-zinc-100 hover:dark:bg-zinc-800"
                 onClick={handleLikeButtonClick}
               >
-                {!photo.liked && <LucideHeart className="text-zinc-500 dark:text-zinc-400" />}
-                {photo.liked && <LucideHeart className="fill-red-500" strokeWidth={0} />}
+                {!photo.isLike && <LucideHeart className="text-zinc-500 dark:text-zinc-400" />}
+                {photo.isLike && <LucideHeart className="fill-red-500" strokeWidth={0} />}
                 <p className="font-medium text-zinc-500 dark:text-zinc-400">{photo.likes}</p>
               </button>
               <button

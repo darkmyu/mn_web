@@ -11,11 +11,8 @@ import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useDialogStore } from '@/stores/dialog';
 import { formatNumber } from '@/utils/formatters';
-import { useQueryClient } from '@tanstack/react-query';
-import { debounce } from 'es-toolkit';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useRef } from 'react';
 
 interface Props {
   username: string;
@@ -29,48 +26,64 @@ function Profile({ username }: Props) {
   const { user } = useAuthStore();
   const { setIsAuthDialogOpen } = useDialogStore();
 
-  const queryClient = useQueryClient();
-  const queryKey = getProfileControllerReadQueryKey(target.username);
+  const queryKey = getProfileControllerReadQueryKey(username);
 
-  const initialIsFollowingRef = useRef(target.isFollowing);
+  const { mutate: followMutate } = useProfileControllerFollow({
+    mutation: {
+      onMutate: async (_, context) => {
+        await context.client.cancelQueries({ queryKey });
 
-  const { mutate: followMutate } = useProfileControllerFollow();
-  const { mutate: unfollowMutate } = useProfileControllerUnfollow();
+        const previousFollows = context.client.getQueryData<profileControllerReadResponse200>(queryKey);
 
-  const debounceToggleFollow = useMemo(
-    () =>
-      debounce((nextIsFollowing: boolean) => {
-        if (nextIsFollowing === initialIsFollowingRef.current) return;
+        context.client.setQueryData<profileControllerReadResponse200>(queryKey, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              isFollowing: true,
+              followers: prev.data.isFollowing ? prev.data.followers : prev.data.followers + 1,
+            },
+          };
+        });
 
-        if (nextIsFollowing) {
-          followMutate({ username: target.username });
-        } else {
-          unfollowMutate({ username: target.username });
-        }
+        return { previousFollows };
+      },
+    },
+  });
 
-        initialIsFollowingRef.current = nextIsFollowing;
-      }, 500),
-    [followMutate, target.username, unfollowMutate],
-  );
+  const { mutate: unfollowMutate } = useProfileControllerUnfollow({
+    mutation: {
+      onMutate: async (_, context) => {
+        await context.client.cancelQueries({ queryKey });
+
+        const previousFollows = context.client.getQueryData<profileControllerReadResponse200>(queryKey);
+
+        context.client.setQueryData<profileControllerReadResponse200>(queryKey, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              isFollowing: false,
+              followers: !prev.data.isFollowing ? prev.data.followers : prev.data.followers - 1,
+            },
+          };
+        });
+
+        return { previousFollows };
+      },
+    },
+  });
 
   const handleFollowButtonClick = () => {
     if (!user) return setIsAuthDialogOpen(true);
 
-    const nextIsFollowing = !target.isFollowing;
-
-    queryClient.setQueryData<profileControllerReadResponse200>(queryKey, (prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        data: {
-          ...prev.data,
-          isFollowing: nextIsFollowing,
-          followers: nextIsFollowing ? prev.data.followers + 1 : prev.data.followers - 1,
-        },
-      };
-    });
-
-    debounceToggleFollow(nextIsFollowing);
+    if (!target.isFollowing) {
+      followMutate({ username });
+    } else {
+      unfollowMutate({ username });
+    }
   };
 
   return (

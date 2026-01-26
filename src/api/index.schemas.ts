@@ -118,9 +118,9 @@ export interface ProfileResponse {
   nickname: string;
   /** @nullable */
   profileImage: string | null;
+  isFollowing: boolean;
   followers: number;
   followings: number;
-  isFollowing: boolean;
   isOwner: boolean;
 }
 
@@ -145,7 +145,7 @@ export interface PhotoResponse {
   /** @nullable */
   description: string | null;
   likes: number;
-  liked: boolean;
+  isLike: boolean;
   tags: TagResponse[];
   animals: AnimalResponse[];
   author: ProfileResponse;
@@ -197,11 +197,11 @@ export interface PhotoCommentResponse {
   content: string;
   createdAt: string;
   updatedAt: string;
+  author: ProfileResponse;
   /** @nullable */
   parentId: number | null;
   /** @nullable */
   mention: PhotoCommentResponseMention;
-  author: ProfileResponse;
 }
 
 export interface PhotoCommentUpdateRequest {

@@ -35,6 +35,9 @@ import type {
 
 import type {
   FileResponse,
+  PhotoCommentCreateRequest,
+  PhotoCommentResponse,
+  PhotoCommentUpdateRequest,
   PhotoControllerAll200,
   PhotoControllerAllParams,
   PhotoControllerUploadBody,
@@ -1400,6 +1403,296 @@ export const usePhotoControllerUnlike = <TError = unknown, TContext = unknown>(
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext> => {
   const mutationOptions = getPhotoControllerUnlikeMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export type photoControllerCreateCommentResponse201 = {
+  data: PhotoCommentResponse;
+  status: 201;
+};
+
+export type photoControllerCreateCommentResponseSuccess = photoControllerCreateCommentResponse201 & {
+  headers: Headers;
+};
+export const getPhotoControllerCreateCommentUrl = (id: number) => {
+  return `http://localhost:4000/api/v1/photos/${id}/comments`;
+};
+
+export const photoControllerCreateComment = async (
+  id: number,
+  photoCommentCreateRequest: PhotoCommentCreateRequest,
+  options?: RequestInit,
+): Promise<photoControllerCreateCommentResponseSuccess> => {
+  const res = await fetch(getPhotoControllerCreateCommentUrl(id), {
+    credentials: 'include',
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(photoCommentCreateRequest),
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerCreateCommentResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerCreateCommentResponseSuccess;
+};
+
+export const getPhotoControllerCreateCommentMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof photoControllerCreateComment>>,
+    TError,
+    { id: number; data: PhotoCommentCreateRequest },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof photoControllerCreateComment>>,
+  TError,
+  { id: number; data: PhotoCommentCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['photoControllerCreateComment'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof photoControllerCreateComment>>,
+    { id: number; data: PhotoCommentCreateRequest }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return photoControllerCreateComment(id, data, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PhotoControllerCreateCommentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerCreateComment>>
+>;
+export type PhotoControllerCreateCommentMutationBody = PhotoCommentCreateRequest;
+export type PhotoControllerCreateCommentMutationError = unknown;
+
+export const usePhotoControllerCreateComment = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof photoControllerCreateComment>>,
+      TError,
+      { id: number; data: PhotoCommentCreateRequest },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof photoControllerCreateComment>>,
+  TError,
+  { id: number; data: PhotoCommentCreateRequest },
+  TContext
+> => {
+  const mutationOptions = getPhotoControllerCreateCommentMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export type photoControllerUpdateCommentResponse200 = {
+  data: PhotoCommentResponse;
+  status: 200;
+};
+
+export type photoControllerUpdateCommentResponseSuccess = photoControllerUpdateCommentResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerUpdateCommentUrl = (id: number, commentId: number) => {
+  return `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}`;
+};
+
+export const photoControllerUpdateComment = async (
+  id: number,
+  commentId: number,
+  photoCommentUpdateRequest: PhotoCommentUpdateRequest,
+  options?: RequestInit,
+): Promise<photoControllerUpdateCommentResponseSuccess> => {
+  const res = await fetch(getPhotoControllerUpdateCommentUrl(id, commentId), {
+    credentials: 'include',
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(photoCommentUpdateRequest),
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerUpdateCommentResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerUpdateCommentResponseSuccess;
+};
+
+export const getPhotoControllerUpdateCommentMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof photoControllerUpdateComment>>,
+    TError,
+    { id: number; commentId: number; data: PhotoCommentUpdateRequest },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof photoControllerUpdateComment>>,
+  TError,
+  { id: number; commentId: number; data: PhotoCommentUpdateRequest },
+  TContext
+> => {
+  const mutationKey = ['photoControllerUpdateComment'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof photoControllerUpdateComment>>,
+    { id: number; commentId: number; data: PhotoCommentUpdateRequest }
+  > = (props) => {
+    const { id, commentId, data } = props ?? {};
+
+    return photoControllerUpdateComment(id, commentId, data, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PhotoControllerUpdateCommentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerUpdateComment>>
+>;
+export type PhotoControllerUpdateCommentMutationBody = PhotoCommentUpdateRequest;
+export type PhotoControllerUpdateCommentMutationError = unknown;
+
+export const usePhotoControllerUpdateComment = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof photoControllerUpdateComment>>,
+      TError,
+      { id: number; commentId: number; data: PhotoCommentUpdateRequest },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof photoControllerUpdateComment>>,
+  TError,
+  { id: number; commentId: number; data: PhotoCommentUpdateRequest },
+  TContext
+> => {
+  const mutationOptions = getPhotoControllerUpdateCommentMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export type photoControllerDeleteCommentResponse200 = {
+  data: PhotoCommentResponse;
+  status: 200;
+};
+
+export type photoControllerDeleteCommentResponseSuccess = photoControllerDeleteCommentResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerDeleteCommentUrl = (id: number, commentId: number) => {
+  return `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}`;
+};
+
+export const photoControllerDeleteComment = async (
+  id: number,
+  commentId: number,
+  options?: RequestInit,
+): Promise<photoControllerDeleteCommentResponseSuccess> => {
+  const res = await fetch(getPhotoControllerDeleteCommentUrl(id, commentId), {
+    credentials: 'include',
+    ...options,
+    method: 'DELETE',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerDeleteCommentResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerDeleteCommentResponseSuccess;
+};
+
+export const getPhotoControllerDeleteCommentMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof photoControllerDeleteComment>>,
+    TError,
+    { id: number; commentId: number },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof photoControllerDeleteComment>>,
+  TError,
+  { id: number; commentId: number },
+  TContext
+> => {
+  const mutationKey = ['photoControllerDeleteComment'];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof photoControllerDeleteComment>>,
+    { id: number; commentId: number }
+  > = (props) => {
+    const { id, commentId } = props ?? {};
+
+    return photoControllerDeleteComment(id, commentId, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PhotoControllerDeleteCommentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerDeleteComment>>
+>;
+
+export type PhotoControllerDeleteCommentMutationError = unknown;
+
+export const usePhotoControllerDeleteComment = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof photoControllerDeleteComment>>,
+      TError,
+      { id: number; commentId: number },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof photoControllerDeleteComment>>,
+  TError,
+  { id: number; commentId: number },
+  TContext
+> => {
+  const mutationOptions = getPhotoControllerDeleteCommentMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

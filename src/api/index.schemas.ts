@@ -179,6 +179,35 @@ export interface PhotoUpdateRequest {
   tags?: string[];
 }
 
+export interface PhotoCommentCreateRequest {
+  content: string;
+  /** @nullable */
+  parentId?: number | null;
+  /** @nullable */
+  mentionId?: number | null;
+}
+
+/**
+ * @nullable
+ */
+export type PhotoCommentResponseMention = ProfileResponse | null;
+
+export interface PhotoCommentResponse {
+  id: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  parentId: number | null;
+  /** @nullable */
+  mention: PhotoCommentResponseMention;
+  author: ProfileResponse;
+}
+
+export interface PhotoCommentUpdateRequest {
+  content: string;
+}
+
 export type AnimalControllerAllParams = {
   /**
    * @minimum 1

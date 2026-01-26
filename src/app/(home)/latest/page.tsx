@@ -17,7 +17,7 @@ export default function HomeLatestPage() {
   );
 
   return (
-    <Suspense fallback={<PhotoMasonrySkeleton count={30} />}>
+    <Suspense fallback={<PhotoMasonrySkeleton count={40} />}>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <HomePhotoMasonry sort={PhotoControllerAllSort.LATEST} />
       </HydrationBoundary>

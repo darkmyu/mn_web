@@ -15,7 +15,7 @@ export default function HomePage() {
   );
 
   return (
-    <Suspense fallback={<PhotoMasonrySkeleton count={30} />}>
+    <Suspense fallback={<PhotoMasonrySkeleton count={40} />}>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <HomePhotoMasonry />
       </HydrationBoundary>

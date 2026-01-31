@@ -168,7 +168,10 @@ function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCa
       </div>
       <div className="flex justify-end">
         <div className="flex items-center gap-4">
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">{`${content.length}/1000`}</span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            <span className={content.length > 1000 ? 'text-red-500' : ''}>{content.length}</span>
+            {` / 1000`}
+          </span>
           {onCancel && (
             <button
               type="button"

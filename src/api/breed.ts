@@ -81,7 +81,7 @@ export const getBreedControllerAllQueryKey = (params?: BreedControllerAllParams)
 };
 
 export const getBreedControllerAllInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -92,7 +92,7 @@ export const getBreedControllerAllInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -105,16 +105,16 @@ export const getBreedControllerAllInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof breedControllerAll>>,
     QueryKey,
-    BreedControllerAllParams['page']
+    BreedControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    breedControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    breedControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof breedControllerAll>>,
     TError,
     TData,
     QueryKey,
-    BreedControllerAllParams['page']
+    BreedControllerAllParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -122,7 +122,7 @@ export type BreedControllerAllInfiniteQueryResult = NonNullable<Awaited<ReturnTy
 export type BreedControllerAllInfiniteQueryError = unknown;
 
 export function useBreedControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params: undefined | BreedControllerAllParams,
@@ -133,7 +133,7 @@ export function useBreedControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     > &
       Pick<
@@ -150,7 +150,7 @@ export function useBreedControllerAllInfinite<
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useBreedControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -161,7 +161,7 @@ export function useBreedControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     > &
       Pick<
@@ -178,7 +178,7 @@ export function useBreedControllerAllInfinite<
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useBreedControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -189,7 +189,7 @@ export function useBreedControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -198,7 +198,7 @@ export function useBreedControllerAllInfinite<
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useBreedControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -209,7 +209,7 @@ export function useBreedControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -240,7 +240,7 @@ export const prefetchBreedControllerAllInfiniteQuery = async <
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -430,7 +430,7 @@ export function useBreedControllerAllSuspense<TData = Awaited<ReturnType<typeof 
 }
 
 export const getBreedControllerAllSuspenseInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -441,7 +441,7 @@ export const getBreedControllerAllSuspenseInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -454,16 +454,16 @@ export const getBreedControllerAllSuspenseInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof breedControllerAll>>,
     QueryKey,
-    BreedControllerAllParams['page']
+    BreedControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    breedControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    breedControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof breedControllerAll>>,
     TError,
     TData,
     QueryKey,
-    BreedControllerAllParams['page']
+    BreedControllerAllParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -471,7 +471,7 @@ export type BreedControllerAllSuspenseInfiniteQueryResult = NonNullable<Awaited<
 export type BreedControllerAllSuspenseInfiniteQueryError = unknown;
 
 export function useBreedControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params: undefined | BreedControllerAllParams,
@@ -482,7 +482,7 @@ export function useBreedControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -490,7 +490,7 @@ export function useBreedControllerAllSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useBreedControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -501,7 +501,7 @@ export function useBreedControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -509,7 +509,7 @@ export function useBreedControllerAllSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useBreedControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -520,7 +520,7 @@ export function useBreedControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -529,7 +529,7 @@ export function useBreedControllerAllSuspenseInfinite<
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useBreedControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof breedControllerAll>>, BreedControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: BreedControllerAllParams,
@@ -540,7 +540,7 @@ export function useBreedControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        BreedControllerAllParams['page']
+        BreedControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;

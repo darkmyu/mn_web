@@ -40,6 +40,10 @@ import type {
   PhotoCommentUpdateRequest,
   PhotoControllerAll200,
   PhotoControllerAllParams,
+  PhotoControllerGetComments200,
+  PhotoControllerGetCommentsParams,
+  PhotoControllerGetReplies200,
+  PhotoControllerGetRepliesParams,
   PhotoControllerUploadBody,
   PhotoCreateRequest,
   PhotoResponse,
@@ -1406,6 +1410,624 @@ export const usePhotoControllerUnlike = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export type photoControllerGetCommentsResponse200 = {
+  data: PhotoControllerGetComments200;
+  status: 200;
+};
+
+export type photoControllerGetCommentsResponseSuccess = photoControllerGetCommentsResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerGetCommentsUrl = (id: number, params?: PhotoControllerGetCommentsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `http://localhost:4000/api/v1/photos/${id}/comments?${stringifiedParams}`
+    : `http://localhost:4000/api/v1/photos/${id}/comments`;
+};
+
+export const photoControllerGetComments = async (
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: RequestInit,
+): Promise<photoControllerGetCommentsResponseSuccess> => {
+  const res = await fetch(getPhotoControllerGetCommentsUrl(id, params), {
+    credentials: 'include',
+    ...options,
+    method: 'GET',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerGetCommentsResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerGetCommentsResponseSuccess;
+};
+
+export const getPhotoControllerGetCommentsInfiniteQueryKey = (
+  id?: number,
+  params?: PhotoControllerGetCommentsParams,
+) => {
+  return ['infinite', `http://localhost:4000/api/v1/photos/${id}/comments`, ...(params ? [params] : [])] as const;
+};
+
+export const getPhotoControllerGetCommentsQueryKey = (id?: number, params?: PhotoControllerGetCommentsParams) => {
+  return [`http://localhost:4000/api/v1/photos/${id}/comments`, ...(params ? [params] : [])] as const;
+};
+
+export const getPhotoControllerGetCommentsInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsInfiniteQueryKey(id, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    QueryKey,
+    PhotoControllerGetCommentsParams['cursor']
+  > = ({ signal, pageParam }) =>
+    photoControllerGetComments(id, { ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    TError,
+    TData,
+    QueryKey,
+    PhotoControllerGetCommentsParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetCommentsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerGetComments>>
+>;
+export type PhotoControllerGetCommentsInfiniteQueryError = unknown;
+
+export function usePhotoControllerGetCommentsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params: undefined | PhotoControllerGetCommentsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetComments>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetComments>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetCommentsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetComments>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetComments>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetCommentsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetCommentsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetCommentsInfiniteQueryOptions(id, params, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchPhotoControllerGetCommentsInfiniteQuery = async <
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getPhotoControllerGetCommentsInfiniteQueryOptions(id, params, options);
+
+  await queryClient.prefetchInfiniteQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getPhotoControllerGetCommentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsQueryKey(id, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetComments>>> = ({ signal }) =>
+    photoControllerGetComments(id, params, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof photoControllerGetComments>>>;
+export type PhotoControllerGetCommentsQueryError = unknown;
+
+export function usePhotoControllerGetComments<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params: undefined | PhotoControllerGetCommentsParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetComments>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetComments>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetComments<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetComments>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetComments>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetComments<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetComments<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetCommentsQueryOptions(id, params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchPhotoControllerGetCommentsQuery = async <
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getPhotoControllerGetCommentsQueryOptions(id, params, options);
+
+  await queryClient.prefetchQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getPhotoControllerGetCommentsSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsQueryKey(id, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetComments>>> = ({ signal }) =>
+    photoControllerGetComments(id, params, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetCommentsSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerGetComments>>
+>;
+export type PhotoControllerGetCommentsSuspenseQueryError = unknown;
+
+export function usePhotoControllerGetCommentsSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params: undefined | PhotoControllerGetCommentsParams,
+  options: {
+    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetCommentsSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetCommentsSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetCommentsSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetComments>>,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetCommentsSuspenseQueryOptions(id, params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getPhotoControllerGetCommentsSuspenseInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsInfiniteQueryKey(id, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    QueryKey,
+    PhotoControllerGetCommentsParams['cursor']
+  > = ({ signal, pageParam }) =>
+    photoControllerGetComments(id, { ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    TError,
+    TData,
+    QueryKey,
+    PhotoControllerGetCommentsParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetCommentsSuspenseInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerGetComments>>
+>;
+export type PhotoControllerGetCommentsSuspenseInfiniteQueryError = unknown;
+
+export function usePhotoControllerGetCommentsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params: undefined | PhotoControllerGetCommentsParams,
+  options: {
+    query: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetCommentsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetCommentsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetCommentsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetComments>>,
+    PhotoControllerGetCommentsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  params?: PhotoControllerGetCommentsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetComments>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetCommentsParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetCommentsSuspenseInfiniteQueryOptions(id, params, options);
+
+  const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export type photoControllerCreateCommentResponse201 = {
   data: PhotoCommentResponse;
   status: 201;
@@ -1503,6 +2125,673 @@ export const usePhotoControllerCreateComment = <TError = unknown, TContext = unk
 
   return useMutation(mutationOptions, queryClient);
 };
+export type photoControllerGetRepliesResponse200 = {
+  data: PhotoControllerGetReplies200;
+  status: 200;
+};
+
+export type photoControllerGetRepliesResponseSuccess = photoControllerGetRepliesResponse200 & {
+  headers: Headers;
+};
+export const getPhotoControllerGetRepliesUrl = (
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies?${stringifiedParams}`
+    : `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies`;
+};
+
+export const photoControllerGetReplies = async (
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: RequestInit,
+): Promise<photoControllerGetRepliesResponseSuccess> => {
+  const res = await fetch(getPhotoControllerGetRepliesUrl(id, commentId, params), {
+    credentials: 'include',
+    ...options,
+    method: 'GET',
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
+    const data = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: photoControllerGetRepliesResponseSuccess['data'] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as photoControllerGetRepliesResponseSuccess;
+};
+
+export const getPhotoControllerGetRepliesInfiniteQueryKey = (
+  id?: number,
+  commentId?: number,
+  params?: PhotoControllerGetRepliesParams,
+) => {
+  return [
+    'infinite',
+    `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getPhotoControllerGetRepliesQueryKey = (
+  id?: number,
+  commentId?: number,
+  params?: PhotoControllerGetRepliesParams,
+) => {
+  return [
+    `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getPhotoControllerGetRepliesInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesInfiniteQueryKey(id, commentId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    QueryKey,
+    PhotoControllerGetRepliesParams['cursor']
+  > = ({ signal, pageParam }) =>
+    photoControllerGetReplies(
+      id,
+      commentId,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...fetchOptions },
+    );
+
+  return { queryKey, queryFn, enabled: !!(id && commentId), ...queryOptions } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    TError,
+    TData,
+    QueryKey,
+    PhotoControllerGetRepliesParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetRepliesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerGetReplies>>
+>;
+export type PhotoControllerGetRepliesInfiniteQueryError = unknown;
+
+export function usePhotoControllerGetRepliesInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params: undefined | PhotoControllerGetRepliesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetReplies>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetReplies>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetRepliesInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetReplies>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetReplies>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetRepliesInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetRepliesInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetRepliesInfiniteQueryOptions(id, commentId, params, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchPhotoControllerGetRepliesInfiniteQuery = async <
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getPhotoControllerGetRepliesInfiniteQueryOptions(id, commentId, params, options);
+
+  await queryClient.prefetchInfiniteQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getPhotoControllerGetRepliesQueryOptions = <
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesQueryKey(id, commentId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetReplies>>> = ({ signal }) =>
+    photoControllerGetReplies(id, commentId, params, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, enabled: !!(id && commentId), ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetRepliesQueryResult = NonNullable<Awaited<ReturnType<typeof photoControllerGetReplies>>>;
+export type PhotoControllerGetRepliesQueryError = unknown;
+
+export function usePhotoControllerGetReplies<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params: undefined | PhotoControllerGetRepliesParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetReplies>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetReplies>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetReplies<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof photoControllerGetReplies>>,
+          TError,
+          Awaited<ReturnType<typeof photoControllerGetReplies>>
+        >,
+        'initialData'
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetReplies<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetReplies<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetRepliesQueryOptions(id, commentId, params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchPhotoControllerGetRepliesQuery = async <
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getPhotoControllerGetRepliesQueryOptions(id, commentId, params, options);
+
+  await queryClient.prefetchQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getPhotoControllerGetRepliesSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesQueryKey(id, commentId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetReplies>>> = ({ signal }) =>
+    photoControllerGetReplies(id, commentId, params, { signal, ...fetchOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetRepliesSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerGetReplies>>
+>;
+export type PhotoControllerGetRepliesSuspenseQueryError = unknown;
+
+export function usePhotoControllerGetRepliesSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params: undefined | PhotoControllerGetRepliesParams,
+  options: {
+    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetRepliesSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetRepliesSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetRepliesSuspense<
+  TData = Awaited<ReturnType<typeof photoControllerGetReplies>>,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetRepliesSuspenseQueryOptions(id, commentId, params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getPhotoControllerGetRepliesSuspenseInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesInfiniteQueryKey(id, commentId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    QueryKey,
+    PhotoControllerGetRepliesParams['cursor']
+  > = ({ signal, pageParam }) =>
+    photoControllerGetReplies(
+      id,
+      commentId,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...fetchOptions },
+    );
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    TError,
+    TData,
+    QueryKey,
+    PhotoControllerGetRepliesParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PhotoControllerGetRepliesSuspenseInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof photoControllerGetReplies>>
+>;
+export type PhotoControllerGetRepliesSuspenseInfiniteQueryError = unknown;
+
+export function usePhotoControllerGetRepliesSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params: undefined | PhotoControllerGetRepliesParams,
+  options: {
+    query: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetRepliesSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePhotoControllerGetRepliesSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function usePhotoControllerGetRepliesSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof photoControllerGetReplies>>,
+    PhotoControllerGetRepliesParams['cursor']
+  >,
+  TError = unknown,
+>(
+  id: number,
+  commentId: number,
+  params?: PhotoControllerGetRepliesParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof photoControllerGetReplies>>,
+        TError,
+        TData,
+        QueryKey,
+        PhotoControllerGetRepliesParams['cursor']
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPhotoControllerGetRepliesSuspenseInfiniteQueryOptions(id, commentId, params, options);
+
+  const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export type photoControllerUpdateCommentResponse200 = {
   data: PhotoCommentResponse;
   status: 200;

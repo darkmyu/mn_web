@@ -30,8 +30,9 @@ export interface AuthCheckDuplicateUsernameRequest {
   username: string;
 }
 
-export interface Pagination {
-  page: number;
+export interface CursorPagination {
+  /** @nullable */
+  cursor: number | null;
   total: number;
   limit: number;
   hasNextPage: boolean;
@@ -124,14 +125,6 @@ export interface ProfileResponse {
   isOwner: boolean;
 }
 
-export interface CursorPagination {
-  /** @nullable */
-  cursor: number | null;
-  total: number;
-  limit: number;
-  hasNextPage: boolean;
-}
-
 export interface TagResponse {
   name: string;
   slug: string;
@@ -149,6 +142,10 @@ export interface PhotoResponse {
   tags: TagResponse[];
   animals: AnimalResponse[];
   author: ProfileResponse;
+}
+
+export interface ProfileFollowResponse {
+  isFollowing: boolean;
 }
 
 export interface FileRequest {
@@ -179,14 +176,6 @@ export interface PhotoUpdateRequest {
   tags?: string[];
 }
 
-export interface PhotoCommentCreateRequest {
-  content: string;
-  /** @nullable */
-  parentId?: number | null;
-  /** @nullable */
-  mentionId?: number | null;
-}
-
 /**
  * @nullable
  */
@@ -202,6 +191,15 @@ export interface PhotoCommentResponse {
   parentId: number | null;
   /** @nullable */
   mention: PhotoCommentResponseMention;
+  replyCount: number;
+}
+
+export interface PhotoCommentCreateRequest {
+  content: string;
+  /** @nullable */
+  parentId?: number | null;
+  /** @nullable */
+  mentionId?: number | null;
 }
 
 export interface PhotoCommentUpdateRequest {
@@ -209,10 +207,7 @@ export interface PhotoCommentUpdateRequest {
 }
 
 export type AnimalControllerAllParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
+  cursor?: number;
   /**
    * @minimum 1
    */
@@ -223,17 +218,14 @@ export type AnimalControllerAll200AllOf = {
   items: AnimalResponse[];
 };
 
-export type AnimalControllerAll200 = Pagination & AnimalControllerAll200AllOf;
+export type AnimalControllerAll200 = CursorPagination & AnimalControllerAll200AllOf;
 
 export type AnimalControllerUploadBody = {
   thumbnail: Blob;
 };
 
 export type ProfileControllerAnimalsParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
+  cursor?: number;
   /**
    * @minimum 1
    */
@@ -244,7 +236,7 @@ export type ProfileControllerAnimals200AllOf = {
   items: AnimalResponse[];
 };
 
-export type ProfileControllerAnimals200 = Pagination & ProfileControllerAnimals200AllOf;
+export type ProfileControllerAnimals200 = CursorPagination & ProfileControllerAnimals200AllOf;
 
 export type ProfileControllerPhotosParams = {
   cursor?: number;
@@ -261,10 +253,7 @@ export type ProfileControllerPhotos200AllOf = {
 export type ProfileControllerPhotos200 = CursorPagination & ProfileControllerPhotos200AllOf;
 
 export type BreedControllerAllParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
+  cursor?: number;
   /**
    * @minimum 1
    */
@@ -284,7 +273,7 @@ export type BreedControllerAll200AllOf = {
   items: BreedResponse[];
 };
 
-export type BreedControllerAll200 = Pagination & BreedControllerAll200AllOf;
+export type BreedControllerAll200 = CursorPagination & BreedControllerAll200AllOf;
 
 export type PhotoControllerAllParams = {
   cursor?: number;
@@ -308,6 +297,34 @@ export type PhotoControllerAll200AllOf = {
 };
 
 export type PhotoControllerAll200 = CursorPagination & PhotoControllerAll200AllOf;
+
+export type PhotoControllerGetCommentsParams = {
+  cursor?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+};
+
+export type PhotoControllerGetComments200AllOf = {
+  items: PhotoCommentResponse[];
+};
+
+export type PhotoControllerGetComments200 = CursorPagination & PhotoControllerGetComments200AllOf;
+
+export type PhotoControllerGetRepliesParams = {
+  cursor?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+};
+
+export type PhotoControllerGetReplies200AllOf = {
+  items: PhotoCommentResponse[];
+};
+
+export type PhotoControllerGetReplies200 = CursorPagination & PhotoControllerGetReplies200AllOf;
 
 export type PhotoControllerUploadBody = {
   image: Blob;

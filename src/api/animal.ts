@@ -98,7 +98,7 @@ export const getAnimalControllerAllQueryKey = (params?: AnimalControllerAllParam
 };
 
 export const getAnimalControllerAllInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -109,7 +109,7 @@ export const getAnimalControllerAllInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -122,16 +122,16 @@ export const getAnimalControllerAllInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof animalControllerAll>>,
     QueryKey,
-    AnimalControllerAllParams['page']
+    AnimalControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    animalControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    animalControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
     TError,
     TData,
     QueryKey,
-    AnimalControllerAllParams['page']
+    AnimalControllerAllParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -139,7 +139,7 @@ export type AnimalControllerAllInfiniteQueryResult = NonNullable<Awaited<ReturnT
 export type AnimalControllerAllInfiniteQueryError = unknown;
 
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params: undefined | AnimalControllerAllParams,
@@ -150,7 +150,7 @@ export function useAnimalControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     > &
       Pick<
@@ -167,7 +167,7 @@ export function useAnimalControllerAllInfinite<
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -178,7 +178,7 @@ export function useAnimalControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     > &
       Pick<
@@ -195,7 +195,7 @@ export function useAnimalControllerAllInfinite<
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -206,7 +206,7 @@ export function useAnimalControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -215,7 +215,7 @@ export function useAnimalControllerAllInfinite<
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useAnimalControllerAllInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -226,7 +226,7 @@ export function useAnimalControllerAllInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -257,7 +257,7 @@ export const prefetchAnimalControllerAllInfiniteQuery = async <
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -459,7 +459,7 @@ export function useAnimalControllerAllSuspense<
 }
 
 export const getAnimalControllerAllSuspenseInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -470,7 +470,7 @@ export const getAnimalControllerAllSuspenseInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -483,16 +483,16 @@ export const getAnimalControllerAllSuspenseInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof animalControllerAll>>,
     QueryKey,
-    AnimalControllerAllParams['page']
+    AnimalControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    animalControllerAll({ ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    animalControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
     TError,
     TData,
     QueryKey,
-    AnimalControllerAllParams['page']
+    AnimalControllerAllParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -502,7 +502,7 @@ export type AnimalControllerAllSuspenseInfiniteQueryResult = NonNullable<
 export type AnimalControllerAllSuspenseInfiniteQueryError = unknown;
 
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params: undefined | AnimalControllerAllParams,
@@ -513,7 +513,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -521,7 +521,7 @@ export function useAnimalControllerAllSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -532,7 +532,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -540,7 +540,7 @@ export function useAnimalControllerAllSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -551,7 +551,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -560,7 +560,7 @@ export function useAnimalControllerAllSuspenseInfinite<
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useAnimalControllerAllSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof animalControllerAll>>, AnimalControllerAllParams['cursor']>,
   TError = unknown,
 >(
   params?: AnimalControllerAllParams,
@@ -571,7 +571,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        AnimalControllerAllParams['page']
+        AnimalControllerAllParams['cursor']
       >
     >;
     fetch?: RequestInit;

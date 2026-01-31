@@ -1,0 +1,55 @@
+'use client';
+
+import { usePhotoControllerGetCommentsSuspenseInfinite } from '@/api/photo';
+import { formatNumber } from '@/utils/formatters';
+import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
+import ProfilePhotoCommentItem from './ProfilePhotoCommentItem';
+import ProfilePhotoCommentListSkeleton from './ProfilePhotoCommentListSkeleton';
+
+interface Props {
+  id: number;
+}
+
+function ProfilePhotoCommentList({ id }: Props) {
+  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = usePhotoControllerGetCommentsSuspenseInfinite(
+    id,
+    {},
+    {
+      query: {
+        getNextPageParam: (lastPage) => (lastPage.data.hasNextPage ? lastPage.data.cursor : undefined),
+      },
+    },
+  );
+
+  const total = data.pages[0]?.data.total ?? 0;
+  const comments = data.pages.flatMap((page) => page.data.items);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="font-semibold">{`댓글 ${formatNumber(total)}개`}</span>
+      <div className="flex flex-col gap-4">
+        <ProfilePhotoCommentEditor />
+        <div className="flex flex-col p-4">
+          {comments.map((comment) => (
+            <ProfilePhotoCommentItem key={comment.id} comment={comment} photoId={id} />
+          ))}
+        </div>
+
+        {isFetchingNextPage && <ProfilePhotoCommentListSkeleton />}
+
+        {hasNextPage && !isFetchingNextPage && (
+          <button
+            className="group flex cursor-pointer items-center gap-4 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            onClick={() => fetchNextPage()}
+          >
+            <div className="h-px flex-1 bg-neutral-200 transition-colors group-hover:bg-neutral-300 dark:bg-neutral-800 dark:group-hover:bg-neutral-700" />
+            댓글 더보기
+            <div className="h-px flex-1 bg-neutral-200 transition-colors group-hover:bg-neutral-300 dark:bg-neutral-800 dark:group-hover:bg-neutral-700" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default ProfilePhotoCommentList;

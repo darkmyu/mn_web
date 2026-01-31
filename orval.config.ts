@@ -27,19 +27,7 @@ export default defineConfig({
           usePrefetch: true,
           useSuspenseQuery: true,
           useSuspenseInfiniteQuery: true,
-          useInfiniteQueryParam: 'page',
-        },
-        operations: {
-          PhotoController_all: {
-            query: {
-              useInfiniteQueryParam: 'cursor',
-            },
-          },
-          ProfileController_photos: {
-            query: {
-              useInfiniteQueryParam: 'cursor',
-            },
-          },
+          useInfiniteQueryParam: 'cursor',
         },
       },
     },

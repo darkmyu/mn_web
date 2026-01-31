@@ -39,6 +39,7 @@ import type {
   ProfileControllerAnimalsParams,
   ProfileControllerPhotos200,
   ProfileControllerPhotosParams,
+  ProfileFollowResponse,
   ProfileResponse,
 } from './index.schemas';
 
@@ -537,7 +538,7 @@ export const getProfileControllerAnimalsQueryKey = (username?: string, params?: 
 };
 
 export const getProfileControllerAnimalsInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -549,7 +550,7 @@ export const getProfileControllerAnimalsInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -562,16 +563,20 @@ export const getProfileControllerAnimalsInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
     QueryKey,
-    ProfileControllerAnimalsParams['page']
+    ProfileControllerAnimalsParams['cursor']
   > = ({ signal, pageParam }) =>
-    profileControllerAnimals(username, { ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    profileControllerAnimals(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...fetchOptions },
+    );
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
     TError,
     TData,
     QueryKey,
-    ProfileControllerAnimalsParams['page']
+    ProfileControllerAnimalsParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -581,7 +586,7 @@ export type ProfileControllerAnimalsInfiniteQueryResult = NonNullable<
 export type ProfileControllerAnimalsInfiniteQueryError = unknown;
 
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -593,7 +598,7 @@ export function useProfileControllerAnimalsInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     > &
       Pick<
@@ -610,7 +615,7 @@ export function useProfileControllerAnimalsInfinite<
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -622,7 +627,7 @@ export function useProfileControllerAnimalsInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     > &
       Pick<
@@ -639,7 +644,7 @@ export function useProfileControllerAnimalsInfinite<
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -651,7 +656,7 @@ export function useProfileControllerAnimalsInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -660,7 +665,7 @@ export function useProfileControllerAnimalsInfinite<
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useProfileControllerAnimalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -672,7 +677,7 @@ export function useProfileControllerAnimalsInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -704,7 +709,7 @@ export const prefetchProfileControllerAnimalsInfiniteQuery = async <
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -931,7 +936,7 @@ export function useProfileControllerAnimalsSuspense<
 }
 
 export const getProfileControllerAnimalsSuspenseInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -943,7 +948,7 @@ export const getProfileControllerAnimalsSuspenseInfiniteQueryOptions = <
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -956,16 +961,20 @@ export const getProfileControllerAnimalsSuspenseInfiniteQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
     QueryKey,
-    ProfileControllerAnimalsParams['page']
+    ProfileControllerAnimalsParams['cursor']
   > = ({ signal, pageParam }) =>
-    profileControllerAnimals(username, { ...params, page: pageParam || params?.['page'] }, { signal, ...fetchOptions });
+    profileControllerAnimals(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...fetchOptions },
+    );
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
     TError,
     TData,
     QueryKey,
-    ProfileControllerAnimalsParams['page']
+    ProfileControllerAnimalsParams['cursor']
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
@@ -975,7 +984,7 @@ export type ProfileControllerAnimalsSuspenseInfiniteQueryResult = NonNullable<
 export type ProfileControllerAnimalsSuspenseInfiniteQueryError = unknown;
 
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -987,7 +996,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -995,7 +1004,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1007,7 +1016,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1015,7 +1024,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1027,7 +1036,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -1036,7 +1045,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useProfileControllerAnimalsSuspenseInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['page']>,
+  TData = InfiniteData<Awaited<ReturnType<typeof profileControllerAnimals>>, ProfileControllerAnimalsParams['cursor']>,
   TError = unknown,
 >(
   username: string,
@@ -1048,7 +1057,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         TError,
         TData,
         QueryKey,
-        ProfileControllerAnimalsParams['page']
+        ProfileControllerAnimalsParams['cursor']
       >
     >;
     fetch?: RequestInit;
@@ -2117,12 +2126,12 @@ export function useProfileControllerPhotoSuspenseInfinite<
   return query;
 }
 
-export type profileControllerFollowResponse200 = {
-  data: void;
-  status: 200;
+export type profileControllerFollowResponse201 = {
+  data: ProfileFollowResponse;
+  status: 201;
 };
 
-export type profileControllerFollowResponseSuccess = profileControllerFollowResponse200 & {
+export type profileControllerFollowResponseSuccess = profileControllerFollowResponse201 & {
   headers: Headers;
 };
 export const getProfileControllerFollowUrl = (username: string) => {
@@ -2199,7 +2208,7 @@ export const useProfileControllerFollow = <TError = unknown, TContext = unknown>
   return useMutation(mutationOptions, queryClient);
 };
 export type profileControllerUnfollowResponse200 = {
-  data: void;
+  data: ProfileFollowResponse;
   status: 200;
 };
 

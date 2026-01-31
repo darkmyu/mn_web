@@ -1,4 +1,5 @@
 import { usePhotoControllerGetRepliesSuspenseInfinite } from '@/api/photo';
+import { uniqBy } from 'es-toolkit';
 import ProfilePhotoReplyItem from './ProfilePhotoReplyItem';
 import ProfilePhotoReplyListSkeleton from './ProfilePhotoReplyListSkeleton';
 
@@ -19,12 +20,15 @@ function ProfilePhotoReplyList({ photoId, commentId }: Props) {
     },
   );
 
-  const replies = data.pages.flatMap((page) => page.data.items);
+  const replies = uniqBy(
+    data.pages.flatMap((page) => page.data.items),
+    (reply) => reply.id,
+  );
 
   return (
     <div className="flex flex-col">
       {replies.map((reply) => (
-        <ProfilePhotoReplyItem key={reply.id} reply={reply} />
+        <ProfilePhotoReplyItem key={reply.id} reply={reply} photoId={photoId} commentId={commentId} />
       ))}
 
       {isFetchingNextPage && <ProfilePhotoReplyListSkeleton />}

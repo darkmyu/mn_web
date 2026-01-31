@@ -3,12 +3,18 @@ import { formatDate } from '@/utils/formatters';
 import { LucideReply } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
+import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 
 interface Props {
   reply: PhotoCommentResponse;
+  photoId: number;
+  commentId: number;
 }
 
-function ProfilePhotoReplyItem({ reply }: Props) {
+function ProfilePhotoReplyItem({ reply, photoId, commentId }: Props) {
+  const [isReplying, setIsReplying] = useState(false);
+
   return (
     <div className="mt-6 flex items-start gap-4 border-t border-zinc-200 pt-6 dark:border-zinc-700">
       <Link href={`/@${reply.author.username}`} className="flex h-6 w-6 items-center justify-center">
@@ -41,11 +47,25 @@ function ProfilePhotoReplyItem({ reply }: Props) {
           {reply.content}
         </div>
         <div className="flex items-center gap-4 pt-3">
-          <div className="flex cursor-pointer items-center gap-1 text-zinc-500 dark:text-zinc-400">
+          <div
+            className="flex cursor-pointer items-center gap-1 text-zinc-500 dark:text-zinc-400"
+            onClick={() => setIsReplying(!isReplying)}
+          >
             <span className="text-sm">답글 작성</span>
             <LucideReply className="h-3.5 w-3.5" />
           </div>
         </div>
+        {isReplying && (
+          <div className="mt-6">
+            <ProfilePhotoCommentEditor
+              photoId={photoId}
+              parentId={commentId}
+              mention={reply.author}
+              onSuccess={() => setIsReplying(false)}
+              onCancel={() => setIsReplying(false)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

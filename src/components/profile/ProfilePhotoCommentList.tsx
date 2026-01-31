@@ -2,6 +2,7 @@
 
 import { usePhotoControllerGetCommentsSuspenseInfinite } from '@/api/photo';
 import { formatNumber } from '@/utils/formatters';
+import { uniqBy } from 'es-toolkit';
 import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 import ProfilePhotoCommentItem from './ProfilePhotoCommentItem';
 import ProfilePhotoCommentListSkeleton from './ProfilePhotoCommentListSkeleton';
@@ -22,13 +23,17 @@ function ProfilePhotoCommentList({ id }: Props) {
   );
 
   const total = data.pages[0]?.data.total ?? 0;
-  const comments = data.pages.flatMap((page) => page.data.items);
+
+  const comments = uniqBy(
+    data.pages.flatMap((page) => page.data.items),
+    (comment) => comment.id,
+  );
 
   return (
     <div className="flex flex-col gap-2">
       <span className="font-semibold">{`댓글 ${formatNumber(total)}개`}</span>
       <div className="flex flex-col gap-4">
-        <ProfilePhotoCommentEditor />
+        <ProfilePhotoCommentEditor photoId={id} />
         <div className="flex flex-col p-4">
           {comments.map((comment) => (
             <ProfilePhotoCommentItem key={comment.id} comment={comment} photoId={id} />

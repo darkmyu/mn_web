@@ -4,6 +4,7 @@ import { LucideChevronDown, LucideReply } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
+import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 import ProfilePhotoReplyList from './ProfilePhotoReplyList';
 import ProfilePhotoReplyListSkeleton from './ProfilePhotoReplyListSkeleton';
 
@@ -14,6 +15,7 @@ interface Props {
 
 function ProfilePhotoCommentItem({ comment, photoId }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
 
   return (
     <div className="flex items-start gap-4 border-zinc-200 not-first:mt-6 not-first:border-t not-first:pt-6 dark:border-zinc-700">
@@ -37,7 +39,10 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
         </div>
         <div className="text-sm whitespace-pre-wrap">{comment.content}</div>
         <div className="flex items-center gap-4 pt-3">
-          <button className="flex cursor-pointer items-center gap-1 text-zinc-500 dark:text-zinc-400">
+          <button
+            className="flex cursor-pointer items-center gap-1 text-zinc-500 dark:text-zinc-400"
+            onClick={() => setIsReplying(!isReplying)}
+          >
             <span className="text-sm">답글 작성</span>
             <LucideReply className="h-3.5 w-3.5" />
           </button>
@@ -51,6 +56,21 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
             </button>
           )}
         </div>
+
+        {isReplying && (
+          <div className="mt-6">
+            <ProfilePhotoCommentEditor
+              photoId={photoId}
+              parentId={comment.id}
+              onSuccess={() => {
+                setIsExpanded(true);
+                setIsReplying(false);
+              }}
+              onCancel={() => setIsReplying(false)}
+            />
+          </div>
+        )}
+
         {isExpanded && (
           <Suspense fallback={<ProfilePhotoReplyListSkeleton />}>
             <ProfilePhotoReplyList photoId={photoId} commentId={comment.id} />

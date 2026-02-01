@@ -12,7 +12,7 @@ import { useAuthStore } from '@/stores/auth';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'es-toolkit';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 interface Props {
   photoId: number;
@@ -36,20 +36,26 @@ function ProfilePhotoCommentEditor({
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
+  const mentionPrefix = mention ? `@${mention.nickname} ` : '';
+
   const {
     reset,
     watch,
     register,
     handleSubmit,
+    setValue,
     formState: { isValid },
   } = useCommentForm({
-    content: initialContent,
+    content: mentionPrefix + initialContent,
     parentId,
     mentionId: mention?.id,
   });
 
   const isModify = !!initialContent;
   const content = watch('content');
+  const mentionId = watch('mentionId');
+  const hasMention = mentionId && content.startsWith(mentionPrefix);
+  const contentLength = hasMention ? content.length - mentionPrefix.length : content.length;
 
   const { mutate: createMutate, isPending: isCreatePending } = usePhotoControllerCreateComment({
     mutation: {
@@ -210,14 +216,34 @@ function ProfilePhotoCommentEditor({
   );
 
   const onSubmit = handleSubmit((body) => {
+    const payload = {
+      ...body,
+      content: hasMention ? body.content.slice(mentionPrefix.length) : body.content,
+    };
+
     if (!isModify) {
-      debouncedCreateMutate(photoId, body);
+      debouncedCreateMutate(photoId, payload);
     } else {
       if (commentId) {
-        debouncedUpdateMutate(photoId, commentId, body);
+        debouncedUpdateMutate(photoId, commentId, payload);
       }
     }
   });
+
+  const handleContentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Backspace' && hasMention) {
+      const { selectionStart, selectionEnd } = e.currentTarget;
+
+      if (
+        (selectionStart < mentionPrefix.length && selectionStart !== selectionEnd) ||
+        (selectionStart <= mentionPrefix.length && selectionStart === selectionEnd && selectionStart > 0)
+      ) {
+        e.preventDefault();
+        setValue('content', content.slice(Math.max(mentionPrefix.length, selectionEnd)), { shouldValidate: true });
+        setValue('mentionId', null);
+      }
+    }
+  };
 
   return (
     <form
@@ -235,17 +261,21 @@ function ProfilePhotoCommentEditor({
           />
         </div>
         <div className="relative flex min-h-10 flex-1">
+          {hasMention && (
+            <div className="absolute z-10 text-sm text-emerald-500 dark:text-emerald-400">{mentionPrefix}</div>
+          )}
           <textarea
             {...register('content')}
+            onKeyDown={handleContentKeyDown}
             className="field-sizing-content min-h-full w-full resize-none border-none text-sm outline-none"
-            placeholder="소중한 댓글을 남겨주세요"
-          ></textarea>
+            placeholder={!mention ? '소중한 댓글을 남겨주세요' : ''}
+          />
         </div>
       </div>
       <div className="flex justify-end">
         <div className="flex items-center gap-4">
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            <span className={content.length > 1000 ? 'text-red-500' : ''}>{content.length}</span>
+            <span className={contentLength > 1000 ? 'text-red-500' : ''}>{contentLength}</span>
             {` / 1000`}
           </span>
           {onCancel && (
@@ -260,7 +290,7 @@ function ProfilePhotoCommentEditor({
           )}
           <button
             type="submit"
-            disabled={!isValid || isCreatePending}
+            disabled={!isValid || isCreatePending || !contentLength}
             className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-1 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
           >
             {!isModify ? '등록' : '수정'}

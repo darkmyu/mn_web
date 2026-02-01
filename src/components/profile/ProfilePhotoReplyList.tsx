@@ -5,13 +5,13 @@ import ProfilePhotoReplyListSkeleton from './ProfilePhotoReplyListSkeleton';
 
 interface Props {
   photoId: number;
-  commentId: number;
+  parentId: number;
 }
 
-function ProfilePhotoReplyList({ photoId, commentId }: Props) {
+function ProfilePhotoReplyList({ photoId, parentId }: Props) {
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = usePhotoControllerGetRepliesSuspenseInfinite(
     photoId,
-    commentId,
+    parentId,
     {},
     {
       query: {
@@ -28,7 +28,7 @@ function ProfilePhotoReplyList({ photoId, commentId }: Props) {
   return (
     <div className="flex flex-col">
       {replies.map((reply) => (
-        <ProfilePhotoReplyItem key={reply.id} reply={reply} photoId={photoId} commentId={commentId} />
+        <ProfilePhotoReplyItem key={reply.id} reply={reply} photoId={photoId} parentId={parentId} />
       ))}
 
       {isFetchingNextPage && <ProfilePhotoReplyListSkeleton />}

@@ -1,10 +1,11 @@
-import { ProfileResponse } from '@/api/index.schemas';
+import { PhotoCommentCreateRequest, PhotoCommentResponseMention } from '@/api/index.schemas';
 import {
   getPhotoControllerGetCommentsInfiniteQueryKey,
   getPhotoControllerGetRepliesInfiniteQueryKey,
   photoControllerGetCommentsResponseSuccess,
   photoControllerGetRepliesResponseSuccess,
   usePhotoControllerCreateComment,
+  usePhotoControllerUpdateComment,
 } from '@/api/photo';
 import { useCommentForm } from '@/hooks/forms/comment';
 import { useAuthStore } from '@/stores/auth';
@@ -16,12 +17,22 @@ import { useMemo } from 'react';
 interface Props {
   photoId: number;
   parentId?: number;
-  mention?: ProfileResponse;
+  commentId?: number;
+  mention?: PhotoCommentResponseMention;
+  initialContent?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCancel }: Props) {
+function ProfilePhotoCommentEditor({
+  photoId,
+  parentId,
+  commentId,
+  mention,
+  initialContent = '',
+  onSuccess,
+  onCancel,
+}: Props) {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
@@ -32,17 +43,18 @@ function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCa
     handleSubmit,
     formState: { isValid },
   } = useCommentForm({
-    content: '',
+    content: initialContent,
     parentId,
     mentionId: mention?.id,
   });
 
+  const isModify = !!initialContent;
   const content = watch('content');
 
   const { mutate: createMutate, isPending: isCreatePending } = usePhotoControllerCreateComment({
     mutation: {
       onSuccess: ({ data: comment }) => {
-        if (!parentId) {
+        if (!comment.parentId) {
           queryClient.setQueryData<InfiniteData<photoControllerGetCommentsResponseSuccess>>(
             getPhotoControllerGetCommentsInfiniteQueryKey(photoId, {}),
             (prev) => {
@@ -72,7 +84,7 @@ function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCa
           );
         } else {
           queryClient.setQueryData<InfiniteData<photoControllerGetRepliesResponseSuccess>>(
-            getPhotoControllerGetRepliesInfiniteQueryKey(photoId, parentId, {}),
+            getPhotoControllerGetRepliesInfiniteQueryKey(photoId, comment.parentId, {}),
             (prev) => {
               if (!prev) return prev;
               return {
@@ -105,7 +117,7 @@ function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCa
                     ...page.data,
                     total: page.data.total + 1,
                     items: page.data.items.map((item) =>
-                      item.id === parentId
+                      item.id === comment.parentId
                         ? {
                             ...item,
                             replyCount: item.replyCount + 1,
@@ -122,9 +134,51 @@ function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCa
     },
   });
 
+  const { mutate: updateMutate } = usePhotoControllerUpdateComment({
+    mutation: {
+      onSuccess: ({ data: comment }) => {
+        if (!comment.parentId) {
+          queryClient.setQueryData<InfiniteData<photoControllerGetCommentsResponseSuccess>>(
+            getPhotoControllerGetCommentsInfiniteQueryKey(photoId, {}),
+            (prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                pages: prev.pages.map((page) => ({
+                  ...page,
+                  data: {
+                    ...page.data,
+                    items: page.data.items.map((item) => (item.id === comment.id ? comment : item)),
+                  },
+                })),
+              };
+            },
+          );
+        } else {
+          queryClient.setQueryData<InfiniteData<photoControllerGetRepliesResponseSuccess>>(
+            getPhotoControllerGetRepliesInfiniteQueryKey(photoId, comment.parentId, {}),
+            (prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                pages: prev.pages.map((page) => ({
+                  ...page,
+                  data: {
+                    ...page.data,
+                    items: page.data.items.map((item) => (item.id === comment.id ? comment : item)),
+                  },
+                })),
+              };
+            },
+          );
+        }
+      },
+    },
+  });
+
   const debouncedCreateMutate = useMemo(
     () =>
-      debounce((id: number, data) => {
+      debounce((id: number, data: PhotoCommentCreateRequest) => {
         createMutate(
           { id, data },
           {
@@ -139,8 +193,30 @@ function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCa
     [createMutate, onSuccess, reset],
   );
 
+  const debouncedUpdateMutate = useMemo(
+    () =>
+      debounce((id: number, commentId: number, data: PhotoCommentCreateRequest) => {
+        updateMutate(
+          { id, commentId, data },
+          {
+            onSuccess: () => {
+              reset();
+              onSuccess?.();
+            },
+          },
+        );
+      }, 500),
+    [onSuccess, reset, updateMutate],
+  );
+
   const onSubmit = handleSubmit((body) => {
-    debouncedCreateMutate(photoId, body);
+    if (!isModify) {
+      debouncedCreateMutate(photoId, body);
+    } else {
+      if (commentId) {
+        debouncedUpdateMutate(photoId, commentId, body);
+      }
+    }
   });
 
   return (
@@ -187,7 +263,7 @@ function ProfilePhotoCommentEditor({ photoId, parentId, mention, onSuccess, onCa
             disabled={!isValid || isCreatePending}
             className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-1 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
           >
-            등록
+            {!isModify ? '등록' : '수정'}
           </button>
         </div>
       </div>

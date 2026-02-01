@@ -1,6 +1,7 @@
 import { PhotoCommentResponse } from '@/api/index.schemas';
 import { formatDate, formatNumber } from '@/utils/formatters';
-import { LucideChevronDown, LucideReply } from 'lucide-react';
+import { Popover } from '@base-ui/react/popover';
+import { LucideChevronDown, LucideEllipsisVertical, LucideReply, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
@@ -16,67 +17,124 @@ interface Props {
 function ProfilePhotoCommentItem({ comment, photoId }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
+  const [isModify, setIsModify] = useState(false);
 
   return (
-    <div className="flex items-start gap-4 border-zinc-200 not-first:mt-6 not-first:border-t not-first:pt-6 dark:border-zinc-700">
-      <Link href={`/@${comment.author.username}`} className="flex h-9 w-9 items-center justify-center">
-        <Image
-          className="h-9 w-9 rounded-full object-cover"
-          src={comment.author.profileImage ?? ''}
-          alt=""
-          width={36}
-          height={36}
-        />
-      </Link>
-      <div className="flex flex-1 flex-col">
-        <div className="flex items-center justify-between pb-1">
-          <div className="flex items-center gap-2">
-            <Link href={`/@${comment.author.username}`} className="text-sm font-medium">
-              {comment.author.nickname}
-            </Link>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">{formatDate(comment.createdAt)}</span>
-          </div>
-        </div>
-        <div className="text-sm whitespace-pre-wrap">{comment.content}</div>
-        <div className="flex items-center gap-4 pt-3">
-          <button
-            className="flex cursor-pointer items-center gap-1 text-zinc-500 dark:text-zinc-400"
-            onClick={() => setIsReplying(!isReplying)}
-          >
-            <span className="text-sm">답글 작성</span>
-            <LucideReply className="h-3.5 w-3.5" />
-          </button>
-          {comment.replyCount > 0 && (
-            <button
-              className="flex cursor-pointer items-center gap-1 text-emerald-600 dark:text-emerald-500"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              <span className="text-sm font-medium">{`답글 ${formatNumber(comment.replyCount)}개`}</span>
-              <LucideChevronDown className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
-
-        {isReplying && (
-          <div className="mt-6">
-            <ProfilePhotoCommentEditor
-              photoId={photoId}
-              parentId={comment.id}
-              onSuccess={() => {
-                setIsExpanded(true);
-                setIsReplying(false);
-              }}
-              onCancel={() => setIsReplying(false)}
+    <div className="border-zinc-200 not-first:mt-6 not-first:border-t not-first:pt-6 dark:border-zinc-700">
+      {!isModify && (
+        <div className="flex items-start gap-4">
+          <Link href={`/@${comment.author.username}`} className="flex h-9 w-9 items-center justify-center">
+            <Image
+              className="h-9 w-9 rounded-full object-cover"
+              src={comment.author.profileImage ?? ''}
+              alt=""
+              width={36}
+              height={36}
             />
+          </Link>
+          <div className="flex flex-1 flex-col">
+            <div className="flex items-center justify-between pb-1">
+              <div className="flex items-center gap-2">
+                <Link href={`/@${comment.author.username}`} className="text-sm font-medium">
+                  {comment.author.nickname}
+                </Link>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">{formatDate(comment.createdAt)}</span>
+              </div>
+              {comment.author.isOwner && (
+                <Popover.Root>
+                  <Popover.Trigger
+                    render={
+                      <button className="cursor-pointer rounded-lg p-1 hover:bg-zinc-100 hover:dark:bg-zinc-800">
+                        <LucideEllipsisVertical className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
+                      </button>
+                    }
+                  />
+                  <Popover.Portal>
+                    <Popover.Positioner align="end" sideOffset={8}>
+                      <Popover.Popup>
+                        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2 shadow-2xl/20 outline-none dark:border-zinc-700 dark:bg-zinc-800">
+                          <ul className="flex flex-col">
+                            <li
+                              className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
+                              onClick={() => {
+                                setIsReplying(false);
+                                setIsModify(!isModify);
+                              }}
+                            >
+                              <LucideSquarePen className="h-3.5 w-3.5" />
+                              <span className="text-sm">수정하기</span>
+                            </li>
+                            <Popover.Close
+                              nativeButton={false}
+                              render={
+                                <li
+                                  className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
+                                  onClick={() => {}}
+                                >
+                                  <LucideTrash2 className="h-3.5 w-3.5" />
+                                  <span className="text-sm">삭제하기</span>
+                                </li>
+                              }
+                            />
+                          </ul>
+                        </div>
+                      </Popover.Popup>
+                    </Popover.Positioner>
+                  </Popover.Portal>
+                </Popover.Root>
+              )}
+            </div>
+            <div className="text-sm whitespace-pre-wrap">{comment.content}</div>
+            <div className="flex items-center gap-4 pt-3">
+              <button
+                className="flex cursor-pointer items-center gap-1 text-zinc-500 dark:text-zinc-400"
+                onClick={() => setIsReplying(!isReplying)}
+              >
+                <span className="text-sm">답글 작성</span>
+                <LucideReply className="h-3.5 w-3.5" />
+              </button>
+              {comment.replyCount > 0 && (
+                <button
+                  className="flex cursor-pointer items-center gap-1 text-emerald-600 dark:text-emerald-500"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  <span className="text-sm font-medium">{`답글 ${formatNumber(comment.replyCount)}개`}</span>
+                  <LucideChevronDown className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
           </div>
-        )}
-
-        {isExpanded && (
+        </div>
+      )}
+      {isModify && (
+        <ProfilePhotoCommentEditor
+          photoId={photoId}
+          commentId={comment.id}
+          initialContent={comment.content}
+          onSuccess={() => setIsModify(false)}
+          onCancel={() => setIsModify(false)}
+        />
+      )}
+      {isReplying && (
+        <div className="pt-4 pl-13">
+          <ProfilePhotoCommentEditor
+            photoId={photoId}
+            parentId={comment.id}
+            onSuccess={() => {
+              setIsExpanded(true);
+              setIsReplying(false);
+            }}
+            onCancel={() => setIsReplying(false)}
+          />
+        </div>
+      )}
+      {isExpanded && (
+        <div className="pl-13">
           <Suspense fallback={<ProfilePhotoReplyListSkeleton />}>
-            <ProfilePhotoReplyList photoId={photoId} commentId={comment.id} />
+            <ProfilePhotoReplyList photoId={photoId} parentId={comment.id} />
           </Suspense>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

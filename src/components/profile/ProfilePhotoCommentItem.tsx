@@ -1,10 +1,18 @@
 import { PhotoCommentResponse } from '@/api/index.schemas';
+import {
+  getPhotoControllerGetCommentsInfiniteQueryKey,
+  photoControllerGetCommentsResponseSuccess,
+  usePhotoControllerDeleteComment,
+} from '@/api/photo';
+import { useConfirmStore } from '@/stores/confirm';
 import { formatDate, formatNumber } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { LucideChevronDown, LucideEllipsisVertical, LucideReply, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
+import toast from 'react-hot-toast';
 import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 import ProfilePhotoReplyList from './ProfilePhotoReplyList';
 import ProfilePhotoReplyListSkeleton from './ProfilePhotoReplyListSkeleton';
@@ -18,6 +26,58 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [isModify, setIsModify] = useState(false);
+  const { openConfirm, closeConfirm } = useConfirmStore();
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: deleteCommentMutateAsync } = usePhotoControllerDeleteComment({
+    mutation: {
+      onSuccess: () => {
+        queryClient.setQueryData<InfiniteData<photoControllerGetCommentsResponseSuccess>>(
+          getPhotoControllerGetCommentsInfiniteQueryKey(photoId, {}),
+          (prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  total: page.data.total - 1 - comment.replyCount,
+                  items: page.data.items.filter((item) => item.id !== comment.id),
+                },
+              })),
+            };
+          },
+        );
+      },
+    },
+  });
+
+  const handleDeleteButtonClick = () => {
+    openConfirm({
+      title: '댓글을 삭제할까요?',
+      description: '삭제된 댓글은 복구할 수 없어요.',
+      onConfirm: () =>
+        toast.promise(
+          deleteCommentMutateAsync(
+            {
+              id: photoId,
+              commentId: comment.id,
+            },
+            {
+              onSuccess: () => {
+                closeConfirm();
+              },
+            },
+          ),
+          {
+            loading: '댓글을 삭제하고 있어요...',
+            success: '댓글이 삭제되었어요!',
+            error: '댓글 삭제에 실패했어요.',
+          },
+        ),
+    });
+  };
 
   return (
     <div className="border-zinc-200 not-first:mt-6 not-first:border-t not-first:pt-6 dark:border-zinc-700">
@@ -69,7 +129,7 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
                               render={
                                 <li
                                   className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
-                                  onClick={() => {}}
+                                  onClick={handleDeleteButtonClick}
                                 >
                                   <LucideTrash2 className="h-3.5 w-3.5" />
                                   <span className="text-sm">삭제하기</span>

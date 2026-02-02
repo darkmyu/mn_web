@@ -1,10 +1,20 @@
 import { PhotoCommentResponse } from '@/api/index.schemas';
+import {
+  getPhotoControllerGetCommentsInfiniteQueryKey,
+  getPhotoControllerGetRepliesInfiniteQueryKey,
+  photoControllerGetCommentsResponseSuccess,
+  photoControllerGetRepliesResponseSuccess,
+  usePhotoControllerDeleteComment,
+} from '@/api/photo';
+import { useConfirmStore } from '@/stores/confirm';
 import { formatDate } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { LucideEllipsisVertical, LucideReply, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 
 interface Props {
@@ -16,6 +26,83 @@ interface Props {
 function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
   const [isReplying, setIsReplying] = useState(false);
   const [isModify, setIsModify] = useState(false);
+  const { openConfirm, closeConfirm } = useConfirmStore();
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: deleteCommentMutateAsync } = usePhotoControllerDeleteComment({
+    mutation: {
+      onSuccess: () => {
+        queryClient.setQueryData<InfiniteData<photoControllerGetRepliesResponseSuccess>>(
+          getPhotoControllerGetRepliesInfiniteQueryKey(photoId, parentId, {}),
+          (prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  total: page.data.total - 1,
+                  items: page.data.items.filter((item) => item.id !== reply.id),
+                },
+              })),
+            };
+          },
+        );
+
+        queryClient.setQueryData<InfiniteData<photoControllerGetCommentsResponseSuccess>>(
+          getPhotoControllerGetCommentsInfiniteQueryKey(photoId, {}),
+          (prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  total: page.data.total - 1,
+                  items: page.data.items.map((item) =>
+                    item.id === parentId
+                      ? {
+                          ...item,
+                          replyCount: item.replyCount - 1,
+                        }
+                      : item,
+                  ),
+                },
+              })),
+            };
+          },
+        );
+      },
+    },
+  });
+
+  const handleDeleteButtonClick = () => {
+    openConfirm({
+      title: '답글을 삭제할까요?',
+      description: '삭제된 답글은 복구할 수 없어요.',
+      onConfirm: () =>
+        toast.promise(
+          deleteCommentMutateAsync(
+            {
+              id: photoId,
+              commentId: reply.id,
+            },
+            {
+              onSuccess: () => {
+                closeConfirm();
+              },
+            },
+          ),
+          {
+            loading: '답글을 삭제하고 있어요...',
+            success: '답글이 삭제되었어요!',
+            error: '답글 삭제에 실패했어요.',
+          },
+        ),
+    });
+  };
 
   return (
     <div className="mt-6 border-t border-zinc-200 pt-6 dark:border-zinc-700">
@@ -67,7 +154,7 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
                               render={
                                 <li
                                   className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
-                                  onClick={() => {}}
+                                  onClick={handleDeleteButtonClick}
                                 >
                                   <LucideTrash2 className="h-3.5 w-3.5" />
                                   <span className="text-sm">삭제하기</span>

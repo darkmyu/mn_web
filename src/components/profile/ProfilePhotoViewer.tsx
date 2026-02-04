@@ -216,9 +216,9 @@ function ProfilePhotoViewer({ username, id }: Props) {
         {photo.title && <p className="mb-6 border-b-1 border-zinc-200 pb-2 text-2xl font-semibold">{photo.title}</p>}
         <div className="mb-12 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {photo.author.profileImage && (
+            {photo.author.thumbnail && (
               <div className="h-10 w-10 overflow-hidden rounded-full">
-                <Image className="object-cover" src={photo.author.profileImage} alt="" width={40} height={40} />
+                <Image className="object-cover" src={photo.author.thumbnail} alt="" width={40} height={40} />
               </div>
             )}
             <div className="flex flex-col gap-0.5">

@@ -86,7 +86,7 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
           <Link href={`/@${comment.author.username}`} className="flex h-9 w-9 items-center justify-center">
             <Image
               className="h-9 w-9 rounded-full object-cover"
-              src={comment.author.profileImage ?? ''}
+              src={comment.author.thumbnail ?? ''}
               alt=""
               width={36}
               height={36}

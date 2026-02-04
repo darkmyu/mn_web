@@ -194,7 +194,7 @@ function ProfilePhotoCommentEditor({
             },
           },
         );
-      }, 500),
+      }, 300),
 
     [createMutate, onSuccess, reset],
   );
@@ -211,7 +211,7 @@ function ProfilePhotoCommentEditor({
             },
           },
         );
-      }, 500),
+      }, 300),
     [onSuccess, reset, updateMutate],
   );
 
@@ -254,7 +254,7 @@ function ProfilePhotoCommentEditor({
         <div className="flex h-9 w-9 items-center justify-center">
           <Image
             className="h-9 w-9 rounded-full object-cover"
-            src={user?.profileImage ?? ''}
+            src={user?.thumbnail ?? ''}
             alt=""
             width={36}
             height={36}

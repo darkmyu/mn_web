@@ -111,7 +111,7 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
           <Link href={`/@${reply.author.username}`} className="flex h-6 w-6 items-center justify-center">
             <Image
               className="h-6 w-6 rounded-full object-cover"
-              src={reply.author.profileImage ?? ''}
+              src={reply.author.thumbnail ?? ''}
               alt=""
               width={24}
               height={24}

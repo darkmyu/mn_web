@@ -79,7 +79,7 @@ function AnimalForm({ animal }: Props) {
             },
           },
         );
-      }, 500),
+      }, 300),
     [createAnimalMutate, router],
   );
 
@@ -97,7 +97,7 @@ function AnimalForm({ animal }: Props) {
             },
           },
         );
-      }, 500),
+      }, 300),
     [updateAnimalMutate, router],
   );
 

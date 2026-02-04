@@ -68,7 +68,7 @@ function PhotoForm({ photo }: Props) {
             },
           },
         );
-      }, 500),
+      }, 300),
     [createPhotoMutate, router],
   );
 
@@ -86,7 +86,7 @@ function PhotoForm({ photo }: Props) {
             },
           },
         );
-      }, 500),
+      }, 300),
     [router, updatePhotoMutate],
   );
 

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Dialog } from '.';
 
 function AuthDialog() {
-  const { isAuthDialogOpen, setIsAuthDialogOpen } = useDialogStore((state) => state);
+  const { isAuthDialogOpen, setIsAuthDialogOpen } = useDialogStore();
 
   const handleOpenChange = (open: boolean) => {
     setIsAuthDialogOpen(open);

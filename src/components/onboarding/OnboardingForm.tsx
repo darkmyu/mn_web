@@ -59,7 +59,7 @@ function OnboardingForm() {
             },
           },
         );
-      }, 500),
+      }, 300),
     [registerMutate, router],
   );
 
@@ -69,7 +69,7 @@ function OnboardingForm() {
         checkDuplicateUsernameMutate({
           data: { username },
         });
-      }, 500),
+      }, 300),
     [checkDuplicateUsernameMutate],
   );
 

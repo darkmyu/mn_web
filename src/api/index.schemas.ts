@@ -8,7 +8,9 @@ export interface UserResponse {
   username: string;
   nickname: string;
   /** @nullable */
-  profileImage: string | null;
+  thumbnail: string | null;
+  /** @nullable */
+  about: string | null;
 }
 
 /**
@@ -118,7 +120,9 @@ export interface ProfileResponse {
   username: string;
   nickname: string;
   /** @nullable */
-  profileImage: string | null;
+  thumbnail: string | null;
+  /** @nullable */
+  about: string | null;
   isFollowing: boolean;
   followers: number;
   followings: number;
@@ -204,6 +208,18 @@ export interface PhotoCommentCreateRequest {
 
 export interface PhotoCommentUpdateRequest {
   content: string;
+  /** @nullable */
+  parentId?: number | null;
+  /** @nullable */
+  mentionId?: number | null;
+}
+
+export interface UserUpdateRequest {
+  nickname: string;
+  /** @nullable */
+  about?: string | null;
+  /** @nullable */
+  thumbnail?: string | null;
 }
 
 export type AnimalControllerAllParams = {
@@ -328,4 +344,8 @@ export type PhotoControllerGetReplies200 = CursorPagination & PhotoControllerGet
 
 export type PhotoControllerUploadBody = {
   image: Blob;
+};
+
+export type UserControllerThumbnailBody = {
+  thumbnail: Blob;
 };

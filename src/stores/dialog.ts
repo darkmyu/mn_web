@@ -6,7 +6,7 @@ interface DialogState {
 }
 
 interface DialogAction {
-  setIsAuthDialogOpen: (open: boolean) => void;
+  setIsAuthDialogOpen: (isAuthDialogOpen: boolean) => void;
 }
 
 interface DialogStore extends DialogState, DialogAction {}
@@ -18,6 +18,6 @@ const initialState: DialogState = {
 export const useDialogStore = create<DialogStore>()(
   devtools((set) => ({
     ...initialState,
-    setIsAuthDialogOpen: (open) => set({ isAuthDialogOpen: open }),
+    setIsAuthDialogOpen: (isAuthDialogOpen) => set({ isAuthDialogOpen }),
   })),
 );

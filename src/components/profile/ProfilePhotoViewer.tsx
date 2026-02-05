@@ -8,7 +8,7 @@ import {
   useProfileControllerPhotoSuspense,
   useProfileControllerUnfollow,
 } from '@/api/profile';
-import { ROUTE_PHOTOS_WRITE_PAGE } from '@/constants/route';
+import { ROUTE_PHOTOS_WRITE_PAGE, ROUTE_TAGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatAge, formatNumber } from '@/utils/formatters';
@@ -359,7 +359,11 @@ function ProfilePhotoViewer({ username, id }: Props) {
               {photo.tags.length > 0 && (
                 <div className="flex items-center gap-2">
                   {photo.tags.map((tag) => (
-                    <span key={tag.name} className="cursor-pointer text-sm text-emerald-700 dark:text-emerald-300">
+                    <span
+                      key={tag.name}
+                      className="cursor-pointer text-sm text-emerald-700 dark:text-emerald-300"
+                      onClick={() => router.push(`${ROUTE_TAGS_PAGE}/${tag.slug}`)}
+                    >
                       {`#${tag.name}`}
                     </span>
                   ))}

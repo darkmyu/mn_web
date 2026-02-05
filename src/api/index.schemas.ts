@@ -298,6 +298,7 @@ export type PhotoControllerAllParams = {
    */
   limit?: number;
   sort?: PhotoControllerAllSort;
+  tag?: string;
 };
 
 export type PhotoControllerAllSort = (typeof PhotoControllerAllSort)[keyof typeof PhotoControllerAllSort];

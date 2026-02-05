@@ -10,8 +10,7 @@ import {
 } from '@/api/profile';
 import { ROUTE_PHOTOS_WRITE_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
-import { useConfirmStore } from '@/stores/confirm';
-import { useDialogStore } from '@/stores/dialog';
+import { useModalStore } from '@/stores/modal';
 import { formatAge, formatNumber } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
 import {
@@ -27,6 +26,8 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import AuthModal from '../modal/AuthModal';
+import ConfirmModal from '../modal/ConfirmModal';
 import ProfilePhotoViewerDescription from './ProfilePhotoViewerDescription';
 
 interface Props {
@@ -40,9 +41,8 @@ function ProfilePhotoViewer({ username, id }: Props) {
   } = useProfileControllerPhotoSuspense(username, id);
 
   const router = useRouter();
+  const modals = useModalStore();
   const { user } = useAuthStore();
-  const { setIsAuthDialogOpen } = useDialogStore();
-  const { openConfirm, closeConfirm } = useConfirmStore();
 
   const queryKey = getProfileControllerPhotoQueryKey(username, id);
 
@@ -150,8 +150,13 @@ function ProfilePhotoViewer({ username, id }: Props) {
     },
   });
 
-  const handleLikeButtonClick = () => {
-    if (!user) return setIsAuthDialogOpen(true);
+  const handleLikeButtonClick = async () => {
+    if (!user) {
+      return modals.push({
+        key: 'auth-modal',
+        component: AuthModal,
+      });
+    }
 
     if (!photo.isLike) {
       likeMutate({ id });
@@ -161,7 +166,12 @@ function ProfilePhotoViewer({ username, id }: Props) {
   };
 
   const handleFollowButtonClick = () => {
-    if (!user) return setIsAuthDialogOpen(true);
+    if (!user) {
+      return modals.push({
+        key: 'auth-modal',
+        component: AuthModal,
+      });
+    }
 
     if (!photo.author.isFollowing) {
       followMutate({ username });
@@ -170,28 +180,34 @@ function ProfilePhotoViewer({ username, id }: Props) {
     }
   };
 
-  const handleDeleteButtonClick = () => {
-    openConfirm({
-      title: '사진을 삭제할까요?',
-      description: '삭제된 사진은 복구할 수 없어요.',
-      onConfirm: () =>
-        toast.promise(
-          deletePhotoMutateAsync(
-            { id },
-            {
-              onSuccess: () => {
-                closeConfirm();
-                router.push(`/@${username}`);
-              },
-            },
-          ),
+  const handleDeleteButtonClick = async () => {
+    const confirmed = await modals.push({
+      key: 'delete-photo-confirm-modal',
+      component: ConfirmModal,
+      props: {
+        title: '사진을 삭제할까요?',
+        description: '삭제된 사진은 복구할 수 없어요.',
+        confirmText: '삭제',
+      },
+    });
+
+    if (confirmed) {
+      toast.promise(
+        deletePhotoMutateAsync(
+          { id },
           {
-            loading: '사진을 삭제하고 있어요...',
-            success: '사진이 삭제되었어요!',
-            error: '사진 삭제에 실패했어요.',
+            onSuccess: () => {
+              router.push(`/@${username}`);
+            },
           },
         ),
-    });
+        {
+          loading: '사진을 삭제하고 있어요...',
+          success: '사진이 삭제되었어요!',
+          error: '사진 삭제에 실패했어요.',
+        },
+      );
+    }
   };
 
   const handleShareButtonClick = () => {

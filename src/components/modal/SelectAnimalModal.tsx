@@ -1,16 +1,17 @@
 import { useAnimalControllerAllSuspense } from '@/api/animal';
 import { AnimalResponse } from '@/api/index.schemas';
+import { ModalControllerProps } from '@/stores/modal';
 import { LucideCat, LucideCheck, LucideDog, X } from 'lucide-react';
 import Image from 'next/image';
-import { Suspense, useState } from 'react';
-import { Dialog } from '..';
+import { Dispatch, SetStateAction, Suspense, useState } from 'react';
+import { Modal } from '.';
 
-interface Props {
-  value: AnimalResponse[];
-  onChange: (animals: AnimalResponse[]) => void;
+interface AnimalListProps {
+  selectedAnimals: AnimalResponse[];
+  setSelectedAnimals: Dispatch<SetStateAction<AnimalResponse[]>>;
 }
 
-function AnimalList({ value, onChange }: Props) {
+function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
   const {
     data: { data: animals },
   } = useAnimalControllerAllSuspense();
@@ -18,10 +19,12 @@ function AnimalList({ value, onChange }: Props) {
   return (
     <ul className="flex flex-col gap-2">
       {animals.items.map((animal) => {
-        const isSelected = value.some((v) => v.id === animal.id);
+        const isSelected = selectedAnimals.some((v) => v.id === animal.id);
 
         const handleClick = () => {
-          onChange(isSelected ? value.filter((v) => v.id !== animal.id) : [...value, animal]);
+          setSelectedAnimals(
+            isSelected ? selectedAnimals.filter((v) => v.id !== animal.id) : [...selectedAnimals, animal],
+          );
         };
 
         return (
@@ -81,43 +84,55 @@ function AnimalListSkeleton() {
   );
 }
 
-function SelectAnimalDialogContent({ value, onChange }: Props) {
-  const [selected, setSelected] = useState(value);
+interface SelectAnimalModalProps extends ModalControllerProps<AnimalResponse[]> {
+  initialAnimals: AnimalResponse[];
+}
+
+function SelectAnimalModal({ resolve, initialAnimals }: SelectAnimalModalProps) {
+  const [selectedAnimals, setSelectedAnimals] = useState(initialAnimals);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) resolve(initialAnimals);
+  };
 
   const handleConfirm = () => {
-    onChange(selected);
+    resolve(selectedAnimals);
   };
 
   return (
-    <div className="flex w-[28rem] flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium">반려동물 선택</h1>
-        <Dialog.Close
-          render={
-            <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-              <X size={20} />
-            </button>
-          }
-        />
-      </div>
-      <div className="scrollbar-hide h-80 overflow-y-auto">
-        <Suspense fallback={<AnimalListSkeleton />}>
-          <AnimalList value={selected} onChange={setSelected} />
-        </Suspense>
-      </div>
-      <Dialog.Close
-        render={
-          <button
-            onClick={handleConfirm}
-            disabled={selected.length === 0}
-            className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
-          >
-            선택 완료
-          </button>
-        }
-      />
-    </div>
+    <Modal.Root open={true} onOpenChange={handleOpenChange}>
+      <Modal.Popup>
+        <div className="flex w-[28rem] flex-col gap-6 p-6">
+          <div className="flex items-center justify-between">
+            <h1 className="font-medium">반려동물 선택</h1>
+            <Modal.Close
+              render={
+                <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                  <X size={20} />
+                </button>
+              }
+            />
+          </div>
+          <div className="scrollbar-hide h-80 overflow-y-auto">
+            <Suspense fallback={<AnimalListSkeleton />}>
+              <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
+            </Suspense>
+          </div>
+          <Modal.Close
+            render={
+              <button
+                onClick={handleConfirm}
+                disabled={selectedAnimals.length === 0}
+                className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+              >
+                선택 완료
+              </button>
+            }
+          />
+        </div>
+      </Modal.Popup>
+    </Modal.Root>
   );
 }
 
-export default SelectAnimalDialogContent;
+export default SelectAnimalModal;

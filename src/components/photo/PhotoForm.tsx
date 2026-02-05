@@ -3,14 +3,14 @@
 import { AnimalResponse, PhotoCreateRequest, PhotoResponse, PhotoUpdateRequest } from '@/api/index.schemas';
 import { usePhotoControllerCreate, usePhotoControllerUpdate, usePhotoControllerUpload } from '@/api/photo';
 import { usePhotoForm } from '@/hooks/forms/photo';
+import { useModalStore } from '@/stores/modal';
 import { debounce } from 'es-toolkit';
 import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { Dialog } from '../dialog';
-import SelectAnimalDialogContent from '../dialog/contents/SelectAnimalDialogContent';
+import SelectAnimalModal from '../modal/SelectAnimalModal';
 
 interface Props {
   photo?: PhotoResponse;
@@ -40,6 +40,7 @@ function PhotoForm({ photo }: Props) {
   const description = watch('description');
 
   const router = useRouter();
+  const modals = useModalStore();
   const imageRef = useRef<HTMLInputElement>(null);
   const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(photo?.animals ?? []);
 
@@ -111,13 +112,21 @@ function PhotoForm({ photo }: Props) {
     });
   };
 
-  const handleAnimalChange = (animals: AnimalResponse[]) => {
+  const handleAnimalClick = async () => {
+    const animals = await modals.push({
+      key: 'select-animal-modal',
+      component: SelectAnimalModal,
+      props: {
+        initialAnimals: selectedAnimals,
+      },
+    });
+
+    setSelectedAnimals(animals);
     setValue(
       'animalIds',
       animals.map((animal) => animal.id),
       { shouldValidate: true },
     );
-    setSelectedAnimals(animals);
   };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -201,119 +210,105 @@ function PhotoForm({ photo }: Props) {
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 반려동물 <span className="text-sm text-red-700">*</span>
               </label>
-              <Dialog.Root>
-                {selectedAnimals.length === 0 && (
-                  <Dialog.Trigger
-                    nativeButton={false}
-                    render={
-                      <div className="relative w-full">
-                        <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
-                          <LucideSearch className="h-4 w-4 text-zinc-700" />
-                        </div>
-                        <input
-                          type="text"
-                          readOnly
-                          placeholder="사진 속 반려동물을 선택해주세요"
-                          className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
-                        />
-                      </div>
-                    }
+              {selectedAnimals.length === 0 && (
+                <div className="relative w-full" onClick={handleAnimalClick}>
+                  <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
+                    <LucideSearch className="h-4 w-4 text-zinc-700" />
+                  </div>
+                  <input
+                    type="text"
+                    readOnly
+                    placeholder="사진 속 반려동물을 선택해주세요"
+                    className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
                   />
-                )}
-                {selectedAnimals.length > 0 && (
-                  <Dialog.Trigger
-                    nativeButton={false}
-                    render={
-                      <div className="flex cursor-pointer items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 dark:bg-zinc-800">
-                        <div className="flex items-center gap-3 overflow-hidden">
-                          {selectedAnimals.length === 1 && (
-                            <>
-                              {selectedAnimals[0]?.thumbnail && (
+                </div>
+              )}
+              {selectedAnimals.length > 0 && (
+                <div
+                  className="flex cursor-pointer items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 dark:bg-zinc-800"
+                  onClick={handleAnimalClick}
+                >
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    {selectedAnimals.length === 1 && (
+                      <>
+                        {selectedAnimals[0]?.thumbnail && (
+                          <Image
+                            className="h-9 w-9 rounded-full object-cover"
+                            src={selectedAnimals[0].thumbnail}
+                            alt=""
+                            width={36}
+                            height={36}
+                          />
+                        )}
+                        {!selectedAnimals[0]?.thumbnail && (
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-dashed border-zinc-300 bg-white dark:border-zinc-600 dark:bg-zinc-900">
+                            {selectedAnimals[0]?.breed.species === 'DOG' && (
+                              <LucideDog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                            )}
+                            {selectedAnimals[0]?.breed.species === 'CAT' && (
+                              <LucideCat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                            )}
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <p className="text-sm font-semibold">{selectedAnimals[0]?.name}</p>
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400">{selectedAnimals[0]?.breed.name}</p>
+                        </div>
+                      </>
+                    )}
+                    {selectedAnimals.length > 1 && (
+                      <>
+                        <div className="flex -space-x-3">
+                          {selectedAnimals.slice(0, 3).map((animal) => (
+                            <div
+                              key={animal.id}
+                              className="relative h-9 w-9 rounded-full ring-2 ring-zinc-100 dark:ring-zinc-800"
+                            >
+                              {animal.thumbnail && (
                                 <Image
-                                  className="h-9 w-9 rounded-full object-cover"
-                                  src={selectedAnimals[0].thumbnail}
+                                  className="h-full w-full rounded-full object-cover"
+                                  src={animal.thumbnail}
                                   alt=""
                                   width={36}
                                   height={36}
                                 />
                               )}
-                              {!selectedAnimals[0]?.thumbnail && (
-                                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-dashed border-zinc-300 bg-white dark:border-zinc-600 dark:bg-zinc-900">
-                                  {selectedAnimals[0]?.breed.species === 'DOG' && (
-                                    <LucideDog className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                              {!animal.thumbnail && (
+                                <div className="flex h-full w-full items-center justify-center rounded-full bg-white dark:bg-zinc-900">
+                                  {animal.breed.species === 'DOG' && (
+                                    <LucideDog className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                                   )}
-                                  {selectedAnimals[0]?.breed.species === 'CAT' && (
-                                    <LucideCat className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                                  {animal.breed.species === 'CAT' && (
+                                    <LucideCat className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                                   )}
                                 </div>
                               )}
-                              <div className="flex flex-col">
-                                <p className="text-sm font-semibold">{selectedAnimals[0]?.name}</p>
-                                <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                                  {selectedAnimals[0]?.breed.name}
-                                </p>
-                              </div>
-                            </>
-                          )}
-                          {selectedAnimals.length > 1 && (
-                            <>
-                              <div className="flex -space-x-3">
-                                {selectedAnimals.slice(0, 3).map((animal) => (
-                                  <div
-                                    key={animal.id}
-                                    className="relative h-9 w-9 rounded-full ring-2 ring-zinc-100 dark:ring-zinc-800"
-                                  >
-                                    {animal.thumbnail && (
-                                      <Image
-                                        className="h-full w-full rounded-full object-cover"
-                                        src={animal.thumbnail}
-                                        alt=""
-                                        width={36}
-                                        height={36}
-                                      />
-                                    )}
-                                    {!animal.thumbnail && (
-                                      <div className="flex h-full w-full items-center justify-center rounded-full bg-white dark:bg-zinc-900">
-                                        {animal.breed.species === 'DOG' && (
-                                          <LucideDog className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-                                        )}
-                                        {animal.breed.species === 'CAT' && (
-                                          <LucideCat className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                                {selectedAnimals.length > 3 && (
-                                  <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 ring-2 ring-zinc-100 dark:bg-zinc-700 dark:ring-zinc-800">
-                                    <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                                      +{selectedAnimals.length - 3}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex min-w-0 flex-col">
-                                <p className="truncate text-sm font-semibold">
-                                  {selectedAnimals.map((a) => a.name).join(', ')}
-                                </p>
-                                <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                                  총 {selectedAnimals.length}마리 선택됨
-                                </p>
-                              </div>
-                            </>
+                            </div>
+                          ))}
+                          {selectedAnimals.length > 3 && (
+                            <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 ring-2 ring-zinc-100 dark:bg-zinc-700 dark:ring-zinc-800">
+                              <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                                +{selectedAnimals.length - 3}
+                              </span>
+                            </div>
                           )}
                         </div>
-                        <div className="flex shrink-0 items-center justify-center pl-4">
-                          <LucideSearch className="h-4 w-4 text-zinc-700" />
+                        <div className="flex min-w-0 flex-col">
+                          <p className="truncate text-sm font-semibold">
+                            {selectedAnimals.map((a) => a.name).join(', ')}
+                          </p>
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                            총 {selectedAnimals.length}마리 선택됨
+                          </p>
                         </div>
-                      </div>
-                    }
-                  />
-                )}
-                <Dialog.Popup>
-                  <SelectAnimalDialogContent value={selectedAnimals} onChange={handleAnimalChange} />
-                </Dialog.Popup>
-              </Dialog.Root>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex shrink-0 items-center justify-center pl-4">
+                    <LucideSearch className="h-4 w-4 text-zinc-700" />
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">제목</label>

@@ -1,44 +1,44 @@
 import { useUserControllerDelete } from '@/api/user';
 import { ROUTE_HOME_PAGE } from '@/constants/route';
-import { useConfirmStore } from '@/stores/confirm';
-import { debounce } from 'es-toolkit';
+import { useAuthStore } from '@/stores/auth';
+import { useModalStore } from '@/stores/modal';
 import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../modal/ConfirmModal';
 
 function SettingAccount() {
   const router = useRouter();
-  const { openConfirm, closeConfirm } = useConfirmStore();
+  const modals = useModalStore();
+  const { setUser } = useAuthStore();
 
   const { mutateAsync: deleteAccountMutateAsync } = useUserControllerDelete({
     mutation: {
       onSuccess: () => {
+        setUser(null);
+        modals.clear();
         router.push(ROUTE_HOME_PAGE);
-      },
-      onSettled: () => {
-        closeConfirm();
       },
     },
   });
 
-  const debouncedDeleteAccountMutate = useMemo(
-    () =>
-      debounce(() => {
-        toast.promise(deleteAccountMutateAsync(), {
-          loading: '계정을 삭제하고 있어요...',
-          success: '계정이 삭제되었어요!',
-          error: '계정 삭제에 실패했어요.',
-        });
-      }, 300),
-    [deleteAccountMutateAsync],
-  );
-
-  const handleDeleteButtonClick = () => {
-    openConfirm({
-      title: '계정을 삭제할까요?',
-      description: '삭제된 계정은 복구할 수 없어요.',
-      onConfirm: () => debouncedDeleteAccountMutate(),
+  const handleDeleteButtonClick = async () => {
+    const confirmed = await modals.push({
+      key: 'delete-account-confirm-modal',
+      component: ConfirmModal,
+      props: {
+        title: '계정을 삭제할까요?',
+        description: '삭제된 계정은 복수할 수 없어요.',
+        confirmText: '삭제',
+      },
     });
+
+    if (confirmed) {
+      toast.promise(deleteAccountMutateAsync(), {
+        loading: '계정을 삭제하고 있어요...',
+        success: '계정이 삭제되었어요!',
+        error: '계정 삭제에 실패했어요.',
+      });
+    }
   };
 
   return (

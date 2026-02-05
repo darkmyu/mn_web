@@ -8,11 +8,11 @@ import {
   useProfileControllerUnfollow,
 } from '@/api/profile';
 import { useAuthStore } from '@/stores/auth';
-import { useDialogStore } from '@/stores/dialog';
+import { useModalStore } from '@/stores/modal';
 import { formatNumber } from '@/utils/formatters';
 import Image from 'next/image';
-import { Dialog } from '../dialog';
-import SettingDialogContent from '../dialog/contents/SettingDialogContent';
+import AuthModal from '../modal/AuthModal';
+import SettingModal from '../modal/SettingModal';
 
 interface Props {
   username: string;
@@ -23,8 +23,8 @@ function Profile({ username }: Props) {
     data: { data: target },
   } = useProfileControllerReadSuspense(username);
 
+  const modals = useModalStore();
   const { user } = useAuthStore();
-  const { setIsAuthDialogOpen } = useDialogStore();
 
   const queryKey = getProfileControllerReadQueryKey(username);
 
@@ -77,13 +77,25 @@ function Profile({ username }: Props) {
   });
 
   const handleFollowButtonClick = () => {
-    if (!user) return setIsAuthDialogOpen(true);
+    if (!user) {
+      return modals.push({
+        key: 'auth-modal',
+        component: AuthModal,
+      });
+    }
 
     if (!target.isFollowing) {
       followMutate({ username });
     } else {
       unfollowMutate({ username });
     }
+  };
+
+  const handleSettingButtonClick = async () => {
+    await modals.push({
+      key: 'setting-modal',
+      component: SettingModal,
+    });
   };
 
   return (
@@ -95,18 +107,12 @@ function Profile({ username }: Props) {
         <div className="mb-2 flex items-center gap-4">
           <p className="text-2xl font-medium">{target.nickname}</p>
           {target.isOwner && (
-            <Dialog.Root>
-              <Dialog.Trigger
-                render={
-                  <button className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700">
-                    프로필 편집
-                  </button>
-                }
-              />
-              <Dialog.Popup>
-                <SettingDialogContent />
-              </Dialog.Popup>
-            </Dialog.Root>
+            <button
+              className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+              onClick={handleSettingButtonClick}
+            >
+              프로필 편집
+            </button>
           )}
           {!target.isOwner && (
             <button

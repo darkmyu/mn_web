@@ -10,6 +10,7 @@ import {
   BreedResponseSpecies,
 } from '@/api/index.schemas';
 import { useAnimalForm } from '@/hooks/forms/animal';
+import { useModalStore } from '@/stores/modal';
 import dayjs from '@/utils/dayjs';
 import { debounce } from 'es-toolkit';
 import { Camera, Search } from 'lucide-react';
@@ -17,8 +18,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { Dialog } from '../dialog';
-import SelectBreedDialogContent from '../dialog/contents/SelectBreedDialogContent';
+import SelectBreedModal from '../modal/SelectBreedModal';
 
 interface Props {
   animal?: AnimalResponse;
@@ -50,6 +50,7 @@ function AnimalForm({ animal }: Props) {
   const thumbnail = watch('thumbnail');
 
   const router = useRouter();
+  const modals = useModalStore();
   const thumbnailRef = useRef<HTMLInputElement>(null);
   const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(animal?.breed ?? null);
   const [selectedSpecies, setSelectedSpecie] = useState<BreedResponseSpecies>(animal?.breed.species ?? 'DOG');
@@ -126,9 +127,20 @@ function AnimalForm({ animal }: Props) {
     reset({ ...values, breedId: undefined });
   };
 
-  const handleBreedChange = (breed: BreedResponse) => {
-    setValue('breedId', breed.id, { shouldValidate: true });
-    setSelectedBreed(breed);
+  const handleBreedClick = async () => {
+    const breed = await modals.push({
+      key: 'select-breed-modal',
+      component: SelectBreedModal,
+      props: {
+        initialBreed: selectedBreed,
+        initialSpecies: selectedSpecies,
+      },
+    });
+
+    if (breed) {
+      setSelectedBreed(breed);
+      setValue('breedId', breed.id, { shouldValidate: true });
+    }
   };
 
   const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,32 +268,18 @@ function AnimalForm({ animal }: Props) {
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 품종 <span className="text-sm text-red-700">*</span>
               </label>
-              <Dialog.Root>
-                <Dialog.Trigger
-                  nativeButton={false}
-                  render={
-                    <div className="relative w-full">
-                      <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
-                        <Search className="h-4 w-4 text-zinc-700" />
-                      </div>
-                      <input
-                        type="text"
-                        readOnly
-                        value={selectedBreed?.name ?? ''}
-                        placeholder="반려동물의 품종을 선택해주세요"
-                        className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
-                      />
-                    </div>
-                  }
+              <div className="relative w-full" onClick={handleBreedClick}>
+                <div className="absolute right-4 flex h-full cursor-pointer items-center justify-center">
+                  <Search className="h-4 w-4 text-zinc-700" />
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  value={selectedBreed?.name ?? ''}
+                  placeholder="반려동물의 품종을 선택해주세요"
+                  className="w-full cursor-pointer rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500"
                 />
-                <Dialog.Popup>
-                  <SelectBreedDialogContent
-                    value={selectedBreed}
-                    species={selectedSpecies}
-                    onChange={handleBreedChange}
-                  />
-                </Dialog.Popup>
-              </Dialog.Root>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">

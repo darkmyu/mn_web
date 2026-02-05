@@ -4,18 +4,14 @@ import GoogleLogo from '@/assets/images/google.png';
 import KakaoLogo from '@/assets/images/kakao.png';
 import NaverLogo from '@/assets/images/naver.png';
 import { API_ROUTE_OAUTH_GOOGLE, API_ROUTE_OAUTH_KAKAO, API_ROUTE_OAUTH_NAVER } from '@/constants/route';
-import { useDialogStore } from '@/stores/dialog';
+import { ModalControllerProps } from '@/stores/modal';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Dialog } from '.';
+import { Modal } from '.';
 
-function AuthDialog() {
-  const { isAuthDialogOpen, setIsAuthDialogOpen } = useDialogStore();
+type Props = ModalControllerProps<boolean>;
 
-  const handleOpenChange = (open: boolean) => {
-    setIsAuthDialogOpen(open);
-  };
-
+function AuthModal({ resolve }: Props) {
   const handleGoogleLogin = () => {
     window.location.href = API_ROUTE_OAUTH_GOOGLE;
   };
@@ -29,8 +25,8 @@ function AuthDialog() {
   };
 
   return (
-    <Dialog.Root open={isAuthDialogOpen} onOpenChange={handleOpenChange}>
-      <Dialog.Popup className="w-[24rem] p-6">
+    <Modal.Root open={true} onOpenChange={() => resolve(false)}>
+      <Modal.Popup className="w-[24rem] p-6">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">
             <h1 className="text-lg font-medium">당신의 반려동물을 보여주세요! 🐶🐱</h1>
@@ -74,9 +70,9 @@ function AuthDialog() {
           </button> */}
           </div>
         </div>
-      </Dialog.Popup>
-    </Dialog.Root>
+      </Modal.Popup>
+    </Modal.Root>
   );
 }
 
-export default AuthDialog;
+export default AuthModal;

@@ -6,7 +6,7 @@ import {
   photoControllerGetRepliesResponseSuccess,
   usePhotoControllerDeleteComment,
 } from '@/api/photo';
-import { useConfirmStore } from '@/stores/confirm';
+import { useModalStore } from '@/stores/modal';
 import { formatDate } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -15,6 +15,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../modal/ConfirmModal';
 import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 
 interface Props {
@@ -26,8 +27,8 @@ interface Props {
 function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
   const [isReplying, setIsReplying] = useState(false);
   const [isModify, setIsModify] = useState(false);
-  const { openConfirm, closeConfirm } = useConfirmStore();
   const queryClient = useQueryClient();
+  const modals = useModalStore();
 
   const { mutateAsync: deleteCommentMutateAsync } = usePhotoControllerDeleteComment({
     mutation: {
@@ -78,30 +79,30 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
     },
   });
 
-  const handleDeleteButtonClick = () => {
-    openConfirm({
-      title: '답글을 삭제할까요?',
-      description: '삭제된 답글은 복구할 수 없어요.',
-      onConfirm: () =>
-        toast.promise(
-          deleteCommentMutateAsync(
-            {
-              id: photoId,
-              commentId: reply.id,
-            },
-            {
-              onSuccess: () => {
-                closeConfirm();
-              },
-            },
-          ),
-          {
-            loading: '답글을 삭제하고 있어요...',
-            success: '답글이 삭제되었어요!',
-            error: '답글 삭제에 실패했어요.',
-          },
-        ),
+  const handleDeleteButtonClick = async () => {
+    const confirmed = await modals.push({
+      key: 'delete-reply-confirm-modal',
+      component: ConfirmModal,
+      props: {
+        title: '답글을 삭제할까요?',
+        description: '삭제된 답글은 복구할 수 없어요.',
+        confirmText: '삭제',
+      },
     });
+
+    if (confirmed) {
+      toast.promise(
+        deleteCommentMutateAsync({
+          id: photoId,
+          commentId: reply.id,
+        }),
+        {
+          loading: '답글을 삭제하고 있어요...',
+          success: '답글이 삭제되었어요!',
+          error: '답글 삭제에 실패했어요.',
+        },
+      );
+    }
   };
 
   return (

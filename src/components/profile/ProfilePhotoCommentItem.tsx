@@ -4,7 +4,7 @@ import {
   photoControllerGetCommentsResponseSuccess,
   usePhotoControllerDeleteComment,
 } from '@/api/photo';
-import { useConfirmStore } from '@/stores/confirm';
+import { useModalStore } from '@/stores/modal';
 import { formatDate, formatNumber } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -13,6 +13,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../modal/ConfirmModal';
 import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 import ProfilePhotoReplyList from './ProfilePhotoReplyList';
 import ProfilePhotoReplyListSkeleton from './ProfilePhotoReplyListSkeleton';
@@ -26,8 +27,8 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [isModify, setIsModify] = useState(false);
-  const { openConfirm, closeConfirm } = useConfirmStore();
   const queryClient = useQueryClient();
+  const modals = useModalStore();
 
   const { mutateAsync: deleteCommentMutateAsync } = usePhotoControllerDeleteComment({
     mutation: {
@@ -53,30 +54,30 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
     },
   });
 
-  const handleDeleteButtonClick = () => {
-    openConfirm({
-      title: '댓글을 삭제할까요?',
-      description: '삭제된 댓글은 복구할 수 없어요.',
-      onConfirm: () =>
-        toast.promise(
-          deleteCommentMutateAsync(
-            {
-              id: photoId,
-              commentId: comment.id,
-            },
-            {
-              onSuccess: () => {
-                closeConfirm();
-              },
-            },
-          ),
-          {
-            loading: '댓글을 삭제하고 있어요...',
-            success: '댓글이 삭제되었어요!',
-            error: '댓글 삭제에 실패했어요.',
-          },
-        ),
+  const handleDeleteButtonClick = async () => {
+    const confirmed = await modals.push({
+      key: 'delete-comment-confirm-modal',
+      component: ConfirmModal,
+      props: {
+        title: '댓글을 삭제할까요?',
+        description: '삭제된 댓글은 복구할 수 없어요.',
+        confirmText: '삭제',
+      },
     });
+
+    if (confirmed) {
+      toast.promise(
+        deleteCommentMutateAsync({
+          id: photoId,
+          commentId: comment.id,
+        }),
+        {
+          loading: '댓글을 삭제하고 있어요...',
+          success: '댓글이 삭제되었어요!',
+          error: '댓글 삭제에 실패했어요.',
+        },
+      );
+    }
   };
 
   return (

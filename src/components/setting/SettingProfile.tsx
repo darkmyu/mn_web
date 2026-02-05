@@ -7,7 +7,7 @@ import { LucideSquarePen } from 'lucide-react';
 import Image from 'next/image';
 import { useMemo, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { Dialog } from '../dialog';
+import { Modal } from '../modal';
 
 function SettingProfile() {
   const {
@@ -140,7 +140,7 @@ function SettingProfile() {
         </form>
       </div>
       <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t border-zinc-200 bg-zinc-50 px-8 py-6 dark:border-zinc-700 dark:bg-zinc-900">
-        <Dialog.Close
+        <Modal.Close
           render={
             <button className="cursor-pointer rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800">
               닫기

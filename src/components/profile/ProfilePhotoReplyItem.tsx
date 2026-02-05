@@ -6,6 +6,7 @@ import {
   photoControllerGetRepliesResponseSuccess,
   usePhotoControllerDeleteComment,
 } from '@/api/photo';
+import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatDate } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
@@ -15,6 +16,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import AuthModal from '../modal/AuthModal';
 import ConfirmModal from '../modal/ConfirmModal';
 import ProfilePhotoCommentEditor from './ProfilePhotoCommentEditor';
 
@@ -29,6 +31,7 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
   const [isModify, setIsModify] = useState(false);
   const queryClient = useQueryClient();
   const modals = useModalStore();
+  const { user } = useAuthStore();
 
   const { mutateAsync: deleteCommentMutateAsync } = usePhotoControllerDeleteComment({
     mutation: {
@@ -103,6 +106,17 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
         },
       );
     }
+  };
+
+  const handleReplyButtonClick = () => {
+    if (!user) {
+      return modals.push({
+        key: 'auth-modal',
+        component: AuthModal,
+      });
+    }
+
+    setIsReplying(!isReplying);
   };
 
   return (
@@ -184,7 +198,7 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
             <div className="flex items-center gap-4 pt-3">
               <div
                 className="flex cursor-pointer items-center gap-1 text-zinc-500 dark:text-zinc-400"
-                onClick={() => setIsReplying(!isReplying)}
+                onClick={handleReplyButtonClick}
               >
                 <span className="text-sm">답글 작성</span>
                 <LucideReply className="h-3.5 w-3.5" />

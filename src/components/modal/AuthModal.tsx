@@ -1,9 +1,9 @@
 'use client';
 
+import { getAuthControllerGoogleUrl, getAuthControllerKakaoUrl, getAuthControllerNaverUrl } from '@/api/auth';
 import GoogleLogo from '@/assets/images/google.png';
 import KakaoLogo from '@/assets/images/kakao.png';
 import NaverLogo from '@/assets/images/naver.png';
-import { API_ROUTE_OAUTH_GOOGLE, API_ROUTE_OAUTH_KAKAO, API_ROUTE_OAUTH_NAVER } from '@/constants/route';
 import { ModalControllerProps } from '@/stores/modal';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,15 +13,15 @@ type Props = ModalControllerProps<boolean>;
 
 function AuthModal({ resolve }: Props) {
   const handleGoogleLogin = () => {
-    window.location.href = API_ROUTE_OAUTH_GOOGLE;
+    window.location.href = `${getAuthControllerGoogleUrl()}?redirect=${window.location.href}`;
   };
 
   const handleNaverLogin = () => {
-    window.location.href = API_ROUTE_OAUTH_NAVER;
+    window.location.href = `${getAuthControllerNaverUrl()}?redirect=${window.location.href}`;
   };
 
   const handleKakaoLogin = () => {
-    window.location.href = API_ROUTE_OAUTH_KAKAO;
+    window.location.href = `${getAuthControllerKakaoUrl()}?redirect=${window.location.href}`;
   };
 
   return (

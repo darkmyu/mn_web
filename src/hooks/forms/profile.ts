@@ -8,11 +8,15 @@ export function useProfileForm(defaultValues?: UserUpdateRequest) {
     mode: 'onChange',
     resolver: zodResolver(
       z.object({
-        nickname: z.string().min(1),
-        about: z.string().optional().nullable(),
+        nickname: z.string().min(1).max(30),
+        about: z.string().max(1000).optional().nullable(),
         thumbnail: z.string().optional().nullable(),
       }),
     ),
-    defaultValues,
+    defaultValues: {
+      nickname: '',
+      about: '',
+      ...defaultValues,
+    },
   });
 }

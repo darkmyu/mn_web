@@ -10,7 +10,7 @@ export function useAnimalForm(defaultValues?: AnimalCreateRequest) {
     resolver: zodResolver(
       z.object({
         breedId: z.number().min(1),
-        name: z.string().trim().min(1),
+        name: z.string().trim().min(1).max(30),
         gender: z.enum(['MALE', 'FEMALE']),
         birthday: z
           .string()
@@ -25,6 +25,7 @@ export function useAnimalForm(defaultValues?: AnimalCreateRequest) {
       }),
     ),
     defaultValues: {
+      name: '',
       gender: 'MALE',
       ...defaultValues,
     },

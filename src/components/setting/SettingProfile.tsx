@@ -28,6 +28,8 @@ function SettingProfile() {
   });
 
   const thumbnail = watch('thumbnail');
+  const nickname = watch('nickname');
+  const about = watch('about');
 
   const { setUser } = useAuthStore();
   const thumbnailRef = useRef<HTMLInputElement>(null);
@@ -107,34 +109,53 @@ function SettingProfile() {
               <label htmlFor="nickname" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 이름
               </label>
-              <input
-                {...register('nickname')}
-                type="text"
-                autoComplete="off"
-                placeholder="사용하실 이름을 입력해주세요"
-                className={`rounded-lg border px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:text-zinc-100 dark:placeholder-zinc-500 ${
+              <div
+                className={`flex items-center gap-3 rounded-lg border px-4 py-3 focus-within:ring-0 dark:text-zinc-100 ${
                   false
-                    ? 'border-red-400 focus:border-red-400 dark:border-red-400 dark:focus:border-red-400'
-                    : 'border-zinc-200 focus:border-zinc-400 dark:border-zinc-700 dark:focus:border-zinc-500'
+                    ? 'border-red-400 focus-within:border-red-400 dark:border-red-400 dark:focus-within:border-red-400'
+                    : 'border-zinc-200 focus-within:border-zinc-400 dark:border-zinc-700 dark:focus-within:border-zinc-500'
                 }`}
-              />
+              >
+                <input
+                  {...register('nickname', {
+                    onChange: (e) => {
+                      if (e.target.value.length > 30) {
+                        e.target.value = e.target.value.slice(0, 30);
+                        setValue('nickname', e.target.value);
+                      }
+                    },
+                  })}
+                  type="text"
+                  autoComplete="off"
+                  placeholder="사용하실 이름을 입력해주세요"
+                  className="flex-1 bg-transparent text-sm placeholder-zinc-400 outline-none dark:placeholder-zinc-500"
+                />
+                <span className="text-xs text-zinc-400 dark:text-zinc-500">{`${nickname?.length}/30`}</span>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="about" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 소개
               </label>
-              <textarea
-                {...register('about')}
-                rows={3}
-                spellCheck="false"
-                autoComplete="off"
-                placeholder="반려동물과 함께하는 소중한 일상을 소개해주세요"
-                className={`field-sizing-content min-h-24 resize-none rounded-lg border px-4 py-3 text-sm placeholder-zinc-400 focus:ring-0 focus:outline-none dark:text-zinc-100 dark:placeholder-zinc-500 ${
-                  false
-                    ? 'border-red-400 focus:border-red-400 dark:border-red-400 dark:focus:border-red-400'
-                    : 'border-zinc-200 focus:border-zinc-400 dark:border-zinc-700 dark:focus:border-zinc-500'
-                }`}
-              />
+              <div className="flex min-h-30 flex-col gap-3 rounded-lg border border-zinc-200 px-4 py-3 focus-within:border-zinc-400 focus-within:ring-0 dark:border-zinc-700 dark:focus-within:border-zinc-500">
+                <textarea
+                  {...register('about', {
+                    onChange: (e) => {
+                      if (e.target.value.length > 1000) {
+                        e.target.value = e.target.value.slice(0, 1000);
+                        setValue('about', e.target.value);
+                      }
+                    },
+                  })}
+                  spellCheck="false"
+                  autoComplete="off"
+                  placeholder="반려동물과 함께하는 소중한 일상을 소개해주세요"
+                  className="field-sizing-content flex-1 resize-none bg-transparent text-sm placeholder-zinc-400 outline-none dark:placeholder-zinc-500"
+                />
+                <div className="flex justify-end">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500">{`${about?.length}/1000`}</span>
+                </div>
+              </div>
             </div>
           </div>
         </form>

@@ -16,11 +16,15 @@ export function usePhotoForm(defaultValues?: PhotoCreateRequest) {
           height: z.number().min(1),
           mimetype: z.string().min(1),
         }),
-        title: z.string().optional().nullable(),
-        description: z.string().optional().nullable(),
+        title: z.string().max(100).optional().nullable(),
+        description: z.string().max(1000).optional().nullable(),
         tags: z.string().array().optional(),
       }),
     ),
-    defaultValues,
+    defaultValues: {
+      title: '',
+      description: '',
+      ...defaultValues,
+    },
   });
 }

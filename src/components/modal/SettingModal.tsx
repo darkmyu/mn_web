@@ -101,7 +101,7 @@ function SettingModal({ resolve }: Props) {
                 />
               </nav>
             </aside>
-            <main className="flex-1">
+            <main className="flex-1 overflow-auto">
               {activeTab === 'profile' && (
                 <Suspense
                   fallback={

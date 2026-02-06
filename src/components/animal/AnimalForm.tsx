@@ -285,18 +285,30 @@ function AnimalForm({ animal }: Props) {
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 이름 <span className="text-sm text-red-700">*</span>
               </label>
-              <input
-                {...register('name')}
-                type="text"
-                autoComplete="off"
-                defaultValue={name}
-                placeholder="반려동물의 이름을 입력해주세요"
-                className={`rounded-lg border px-4 py-3 text-sm focus:ring-0 focus:outline-none dark:text-zinc-100 ${
+              <div
+                className={`flex items-center gap-3 rounded-lg border px-4 py-3 focus-within:ring-0 ${
                   errors.name
-                    ? 'border-red-400 placeholder-red-400 focus:border-red-400 dark:border-red-400 dark:focus:border-red-400'
-                    : 'border-zinc-200 placeholder-zinc-400 focus:border-zinc-400 dark:border-zinc-700 dark:placeholder-zinc-500 dark:focus:border-zinc-500'
+                    ? 'border-red-400 focus-within:border-red-400 dark:border-red-400 dark:focus-within:border-red-400'
+                    : 'border-zinc-200 focus-within:border-zinc-400 dark:border-zinc-700 dark:focus-within:border-zinc-500'
                 }`}
-              />
+              >
+                <input
+                  {...register('name', {
+                    onChange: (e) => {
+                      if (e.target.value.length > 30) {
+                        e.target.value = e.target.value.slice(0, 30);
+                        setValue('name', e.target.value);
+                      }
+                    },
+                  })}
+                  type="text"
+                  autoComplete="off"
+                  defaultValue={name}
+                  placeholder="반려동물의 이름을 입력해주세요"
+                  className="flex-1 bg-transparent text-sm placeholder-zinc-400 outline-none dark:text-zinc-100 dark:placeholder-zinc-500"
+                />
+                <span className="text-xs text-zinc-400 dark:text-zinc-500">{`${name.length}/30`}</span>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -338,7 +350,7 @@ function AnimalForm({ animal }: Props) {
                 autoComplete="off"
                 className={`rounded-lg border px-4 py-3 text-sm focus:ring-0 focus:outline-none dark:text-zinc-100 ${
                   errors.birthday
-                    ? 'border-red-400 placeholder-red-400 focus:border-red-400 dark:border-red-400 dark:focus:border-red-400'
+                    ? 'border-red-400 focus:border-red-400 dark:border-red-400 dark:focus:border-red-400'
                     : 'border-zinc-200 placeholder-zinc-400 focus:border-zinc-400 dark:border-zinc-700 dark:placeholder-zinc-500 dark:focus:border-zinc-500'
                 }`}
               />

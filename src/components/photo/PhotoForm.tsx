@@ -312,27 +312,48 @@ function PhotoForm({ photo }: Props) {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">제목</label>
-              <input
-                {...register('title')}
-                type="text"
-                spellCheck="false"
-                autoComplete="off"
-                defaultValue={title ?? ''}
-                placeholder="사진 제목을 입력해주세요"
-                className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
-              />
+              <div className="flex items-center gap-3 rounded-lg border border-zinc-200 px-4 py-3 focus-within:border-zinc-400 focus-within:ring-0 dark:border-zinc-700 dark:focus-within:border-zinc-500">
+                <input
+                  {...register('title', {
+                    onChange: (e) => {
+                      if (e.target.value.length > 100) {
+                        e.target.value = e.target.value.slice(0, 100);
+                        setValue('title', e.target.value);
+                      }
+                    },
+                  })}
+                  type="text"
+                  spellCheck="false"
+                  autoComplete="off"
+                  defaultValue={title ?? ''}
+                  placeholder="사진 제목을 입력해주세요"
+                  className="flex-1 bg-transparent text-sm placeholder-zinc-400 outline-none dark:placeholder-zinc-500"
+                />
+                <span className="text-xs text-zinc-400 dark:text-zinc-500">{`${title?.length}/100`}</span>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">설명</label>
-              <textarea
-                {...register('description')}
-                rows={5}
-                spellCheck="false"
-                autoComplete="off"
-                defaultValue={description ?? ''}
-                placeholder="사진에 대한 설명을 입력해주세요"
-                className="resize-none rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
-              />
+              <div className="flex min-h-30 flex-col gap-3 rounded-lg border border-zinc-200 px-4 py-3 focus-within:border-zinc-400 focus-within:ring-0 dark:border-zinc-700 dark:focus-within:border-zinc-500">
+                <textarea
+                  {...register('description', {
+                    onChange: (e) => {
+                      if (e.target.value.length > 1000) {
+                        e.target.value = e.target.value.slice(0, 1000);
+                        setValue('description', e.target.value);
+                      }
+                    },
+                  })}
+                  spellCheck="false"
+                  autoComplete="off"
+                  defaultValue={description ?? ''}
+                  placeholder="사진에 대한 설명을 입력해주세요"
+                  className="field-sizing-content flex-1 resize-none bg-transparent text-sm placeholder-zinc-400 outline-none dark:placeholder-zinc-500"
+                />
+                <div className="flex justify-end">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500">{`${description?.length}/1000`}</span>
+                </div>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-2">
@@ -343,7 +364,7 @@ function PhotoForm({ photo }: Props) {
                   autoComplete="off"
                   placeholder="태그를 입력 후 엔터를 눌러주세요"
                   onKeyDown={handleTagKeyDown}
-                  className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
+                  className="rounded-lg border border-zinc-200 bg-transparent px-4 py-3 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:ring-0 focus:outline-none dark:border-zinc-700 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
                 />
               </div>
               {tags && (

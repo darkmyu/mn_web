@@ -8,7 +8,7 @@ export const useAuthRegisterForm = () => {
     mode: 'onChange',
     resolver: zodResolver(
       z.object({
-        nickname: z.string().trim().min(1, '이름을 입력해주세요.'),
+        nickname: z.string().trim().min(1, '이름을 입력해주세요.').max(30, '30자 이내로 입력해주세요.'),
         username: z
           .string()
           .trim()

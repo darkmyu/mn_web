@@ -20,7 +20,7 @@ function SettingProfile() {
     register,
     setValue,
     handleSubmit,
-    formState: { isValid, isDirty },
+    formState: { errors, isValid, isDirty },
   } = useProfileForm({
     nickname: user.nickname,
     about: user.about,
@@ -111,7 +111,7 @@ function SettingProfile() {
               </label>
               <div
                 className={`flex items-center gap-3 rounded-lg border px-4 py-3 focus-within:ring-0 dark:text-zinc-100 ${
-                  false
+                  errors.nickname
                     ? 'border-red-400 focus-within:border-red-400 dark:border-red-400 dark:focus-within:border-red-400'
                     : 'border-zinc-200 focus-within:border-zinc-400 dark:border-zinc-700 dark:focus-within:border-zinc-500'
                 }`}

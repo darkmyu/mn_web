@@ -36,6 +36,17 @@ function MobileBottomNavigation() {
   const isCommunityPage = pathname === ROUTE_COMMUNITY_PAGE;
   const isProfilePage = pathname === `/@${user?.username}`;
 
+  const handlePhotosWriteButtonClick = () => {
+    if (!user) {
+      return modals.push({
+        key: 'auth-modal',
+        component: AuthModal,
+      });
+    }
+
+    router.push(ROUTE_PHOTOS_WRITE_PAGE);
+  };
+
   const handleProfileButtonClick = () => {
     if (!user) {
       return modals.push({
@@ -48,7 +59,7 @@ function MobileBottomNavigation() {
   };
 
   return (
-    <nav className="flex h-14 justify-evenly border-t border-zinc-200 px-4 lg:hidden dark:border-zinc-700">
+    <nav className="flex h-15 justify-evenly border-t border-zinc-200 px-4 lg:hidden dark:border-zinc-700">
       <Link href={ROUTE_HOME_PAGE} className="flex flex-1 items-center justify-center text-zinc-800 dark:text-zinc-200">
         {isHomePage && <MdExplore className="h-6 w-6" />}
         {!isHomePage && <MdOutlineExplore className="h-6 w-6" />}
@@ -60,12 +71,12 @@ function MobileBottomNavigation() {
         {isCollectionsPage && <MdPermMedia className="h-6 w-6" />}
         {!isCollectionsPage && <MdOutlinePermMedia className="h-6 w-6" />}
       </Link>
-      <Link
-        href={ROUTE_PHOTOS_WRITE_PAGE}
+      <button
+        onClick={handlePhotosWriteButtonClick}
         className="flex flex-1 items-center justify-center text-zinc-800 dark:text-zinc-200"
       >
         <MdAdd className="h-6 w-6" />
-      </Link>
+      </button>
       <Link
         href={ROUTE_COMMUNITY_PAGE}
         className="flex flex-1 items-center justify-center text-zinc-800 dark:text-zinc-200"
@@ -74,8 +85,8 @@ function MobileBottomNavigation() {
         {!isCommunityPage && <MdOutlineMessage className="h-6 w-6" />}
       </Link>
       <button
-        className="flex flex-1 items-center justify-center text-zinc-800 dark:text-zinc-200"
         onClick={handleProfileButtonClick}
+        className="flex flex-1 items-center justify-center text-zinc-800 dark:text-zinc-200"
       >
         {!user && (
           <>

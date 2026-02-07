@@ -57,11 +57,14 @@ function ProfilePhotoCommentList({ id }: Props) {
             로그인 후 댓글을 작성할 수 있어요.
           </button>
         )}
-        <div className="flex flex-col p-4">
-          {comments.map((comment) => (
-            <ProfilePhotoCommentItem key={comment.id} comment={comment} photoId={id} />
-          ))}
-        </div>
+
+        {comments.length > 0 && (
+          <div className="flex flex-col p-4">
+            {comments.map((comment) => (
+              <ProfilePhotoCommentItem key={comment.id} comment={comment} photoId={id} />
+            ))}
+          </div>
+        )}
 
         {isFetchingNextPage && <ProfilePhotoCommentListSkeleton />}
 

@@ -148,12 +148,14 @@ function PhotoForm({ photo }: Props) {
 
   return (
     <div className="relative flex min-h-dvh flex-col">
-      <div className="sticky top-0 flex items-center justify-between bg-zinc-50 px-4 py-2 dark:bg-zinc-900">
-        <div className="flex items-center gap-4">
+      <div className="sticky top-0 z-10 flex items-center justify-between bg-zinc-50 px-4 py-4 lg:py-2 dark:bg-zinc-900">
+        <div className="flex flex-col lg:flex-row gap-0.5 lg:items-center lg:gap-4">
           <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
             {!isEdit ? '# 반려동물 사진 등록' : '# 반려동물 사진 수정'}
           </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물의 사진을 공유하고 저장해보세요.</p>
+          <p className="text-xs text-zinc-500 lg:text-sm dark:text-zinc-400">
+            반려동물의 사진을 공유하고 저장해보세요.
+          </p>
         </div>
         <button
           disabled={!isValid || isUploadPhotoImagePending}
@@ -164,7 +166,7 @@ function PhotoForm({ photo }: Props) {
         </button>
       </div>
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center">
-        <form className="grid grid-cols-4 gap-8 p-6">
+        <form className="flex flex-col gap-8 px-4 pt-8 pb-16 lg:grid lg:grid-cols-4 lg:p-4">
           <div className="col-span-2 flex h-full flex-col gap-2">
             <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               사진 <span className="text-sm text-red-700">*</span>

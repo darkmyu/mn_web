@@ -99,14 +99,14 @@ function Profile({ username }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 sm:flex-row sm:gap-16">
+    <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
       <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-2 border-zinc-400 dark:border-zinc-600">
         <Image className="rounded-full object-cover" src={target.thumbnail ?? ''} sizes="25vw" alt="" fill priority />
       </div>
-      <div className="flex flex-col items-center gap-6 py-2 sm:items-start">
-        <div className="flex flex-col gap-4 sm:gap-2">
-          <div className="flex items-center justify-center gap-4 sm:justify-start">
-            <p className="text-xl font-medium sm:text-2xl">{target.nickname}</p>
+      <div className="flex flex-col items-center gap-6 py-2 lg:items-start">
+        <div className="flex flex-col gap-4 lg:gap-2">
+          <div className="flex items-center justify-center gap-4 lg:justify-start">
+            <p className="text-xl font-medium lg:text-2xl">{target.nickname}</p>
             {target.isOwner && (
               <button
                 className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"

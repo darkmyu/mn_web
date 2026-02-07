@@ -219,7 +219,7 @@ function ProfilePhotoViewer({ username, id }: Props) {
   return (
     <div className="flex flex-col gap-12 sm:gap-24">
       <div className="relative sm:grid sm:grid-cols-4">
-        <div className="absolute inset-0 opacity-35 blur-3xl">
+        <div className="absolute inset-0 opacity-50 blur-3xl sm:opacity-35">
           <Image className="object-cover" src={photo.image.path} alt="" sizes="50vw" fill priority />
         </div>
         <div

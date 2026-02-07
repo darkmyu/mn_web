@@ -251,7 +251,7 @@ function ProfilePhotoCommentEditor({
       className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700"
     >
       <div className="flex items-start gap-4">
-        <div className="flex h-9 w-9 items-center justify-center">
+        <div className="hidden h-9 w-9 items-center justify-center sm:flex">
           <Image
             className="h-9 w-9 rounded-full object-cover"
             src={user?.thumbnail ?? ''}

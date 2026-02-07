@@ -45,7 +45,7 @@ function ProfilePhotoCommentList({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-semibold">{`댓글 ${formatNumber(total)}개`}</span>
+      <span className="text-sm font-semibold sm:text-base">{`댓글 ${formatNumber(total)}개`}</span>
       <div className="flex flex-col gap-4">
         {user && <ProfilePhotoCommentEditor photoId={id} />}
         {!user && (

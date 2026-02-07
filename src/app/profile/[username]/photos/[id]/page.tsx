@@ -13,7 +13,7 @@ export default async function ProfilePhotosViewerPage({ params }: Props) {
   await profileControllerPhoto(username, id).catch(() => notFound());
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 py-16">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 px-4 py-8 sm:py-16">
       <ProfilePhotoViewerSuspense username={username} id={id} />
       <ProfilePhotoCommentListSuspense id={id} />
     </div>

@@ -99,40 +99,42 @@ function Profile({ username }: Props) {
   };
 
   return (
-    <div className="flex gap-16">
+    <div className="flex flex-col items-center gap-8 sm:flex-row sm:gap-16">
       <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-2 border-zinc-400 dark:border-zinc-600">
         <Image className="rounded-full object-cover" src={target.thumbnail ?? ''} sizes="25vw" alt="" fill priority />
       </div>
-      <div className="flex flex-col py-2">
-        <div className="mb-2 flex items-center gap-4">
-          <p className="text-2xl font-medium">{target.nickname}</p>
-          {target.isOwner && (
-            <button
-              className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-              onClick={handleSettingButtonClick}
-            >
-              프로필 편집
-            </button>
-          )}
-          {!target.isOwner && (
-            <button
-              className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-              onClick={handleFollowButtonClick}
-            >
-              {target.isFollowing ? '팔로우 중' : '팔로우'}
-            </button>
-          )}
-        </div>
-        <div className="mb-6 flex items-center">
-          <p className="text-base font-semibold">{`@${target.username}`}</p>
-          <span className="mx-3 text-xs text-zinc-600">•</span>
-          <p className="text-base">
-            <span className="font-semibold">{formatNumber(target.followers)}</span> 팔로워
-          </p>
-          <span className="mx-3 text-xs text-zinc-600">•</span>
-          <p className="text-base">
-            <span className="font-semibold">{formatNumber(target.followings)}</span> 팔로우
-          </p>
+      <div className="flex flex-col items-center gap-6 py-2 sm:items-start">
+        <div className="flex flex-col gap-4 sm:gap-2">
+          <div className="flex items-center justify-center gap-4 sm:justify-start">
+            <p className="text-xl font-medium sm:text-2xl">{target.nickname}</p>
+            {target.isOwner && (
+              <button
+                className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                onClick={handleSettingButtonClick}
+              >
+                프로필 편집
+              </button>
+            )}
+            {!target.isOwner && (
+              <button
+                className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                onClick={handleFollowButtonClick}
+              >
+                {target.isFollowing ? '팔로우 중' : '팔로우'}
+              </button>
+            )}
+          </div>
+          <div className="flex items-center">
+            <p className="text-base font-semibold">{`@${target.username}`}</p>
+            <span className="mx-3 text-xs text-zinc-600">•</span>
+            <p className="text-base">
+              <span className="font-semibold">{formatNumber(target.followers)}</span> 팔로워
+            </p>
+            <span className="mx-3 text-xs text-zinc-600">•</span>
+            <p className="text-base">
+              <span className="font-semibold">{formatNumber(target.followings)}</span> 팔로우
+            </p>
+          </div>
         </div>
         <p className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-400">{target.about}</p>
       </div>

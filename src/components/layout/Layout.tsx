@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from '../sidebar/Sidebar';
+import MobileBottomNavigation from './MobileBottomNavigation';
 
 interface Props {
   children: React.ReactNode;
@@ -7,9 +8,10 @@ interface Props {
 
 function Layout({ children }: Props) {
   return (
-    <div className="relative flex min-h-dvh bg-zinc-50 dark:bg-zinc-900">
+    <div className="relative flex h-dvh flex-col overflow-hidden lg:flex-row">
       <Sidebar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
+      <MobileBottomNavigation />
     </div>
   );
 }

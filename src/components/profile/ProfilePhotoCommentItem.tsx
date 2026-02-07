@@ -170,6 +170,7 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
               </button>
               {comment.replyCount > 0 && (
                 <button
+                  type="button"
                   className="flex cursor-pointer items-center gap-1 text-emerald-600 dark:text-emerald-500"
                   onClick={() => setIsExpanded(!isExpanded)}
                 >

@@ -25,13 +25,13 @@ function ProfileAnimalList({ username }: Props) {
   if (!isOwner && animals.items.length === 0) return null;
 
   return (
-    <div className="flex items-stretch gap-4">
+    <div className="scrollbar-hide flex w-full items-stretch gap-4 overflow-x-auto">
       {animals.items.map((animal) => (
         <Popover.Root key={animal.id}>
           <Popover.Trigger
             nativeButton={false}
             render={
-              <div className="flex cursor-pointer items-center gap-3 rounded-full bg-zinc-100 p-1.5 pr-4 dark:bg-zinc-800">
+              <div className="flex shrink-0 cursor-pointer items-center gap-3 rounded-full bg-zinc-100 p-1.5 pr-4 dark:bg-zinc-800">
                 <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
                   {animal.thumbnail && (
                     <Image
@@ -91,13 +91,14 @@ function ProfileAnimalList({ username }: Props) {
         </Popover.Root>
       ))}
       {isOwner && (
-        <Link href={ROUTE_ANIMALS_WRITE_PAGE}>
-          <div className="flex cursor-pointer items-center gap-3 rounded-full border-2 border-dashed border-zinc-300 p-1.5 pr-4 text-zinc-500 transition-colors hover:border-zinc-400 hover:text-zinc-600 dark:border-zinc-600 dark:text-zinc-400 dark:hover:border-zinc-500 dark:hover:text-zinc-400">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-              <Plus size={20} />
-            </div>
-            <p className="text-sm font-semibold">반려동물 등록</p>
+        <Link
+          href={ROUTE_ANIMALS_WRITE_PAGE}
+          className="flex shrink-0 cursor-pointer items-center gap-3 rounded-full border-2 border-dashed border-zinc-300 p-1.5 pr-4 text-zinc-500 transition-colors hover:border-zinc-400 hover:text-zinc-600 dark:border-zinc-600 dark:text-zinc-400 dark:hover:border-zinc-500 dark:hover:text-zinc-400"
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
+            <Plus size={20} />
           </div>
+          <p className="text-sm font-semibold">반려동물 등록</p>
         </Link>
       )}
     </div>

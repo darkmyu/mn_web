@@ -59,7 +59,7 @@ function MobileBottomNavigation() {
   };
 
   return (
-    <nav className="fixed bottom-0 z-50 flex h-15 w-full justify-evenly border-t border-zinc-200 bg-zinc-50 px-4 lg:hidden dark:border-zinc-700 dark:bg-zinc-900">
+    <nav className="flex h-15 justify-evenly border-t border-zinc-200 bg-zinc-50 px-4 lg:hidden dark:border-zinc-700 dark:bg-zinc-900">
       <Link href={ROUTE_HOME_PAGE} className="flex flex-1 items-center justify-center text-zinc-800 dark:text-zinc-200">
         {isHomePage && <MdExplore className="h-6 w-6" />}
         {!isHomePage && <MdOutlineExplore className="h-6 w-6" />}

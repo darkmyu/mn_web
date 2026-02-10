@@ -1,12 +1,12 @@
+'use client';
+
 import { useAnimalControllerAllSuspense } from '@/api/animal';
 import { AnimalResponse } from '@/api/index.schemas';
-import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
+import { Sheet } from '@/components/sheet';
 import { ModalControllerProps } from '@/stores/modal';
-import { LucideCat, LucideCheck, LucideDog, X } from 'lucide-react';
+import { Check, LucideCat, LucideDog } from 'lucide-react';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, Suspense, useState } from 'react';
-import { Modal } from '.';
-import SelectAnimalSheet from '../sheet/SelectAnimalSheet';
 
 interface AnimalListProps {
   selectedAnimals: AnimalResponse[];
@@ -19,7 +19,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
   } = useAnimalControllerAllSuspense();
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col pb-24">
       {animals.items.map((animal) => {
         const isSelected = selectedAnimals.some((v) => v.id === animal.id);
 
@@ -33,7 +33,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
           <li
             key={animal.id}
             onClick={handleClick}
-            className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
+            className="flex cursor-pointer items-center justify-between rounded-md p-4 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
           >
             <div className="flex items-center gap-3">
               <div className="relative flex h-12 w-12 items-center justify-center">
@@ -62,7 +62,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">{animal.breed.name}</p>
               </div>
             </div>
-            {isSelected && <LucideCheck size={20} className="text-emerald-600" />}
+            {isSelected && <Check size={20} className="text-emerald-600" />}
           </li>
         );
       })}
@@ -72,9 +72,9 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
 
 function AnimalListSkeleton() {
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col pb-24">
       {Array.from({ length: 8 }).map((_, index) => (
-        <li key={index} className="flex items-center gap-3 rounded-md p-2">
+        <li key={index} className="flex items-center gap-3 rounded-md p-4">
           <div className="h-12 w-12 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-700" />
           <div className="flex flex-col gap-2">
             <div className="h-3 w-28 animate-pulse rounded bg-zinc-200 dark:bg-zinc-700" />
@@ -86,61 +86,51 @@ function AnimalListSkeleton() {
   );
 }
 
-interface SelectAnimalModalProps extends ModalControllerProps<AnimalResponse[]> {
+interface SelectAnimalSheetProps extends ModalControllerProps<AnimalResponse[]> {
   initialAnimals: AnimalResponse[];
 }
 
-function SelectAnimalModal(props: SelectAnimalModalProps) {
-  const { resolve, initialAnimals } = props;
-  const isLaptop = useMediaQuery(LAPTOP_QUERY);
-  const [selectedAnimals, setSelectedAnimals] = useState(initialAnimals);
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) resolve(initialAnimals);
-  };
+function SelectAnimalSheet({ resolve, initialAnimals }: SelectAnimalSheetProps) {
+  const [isOpen, setIsOpen] = useState(true);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(initialAnimals);
 
   const handleConfirm = () => {
-    resolve(selectedAnimals);
+    setIsConfirmed(true);
+    setIsOpen(false);
   };
 
-  if (!isLaptop) {
-    return <SelectAnimalSheet {...props} />;
-  }
+  const handleCloseEnd = () => {
+    resolve(isConfirmed ? selectedAnimals : initialAnimals);
+  };
 
   return (
-    <Modal.Root open={true} onOpenChange={handleOpenChange}>
-      <Modal.Popup>
-        <div className="flex w-[28rem] flex-col gap-6 p-6">
-          <div className="flex items-center justify-between">
-            <h1 className="font-medium">반려동물 선택</h1>
-            <Modal.Close
-              render={
-                <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-                  <X size={20} />
-                </button>
-              }
-            />
-          </div>
-          <div className="scrollbar-hide h-80 overflow-y-auto">
+    <Sheet.Root isOpen={isOpen} detent="content" onClose={() => setIsOpen(false)} onCloseEnd={handleCloseEnd}>
+      <Sheet.Backdrop onTap={() => setIsOpen(false)} />
+      <Sheet.Container>
+        <Sheet.Header>
+          <Sheet.DragIndicator />
+          <h1 className="p-4 font-medium">반려동물 선택</h1>
+        </Sheet.Header>
+        <Sheet.Content>
+          <div className="relative h-[70dvh]">
             <Suspense fallback={<AnimalListSkeleton />}>
               <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
             </Suspense>
           </div>
-          <Modal.Close
-            render={
-              <button
-                onClick={handleConfirm}
-                disabled={selectedAnimals.length === 0}
-                className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
-              >
-                선택 완료
-              </button>
-            }
-          />
-        </div>
-      </Modal.Popup>
-    </Modal.Root>
+          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent p-4 pt-10 dark:from-zinc-900 dark:via-zinc-900">
+            <button
+              onClick={handleConfirm}
+              disabled={selectedAnimals.length === 0}
+              className="w-full cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+            >
+              선택 완료
+            </button>
+          </div>
+        </Sheet.Content>
+      </Sheet.Container>
+    </Sheet.Root>
   );
 }
 
-export default SelectAnimalModal;
+export default SelectAnimalSheet;

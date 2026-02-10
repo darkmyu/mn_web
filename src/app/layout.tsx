@@ -4,6 +4,7 @@ import Layout from '@/components/layout/Layout';
 import ModalRenderer from '@/components/modal/ModalRenderer';
 import AuthProvider from '@/components/provider/AuthProvider';
 import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';
+import { Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
 import React from 'react';
@@ -16,6 +17,11 @@ interface Props {
 const pretendardFonts = localFont({
   src: '../assets/fonts/PretendardVariable.woff2',
 });
+
+export const viewport: Viewport = {
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export default function RootLayout({ children }: Props) {
   return (

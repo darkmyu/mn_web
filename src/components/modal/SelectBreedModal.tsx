@@ -1,5 +1,7 @@
 import { useBreedControllerAllSuspense } from '@/api/breed';
 import { BreedResponse, BreedResponseSpecies } from '@/api/index.schemas';
+import SelectBreedSheet from '@/components/sheet/SelectBreedSheet';
+import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps } from '@/stores/modal';
 import { getChoseong } from 'es-hangul';
 import { Check, Search, X } from 'lucide-react';
@@ -82,7 +84,9 @@ interface SelectBreedModalProps extends ModalControllerProps<BreedResponse | nul
   initialSpecies: BreedResponseSpecies;
 }
 
-function SelectBreedModal({ resolve, initialBreed, initialSpecies }: SelectBreedModalProps) {
+function SelectBreedModal(props: SelectBreedModalProps) {
+  const { resolve, initialBreed, initialSpecies } = props;
+  const isLaptop = useMediaQuery(LAPTOP_QUERY);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleOpenChange = (open: boolean) => {
@@ -92,6 +96,10 @@ function SelectBreedModal({ resolve, initialBreed, initialSpecies }: SelectBreed
   const handleBreedClick = (breed: BreedResponse) => {
     resolve(breed);
   };
+
+  if (!isLaptop) {
+    return <SelectBreedSheet {...props} />;
+  }
 
   return (
     <Modal.Root open={true} onOpenChange={handleOpenChange}>

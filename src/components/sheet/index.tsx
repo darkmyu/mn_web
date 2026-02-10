@@ -3,10 +3,24 @@ import { Sheet as ReactModalSheet } from 'react-modal-sheet';
 
 export const Sheet = {
   Root: ReactModalSheet,
+  Header: ReactModalSheet.Header,
+  DragIndicator: SheetDragIndicator,
   Backdrop: SheetBackdrop,
   Container: SheetContainer,
   Content: SheetContent,
 };
+
+function SheetDragIndicator({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<typeof ReactModalSheet.DragIndicator>) {
+  return (
+    <ReactModalSheet.DragIndicator className={`flex justify-center p-3 ${className}`} {...props}>
+      {children}
+    </ReactModalSheet.DragIndicator>
+  );
+}
 
 function SheetBackdrop({ children, className, ...props }: React.ComponentProps<typeof ReactModalSheet.Backdrop>) {
   return (

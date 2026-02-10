@@ -4,6 +4,8 @@ import { getAuthControllerGoogleUrl, getAuthControllerKakaoUrl, getAuthControlle
 import GoogleLogo from '@/assets/images/google.png';
 import KakaoLogo from '@/assets/images/kakao.png';
 import NaverLogo from '@/assets/images/naver.png';
+import AuthSheet from '@/components/sheet/AuthSheet';
+import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps } from '@/stores/modal';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,7 +13,10 @@ import { Modal } from '.';
 
 type Props = ModalControllerProps<boolean>;
 
-function AuthModal({ resolve }: Props) {
+function AuthModal(props: Props) {
+  const { resolve } = props;
+  const isLaptop = useMediaQuery(LAPTOP_QUERY);
+
   const handleGoogleLogin = () => {
     window.location.href = `${getAuthControllerGoogleUrl()}?redirect=${window.location.href}`;
   };
@@ -23,6 +28,10 @@ function AuthModal({ resolve }: Props) {
   const handleKakaoLogin = () => {
     window.location.href = `${getAuthControllerKakaoUrl()}?redirect=${window.location.href}`;
   };
+
+  if (!isLaptop) {
+    return <AuthSheet {...props} />;
+  }
 
   return (
     <Modal.Root open={true} onOpenChange={() => resolve(false)}>

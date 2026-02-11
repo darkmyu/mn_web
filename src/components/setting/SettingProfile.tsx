@@ -38,7 +38,7 @@ function SettingProfile() {
   const { mutate: uploadProfileThumbnailMutate, isPending: isProfileThumbnailPending } = useUserControllerThumbnail({
     mutation: {
       onSuccess: (response) => {
-        setValue('thumbnail', response.data.path);
+        setValue('thumbnail', response.data.path, { shouldDirty: true });
       },
     },
   });

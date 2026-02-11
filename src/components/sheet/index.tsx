@@ -2,13 +2,21 @@ import React, { useLayoutEffect, useRef } from 'react';
 import { Sheet as ReactModalSheet } from 'react-modal-sheet';
 
 export const Sheet = {
-  Root: ReactModalSheet,
+  Root: SheetRoot,
   Header: ReactModalSheet.Header,
   DragIndicator: SheetDragIndicator,
   Backdrop: SheetBackdrop,
   Container: SheetContainer,
   Content: SheetContent,
 };
+
+function SheetRoot({ children, className, ...props }: React.ComponentProps<typeof ReactModalSheet>) {
+  return (
+    <ReactModalSheet className={`z-10! ${className}`} {...props}>
+      {children}
+    </ReactModalSheet>
+  );
+}
 
 function SheetDragIndicator({
   children,

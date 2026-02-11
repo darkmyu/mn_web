@@ -20,7 +20,10 @@ function SettingDisplay() {
   return (
     <div className="animate-fade-in p-8">
       <div className="flex flex-col gap-3">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">테마</label>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200">테마</label>
+          <p className="text-xs text-zinc-500">애플리케이션의 테마를 설정합니다.</p>
+        </div>
         <div className="flex w-fit min-w-80 items-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
           <button
             onClick={() => setTheme('light')}
@@ -74,7 +77,7 @@ function SettingDisplay() {
               />
             )}
             <LucideMonitor className="relative z-10 h-4 w-4" />
-            <span className="relative z-10">자동</span>
+            <span className="relative z-10">시스템</span>
           </button>
         </div>
       </div>

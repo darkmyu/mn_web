@@ -21,10 +21,9 @@ function MobileSettingDisplay() {
     <div className="flex flex-col gap-8 p-6">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200">화면 설정</label>
+          <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200">테마</label>
           <p className="text-xs text-zinc-500">애플리케이션의 테마를 설정합니다.</p>
         </div>
-
         <div className="grid grid-cols-3 gap-2 rounded-2xl bg-zinc-100 p-1.5 dark:bg-zinc-800">
           <button
             onClick={() => setTheme('light')}
@@ -42,7 +41,6 @@ function MobileSettingDisplay() {
             <LucideSun className="relative z-10 h-5 w-5" />
             <span className="relative z-10 text-xs font-bold">라이트</span>
           </button>
-
           <button
             onClick={() => setTheme('dark')}
             className={`relative flex flex-col items-center justify-center gap-2 rounded-xl py-4 transition-all active:scale-[0.95] ${
@@ -59,7 +57,6 @@ function MobileSettingDisplay() {
             <LucideMoon className="relative z-10 h-5 w-5" />
             <span className="relative z-10 text-xs font-bold">다크</span>
           </button>
-
           <button
             onClick={() => setTheme('system')}
             className={`relative flex flex-col items-center justify-center gap-2 rounded-xl py-4 transition-all active:scale-[0.95] ${
@@ -78,7 +75,6 @@ function MobileSettingDisplay() {
           </button>
         </div>
       </div>
-
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200">미리보기</label>

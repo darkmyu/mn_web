@@ -9,7 +9,7 @@ function TagPhotoMasonrySkeleton() {
         <div className="h-8 w-32 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
         <div className="h-5 w-48 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
       </div>
-      <PhotoMasonrySkeleton count={40} />
+      <PhotoMasonrySkeleton count={30} />
     </div>
   );
 }

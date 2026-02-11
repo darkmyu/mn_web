@@ -20,11 +20,13 @@ function SettingProfile() {
     handleSubmit,
     formState: { errors, isValid, isDirty },
   } = useProfileForm(
-    user && {
-      nickname: user.nickname,
-      about: user.about,
-      thumbnail: user.thumbnail,
-    },
+    user
+      ? {
+          nickname: user.nickname,
+          about: user.about ?? '',
+          thumbnail: user.thumbnail,
+        }
+      : undefined,
   );
 
   const thumbnail = watch('thumbnail');

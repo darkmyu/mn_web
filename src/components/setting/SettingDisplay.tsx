@@ -24,7 +24,7 @@ function SettingDisplay() {
           <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200">테마</label>
           <p className="text-xs text-zinc-500">애플리케이션의 테마를 설정합니다.</p>
         </div>
-        <div className="flex w-fit min-w-80 items-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
+        <div className="flex w-fit min-w-80 items-center rounded-lg bg-zinc-100 p-1.5 dark:bg-zinc-800">
           <button
             onClick={() => setTheme('light')}
             className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${

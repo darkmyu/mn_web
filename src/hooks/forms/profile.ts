@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-export function useProfileForm(defaultValues: UserUpdateRequest | null) {
+export function useProfileForm(defaultValues?: UserUpdateRequest) {
   return useForm<UserUpdateRequest>({
     mode: 'onChange',
     resolver: zodResolver(
@@ -13,10 +13,6 @@ export function useProfileForm(defaultValues: UserUpdateRequest | null) {
         thumbnail: z.string().optional().nullable(),
       }),
     ),
-    defaultValues: {
-      nickname: '',
-      about: '',
-      ...defaultValues,
-    },
+    defaultValues,
   });
 }

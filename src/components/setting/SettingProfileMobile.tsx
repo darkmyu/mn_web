@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { useMemo, useRef } from 'react';
 import toast from 'react-hot-toast';
 
-function MobileSettingProfile() {
+function SettingProfileMobile() {
   const { user, setUser } = useAuthStore();
 
   const {
@@ -182,4 +182,4 @@ function MobileSettingProfile() {
   );
 }
 
-export default MobileSettingProfile;
+export default SettingProfileMobile;

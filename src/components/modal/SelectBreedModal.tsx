@@ -8,6 +8,68 @@ import { Check, Search, X } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { Modal } from '.';
 
+interface SelectBreedModalProps extends ModalControllerProps<BreedResponse | null> {
+  initialBreed: BreedResponse | null;
+  initialSpecies: BreedResponseSpecies;
+}
+
+function SelectBreedModal(props: SelectBreedModalProps) {
+  const { resolve, initialBreed, initialSpecies } = props;
+  const isLaptop = useMediaQuery(LAPTOP_QUERY);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) resolve(null);
+  };
+
+  const handleBreedClick = (breed: BreedResponse) => {
+    resolve(breed);
+  };
+
+  if (!isLaptop) {
+    return <SelectBreedSheet {...props} />;
+  }
+
+  return (
+    <Modal.Root open={true} onOpenChange={handleOpenChange}>
+      <Modal.Popup>
+        <div className="flex w-[28rem] flex-col gap-6 p-6">
+          <div className="flex items-center justify-between">
+            <h1 className="font-medium">품종 선택</h1>
+            <Modal.Close
+              render={
+                <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                  <X size={20} />
+                </button>
+              }
+            />
+          </div>
+          <div className="relative">
+            <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400" size={18} />
+            <input
+              type="text"
+              placeholder="품종 검색"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg border border-zinc-200 px-4 py-3 pl-10 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
+            />
+          </div>
+          <div className="scrollbar-hide h-80 overflow-y-auto">
+            <Suspense fallback={<BreedListSkeleton />}>
+              <BreedList
+                searchQuery={searchQuery}
+                initialBreed={initialBreed}
+                initialSpecies={initialSpecies}
+                onBreedClick={handleBreedClick}
+              />
+            </Suspense>
+          </div>
+        </div>
+      </Modal.Popup>
+    </Modal.Root>
+  );
+}
+
 interface BreedListProps {
   searchQuery: string;
   initialBreed: BreedResponse | null;
@@ -76,68 +138,6 @@ function BreedListSkeleton() {
         <li key={index} className="h-9 w-full animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-700" />
       ))}
     </ul>
-  );
-}
-
-interface SelectBreedModalProps extends ModalControllerProps<BreedResponse | null> {
-  initialBreed: BreedResponse | null;
-  initialSpecies: BreedResponseSpecies;
-}
-
-function SelectBreedModal(props: SelectBreedModalProps) {
-  const { resolve, initialBreed, initialSpecies } = props;
-  const isLaptop = useMediaQuery(LAPTOP_QUERY);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) resolve(null);
-  };
-
-  const handleBreedClick = (breed: BreedResponse) => {
-    resolve(breed);
-  };
-
-  if (!isLaptop) {
-    return <SelectBreedSheet {...props} />;
-  }
-
-  return (
-    <Modal.Root open={true} onOpenChange={handleOpenChange}>
-      <Modal.Popup>
-        <div className="flex w-[28rem] flex-col gap-6 p-6">
-          <div className="flex items-center justify-between">
-            <h1 className="font-medium">품종 선택</h1>
-            <Modal.Close
-              render={
-                <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-                  <X size={20} />
-                </button>
-              }
-            />
-          </div>
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400" size={18} />
-            <input
-              type="text"
-              placeholder="품종 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-zinc-200 px-4 py-3 pl-10 text-sm placeholder-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-500"
-            />
-          </div>
-          <div className="scrollbar-hide h-80 overflow-y-auto">
-            <Suspense fallback={<BreedListSkeleton />}>
-              <BreedList
-                searchQuery={searchQuery}
-                initialBreed={initialBreed}
-                initialSpecies={initialSpecies}
-                onBreedClick={handleBreedClick}
-              />
-            </Suspense>
-          </div>
-        </div>
-      </Modal.Popup>
-    </Modal.Root>
   );
 }
 

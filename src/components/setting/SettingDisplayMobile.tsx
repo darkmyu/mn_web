@@ -5,7 +5,7 @@ import { motion } from 'motion/react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-function MobileSettingDisplay() {
+function SettingDisplayMobile() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -95,4 +95,4 @@ function MobileSettingDisplay() {
   );
 }
 
-export default MobileSettingDisplay;
+export default SettingDisplayMobile;

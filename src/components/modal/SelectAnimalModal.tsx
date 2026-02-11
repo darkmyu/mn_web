@@ -8,6 +8,63 @@ import { Dispatch, SetStateAction, Suspense, useState } from 'react';
 import { Modal } from '.';
 import SelectAnimalSheet from '../sheet/SelectAnimalSheet';
 
+interface SelectAnimalModalProps extends ModalControllerProps<AnimalResponse[]> {
+  initialAnimals: AnimalResponse[];
+}
+
+function SelectAnimalModal(props: SelectAnimalModalProps) {
+  const { resolve, initialAnimals } = props;
+  const isLaptop = useMediaQuery(LAPTOP_QUERY);
+  const [selectedAnimals, setSelectedAnimals] = useState(initialAnimals);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) resolve(initialAnimals);
+  };
+
+  const handleConfirm = () => {
+    resolve(selectedAnimals);
+  };
+
+  if (!isLaptop) {
+    return <SelectAnimalSheet {...props} />;
+  }
+
+  return (
+    <Modal.Root open={true} onOpenChange={handleOpenChange}>
+      <Modal.Popup>
+        <div className="flex w-[28rem] flex-col gap-6 p-6">
+          <div className="flex items-center justify-between">
+            <h1 className="font-medium">반려동물 선택</h1>
+            <Modal.Close
+              render={
+                <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                  <X size={20} />
+                </button>
+              }
+            />
+          </div>
+          <div className="scrollbar-hide h-80 overflow-y-auto">
+            <Suspense fallback={<AnimalListSkeleton />}>
+              <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
+            </Suspense>
+          </div>
+          <Modal.Close
+            render={
+              <button
+                onClick={handleConfirm}
+                disabled={selectedAnimals.length === 0}
+                className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+              >
+                선택 완료
+              </button>
+            }
+          />
+        </div>
+      </Modal.Popup>
+    </Modal.Root>
+  );
+}
+
 interface AnimalListProps {
   selectedAnimals: AnimalResponse[];
   setSelectedAnimals: Dispatch<SetStateAction<AnimalResponse[]>>;
@@ -83,63 +140,6 @@ function AnimalListSkeleton() {
         </li>
       ))}
     </ul>
-  );
-}
-
-interface SelectAnimalModalProps extends ModalControllerProps<AnimalResponse[]> {
-  initialAnimals: AnimalResponse[];
-}
-
-function SelectAnimalModal(props: SelectAnimalModalProps) {
-  const { resolve, initialAnimals } = props;
-  const isLaptop = useMediaQuery(LAPTOP_QUERY);
-  const [selectedAnimals, setSelectedAnimals] = useState(initialAnimals);
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) resolve(initialAnimals);
-  };
-
-  const handleConfirm = () => {
-    resolve(selectedAnimals);
-  };
-
-  if (!isLaptop) {
-    return <SelectAnimalSheet {...props} />;
-  }
-
-  return (
-    <Modal.Root open={true} onOpenChange={handleOpenChange}>
-      <Modal.Popup>
-        <div className="flex w-[28rem] flex-col gap-6 p-6">
-          <div className="flex items-center justify-between">
-            <h1 className="font-medium">반려동물 선택</h1>
-            <Modal.Close
-              render={
-                <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-                  <X size={20} />
-                </button>
-              }
-            />
-          </div>
-          <div className="scrollbar-hide h-80 overflow-y-auto">
-            <Suspense fallback={<AnimalListSkeleton />}>
-              <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
-            </Suspense>
-          </div>
-          <Modal.Close
-            render={
-              <button
-                onClick={handleConfirm}
-                disabled={selectedAnimals.length === 0}
-                className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
-              >
-                선택 완료
-              </button>
-            }
-          />
-        </div>
-      </Modal.Popup>
-    </Modal.Root>
   );
 }
 

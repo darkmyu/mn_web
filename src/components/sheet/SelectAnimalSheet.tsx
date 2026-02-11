@@ -8,6 +8,53 @@ import { Check, LucideCat, LucideDog } from 'lucide-react';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, Suspense, useState } from 'react';
 
+interface SelectAnimalSheetProps extends ModalControllerProps<AnimalResponse[]> {
+  initialAnimals: AnimalResponse[];
+}
+
+function SelectAnimalSheet({ resolve, initialAnimals }: SelectAnimalSheetProps) {
+  const [isOpen, setIsOpen] = useState(true);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(initialAnimals);
+
+  const handleConfirm = () => {
+    setIsConfirmed(true);
+    setIsOpen(false);
+  };
+
+  const handleCloseEnd = () => {
+    resolve(isConfirmed ? selectedAnimals : initialAnimals);
+  };
+
+  return (
+    <Sheet.Root isOpen={isOpen} detent="content" onClose={() => setIsOpen(false)} onCloseEnd={handleCloseEnd}>
+      <Sheet.Backdrop onTap={() => setIsOpen(false)} />
+      <Sheet.Container>
+        <Sheet.Header>
+          <Sheet.DragIndicator />
+          <h1 className="p-4 font-medium">반려동물 선택</h1>
+        </Sheet.Header>
+        <Sheet.Content>
+          <div className="relative h-[70dvh]">
+            <Suspense fallback={<AnimalListSkeleton />}>
+              <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
+            </Suspense>
+          </div>
+          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent p-4 pt-10 dark:from-zinc-900 dark:via-zinc-900">
+            <button
+              onClick={handleConfirm}
+              disabled={selectedAnimals.length === 0}
+              className="w-full cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-all duration-300 hover:bg-emerald-600/90 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+            >
+              선택 완료
+            </button>
+          </div>
+        </Sheet.Content>
+      </Sheet.Container>
+    </Sheet.Root>
+  );
+}
+
 interface AnimalListProps {
   selectedAnimals: AnimalResponse[];
   setSelectedAnimals: Dispatch<SetStateAction<AnimalResponse[]>>;
@@ -83,53 +130,6 @@ function AnimalListSkeleton() {
         </li>
       ))}
     </ul>
-  );
-}
-
-interface SelectAnimalSheetProps extends ModalControllerProps<AnimalResponse[]> {
-  initialAnimals: AnimalResponse[];
-}
-
-function SelectAnimalSheet({ resolve, initialAnimals }: SelectAnimalSheetProps) {
-  const [isOpen, setIsOpen] = useState(true);
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(initialAnimals);
-
-  const handleConfirm = () => {
-    setIsConfirmed(true);
-    setIsOpen(false);
-  };
-
-  const handleCloseEnd = () => {
-    resolve(isConfirmed ? selectedAnimals : initialAnimals);
-  };
-
-  return (
-    <Sheet.Root isOpen={isOpen} detent="content" onClose={() => setIsOpen(false)} onCloseEnd={handleCloseEnd}>
-      <Sheet.Backdrop onTap={() => setIsOpen(false)} />
-      <Sheet.Container>
-        <Sheet.Header>
-          <Sheet.DragIndicator />
-          <h1 className="p-4 font-medium">반려동물 선택</h1>
-        </Sheet.Header>
-        <Sheet.Content>
-          <div className="relative h-[70dvh]">
-            <Suspense fallback={<AnimalListSkeleton />}>
-              <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
-            </Suspense>
-          </div>
-          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent p-4 pt-10 dark:from-zinc-900 dark:via-zinc-900">
-            <button
-              onClick={handleConfirm}
-              disabled={selectedAnimals.length === 0}
-              className="w-full cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-all duration-300 hover:bg-emerald-600/90 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
-            >
-              선택 완료
-            </button>
-          </div>
-        </Sheet.Content>
-      </Sheet.Container>
-    </Sheet.Root>
   );
 }
 

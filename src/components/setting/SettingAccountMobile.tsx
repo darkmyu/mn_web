@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../modal/ConfirmModal';
 
-function MobileSettingAccount() {
+function SettingAccountMobile() {
   const router = useRouter();
   const modals = useModalStore();
   const { setUser } = useAuthStore();
@@ -69,4 +69,4 @@ function MobileSettingAccount() {
   );
 }
 
-export default MobileSettingAccount;
+export default SettingAccountMobile;

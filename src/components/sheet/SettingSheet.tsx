@@ -16,9 +16,9 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Sheet } from '.';
-import MobileSettingAccount from '../setting/MobileSettingAccount';
-import MobileSettingDisplay from '../setting/MobileSettingDisplay';
-import MobileSettingProfile from '../setting/MobileSettingProfile';
+import SettingAccountMobile from '../setting/SettingAccountMobile';
+import SettingDisplayMobile from '../setting/SettingDisplayMobile';
+import SettingProfileMobile from '../setting/SettingProfileMobile';
 
 type Props = ModalControllerProps<boolean>;
 
@@ -162,9 +162,9 @@ function SettingSheet({ resolve }: Props) {
                   exit="exit"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
-                  {currentView === 'profile' && <MobileSettingProfile />}
-                  {currentView === 'account' && <MobileSettingAccount />}
-                  {currentView === 'display' && <MobileSettingDisplay />}
+                  {currentView === 'profile' && <SettingProfileMobile />}
+                  {currentView === 'account' && <SettingAccountMobile />}
+                  {currentView === 'display' && <SettingDisplayMobile />}
                 </motion.div>
               )}
             </AnimatePresence>

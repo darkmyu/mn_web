@@ -1,3 +1,5 @@
+'use client';
+
 import { UserUpdateRequest } from '@/api/index.schemas';
 import { useUserControllerThumbnail, useUserControllerUpdate } from '@/api/user';
 import { useProfileForm } from '@/hooks/forms/profile';
@@ -7,9 +9,8 @@ import { LucideSquarePen } from 'lucide-react';
 import Image from 'next/image';
 import { useMemo, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { Modal } from '../modal';
 
-function SettingProfile() {
+function MobileSettingProfile() {
   const { user, setUser } = useAuthStore();
 
   const {
@@ -84,28 +85,37 @@ function SettingProfile() {
   };
 
   return (
-    <div className="animate-fade-in scrollbar-hide flex h-full flex-col overflow-y-auto">
-      <div className="flex flex-1 flex-col gap-12 p-8">
-        <div
-          className="relative flex h-24 w-24 cursor-pointer items-center justify-center"
-          onClick={handleThumbnailClick}
-        >
-          <Image className="rounded-full object-cover" src={thumbnail ?? ''} sizes="25vw" alt="" fill priority />
-          <div className="absolute right-0 bottom-0 flex h-8 w-8 items-center justify-center rounded-full bg-black">
-            <LucideSquarePen className="h-3.5 w-3.5 text-white" />
+    <div className="flex flex-col">
+      <div className="flex flex-1 flex-col gap-10 p-6 pb-25">
+        <div className="flex justify-center">
+          <div
+            className="relative flex h-28 w-28 cursor-pointer items-center justify-center"
+            onClick={handleThumbnailClick}
+          >
+            <Image
+              className="rounded-full object-cover shadow-md"
+              src={thumbnail ?? ''}
+              sizes="30vw"
+              alt=""
+              fill
+              priority
+            />
+            <div className="absolute right-0 bottom-0 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900 shadow-lg dark:bg-zinc-100">
+              <LucideSquarePen className="h-4 w-4 text-zinc-100 dark:text-zinc-900" />
+            </div>
+            <input
+              ref={thumbnailRef}
+              type="file"
+              accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+              onChange={handleThumbnailChange}
+              hidden
+            />
           </div>
-          <input
-            ref={thumbnailRef}
-            type="file"
-            accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
-            onChange={handleThumbnailChange}
-            hidden
-          />
         </div>
         <form>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <label htmlFor="nickname" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label htmlFor="nickname" className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                 이름
               </label>
               <div
@@ -133,7 +143,7 @@ function SettingProfile() {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="about" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label htmlFor="about" className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                 소개
               </label>
               <div className="flex min-h-30 flex-col gap-3 rounded-lg border border-zinc-200 px-4 py-3 focus-within:border-zinc-400 focus-within:ring-0 dark:border-zinc-700 dark:focus-within:border-zinc-500">
@@ -159,18 +169,11 @@ function SettingProfile() {
           </div>
         </form>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t border-zinc-200 bg-zinc-50 px-8 py-6 dark:border-zinc-700 dark:bg-zinc-900">
-        <Modal.Close
-          render={
-            <button className="cursor-pointer rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800">
-              닫기
-            </button>
-          }
-        />
+      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent p-4 pt-10 dark:from-zinc-900 dark:via-zinc-900">
         <button
           onClick={onSubmit}
           disabled={!isValid || !isDirty || isProfileThumbnailPending}
-          className="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-emerald-50 transition-colors hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+          className="w-full cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
         >
           저장하기
         </button>
@@ -179,4 +182,4 @@ function SettingProfile() {
   );
 }
 
-export default SettingProfile;
+export default MobileSettingProfile;

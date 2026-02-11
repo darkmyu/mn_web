@@ -2,31 +2,28 @@
 
 import { useAuthControllerLogout } from '@/api/auth';
 import { ROUTE_HOME_PAGE } from '@/constants/route';
+import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { useAuthStore } from '@/stores/auth';
 import { ModalControllerProps } from '@/stores/modal';
-import {
-  LucideCircleUserRound,
-  LucideLoaderCircle,
-  LucideLogOut,
-  LucidePalette,
-  LucideUserRoundPen,
-  LucideX,
-} from 'lucide-react';
+import { LucideCircleUserRound, LucideLogOut, LucidePalette, LucideUserRoundPen, LucideX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import { Modal } from '.';
 import SettingAccount from '../setting/SettingAccount';
 import SettingDisplay from '../setting/SettingDisplay';
 import SettingProfile from '../setting/SettingProfile';
+import SettingSheet from '../sheet/SettingSheet';
 
 type Props = ModalControllerProps<boolean>;
 
 type Tab = 'profile' | 'account' | 'display';
 
-function SettingModal({ resolve }: Props) {
+function SettingModal(props: Props) {
+  const { resolve } = props;
   const router = useRouter();
   const { setUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState<Tab>('profile');
+  const isLaptop = useMediaQuery(LAPTOP_QUERY);
 
   const { mutate: logoutMutate } = useAuthControllerLogout({
     mutation: {
@@ -36,6 +33,8 @@ function SettingModal({ resolve }: Props) {
       },
     },
   });
+
+  if (!isLaptop) return <SettingSheet {...props} />;
 
   return (
     <Modal.Root open={true} onOpenChange={() => resolve(false)}>
@@ -102,17 +101,7 @@ function SettingModal({ resolve }: Props) {
               </nav>
             </aside>
             <main className="flex-1 overflow-auto">
-              {activeTab === 'profile' && (
-                <Suspense
-                  fallback={
-                    <div className="flex h-[90%] items-center justify-center">
-                      <LucideLoaderCircle className="h-8 w-8 animate-spin text-zinc-500 duration-500 dark:text-zinc-400" />
-                    </div>
-                  }
-                >
-                  <SettingProfile />
-                </Suspense>
-              )}
+              {activeTab === 'profile' && <SettingProfile />}
               {activeTab === 'account' && <SettingAccount />}
               {activeTab === 'display' && <SettingDisplay />}
             </main>

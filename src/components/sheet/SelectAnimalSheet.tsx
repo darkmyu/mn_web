@@ -19,7 +19,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
   } = useAnimalControllerAllSuspense();
 
   return (
-    <ul className="flex flex-col pb-24">
+    <ul className="flex flex-col pb-25">
       {animals.items.map((animal) => {
         const isSelected = selectedAnimals.some((v) => v.id === animal.id);
 

@@ -22,6 +22,7 @@ function PhotoMasonry({ photos, children }: Props) {
       <div className="relative" style={{ height: layout.height }}>
         {photos.map((photo) => {
           const position = layout.positions[photo.id];
+          if (!position) return null;
 
           return (
             <Link
@@ -29,9 +30,9 @@ function PhotoMasonry({ photos, children }: Props) {
               href={`/@${photo.author.username}/photos/${photo.id}`}
               className="absolute cursor-pointer overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800"
               style={{
-                width: position?.width ?? 0,
-                height: position?.height ?? 0,
-                transform: `translate(${position?.left ?? 0}px, ${position?.top ?? 0}px)`,
+                width: position.width,
+                height: position.height,
+                transform: `translate(${position.left}px, ${position.top}px)`,
               }}
             >
               <Image src={photo.image.path} alt="" fill sizes="25vw" className="object-cover" />

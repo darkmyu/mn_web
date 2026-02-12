@@ -86,7 +86,7 @@ function OnboardingForm() {
 
   return (
     <main className="flex h-full flex-col items-center justify-center">
-      <div className="flex w-md flex-col gap-20 rounded-lg bg-zinc-50 p-6 dark:bg-zinc-900">
+      <div className="flex w-full flex-col gap-20 rounded-lg bg-zinc-50 p-6 sm:w-md dark:bg-zinc-900">
         <div className="flex flex-col items-center gap-4">
           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">환영합니다!</p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">사용하실 이름과 고유명을 입력해주세요.</p>
@@ -111,7 +111,7 @@ function OnboardingForm() {
                   }`}
                 />
               </div>
-              <p className={`text-sm ${errors.nickname ? 'text-red-400' : 'text-zinc-400'}`}>
+              <p className={`text-xs sm:text-sm ${errors.nickname ? 'text-red-400' : 'text-zinc-400'}`}>
                 {errors.nickname ? errors.nickname.message : '사용하실 이름을 입력해주세요. 설정에서 변경할 수 있어요.'}
               </p>
             </div>
@@ -138,7 +138,7 @@ function OnboardingForm() {
                   />
                 </div>
               </div>
-              <p className={`text-sm ${errors.username ? 'text-red-400' : 'text-zinc-400'}`}>
+              <p className={`text-xs sm:text-sm ${errors.username ? 'text-red-400' : 'text-zinc-400'}`}>
                 {errors.username
                   ? errors.username.message
                   : '중복되지 않는 고유한 이름이에요. 설정에서 변경할 수 없어요.'}

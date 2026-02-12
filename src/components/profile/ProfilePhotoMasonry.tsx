@@ -1,9 +1,12 @@
 'use client';
 
 import { useProfileControllerPhotosSuspenseInfinite } from '@/api/profile';
+import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import PhotoMasonry from '../photo/PhotoMasonry';
+
+const ProfilePhotoEmpty = dynamic(() => import('./ProfilePhotoEmpty'), { ssr: false });
 
 interface Props {
   username: string;
@@ -31,6 +34,10 @@ function ProfilePhotoMasonry({ username }: Props) {
       fetchNextPage();
     }
   }, [fetchNextPage, hasNextPage, inView, isFetched]);
+
+  if (photos.length === 0) {
+    return <ProfilePhotoEmpty username={username} />;
+  }
 
   return (
     <PhotoMasonry photos={photos}>

@@ -147,9 +147,9 @@ function PhotoForm({ photo }: Props) {
   };
 
   return (
-    <div className="relative flex min-h-dvh flex-col">
+    <div className="relative isolate flex min-h-dvh flex-col">
       <div className="sticky top-0 z-10 flex items-center justify-between bg-zinc-50 px-4 py-4 lg:py-2 dark:bg-zinc-900">
-        <div className="flex flex-col lg:flex-row gap-0.5 lg:items-center lg:gap-4">
+        <div className="flex flex-col gap-0.5 lg:flex-row lg:items-center lg:gap-4">
           <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
             {!isEdit ? '# 반려동물 사진 등록' : '# 반려동물 사진 수정'}
           </p>

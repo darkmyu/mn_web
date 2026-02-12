@@ -12,7 +12,7 @@ export const Sheet = {
 
 function SheetRoot({ children, className, ...props }: React.ComponentProps<typeof ReactModalSheet>) {
   return (
-    <ReactModalSheet className={`z-10! ${className}`} {...props}>
+    <ReactModalSheet className={`z-auto! ${className}`} {...props}>
       {children}
     </ReactModalSheet>
   );

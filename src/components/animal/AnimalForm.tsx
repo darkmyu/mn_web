@@ -1,6 +1,11 @@
 'use client';
 
-import { useAnimalControllerCreate, useAnimalControllerUpdate, useAnimalControllerUpload } from '@/api/animal';
+import {
+  useAnimalControllerCreate,
+  useAnimalControllerDelete,
+  useAnimalControllerUpdate,
+  useAnimalControllerUpload,
+} from '@/api/animal';
 import {
   AnimalCreateRequest,
   AnimalResponse,
@@ -18,6 +23,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../modal/ConfirmModal';
 import SelectBreedModal from '../modal/SelectBreedModal';
 
 interface Props {
@@ -57,6 +64,7 @@ function AnimalForm({ animal }: Props) {
 
   const { mutate: createAnimalMutate } = useAnimalControllerCreate();
   const { mutate: updateAnimalMutate } = useAnimalControllerUpdate();
+  const { mutateAsync: deleteAnimalMutateAsync } = useAnimalControllerDelete();
 
   const { mutate: uploadAnimalThumbnail, isPending: isUploadAnimalThumbnailPending } = useAnimalControllerUpload({
     mutation: {
@@ -165,6 +173,36 @@ function AnimalForm({ animal }: Props) {
 
   const handleThumbnailCancel = () => {
     setValue('thumbnail', null, { shouldValidate: true });
+  };
+
+  const handleDeleteAnimalButtonClick = async (id: number) => {
+    const confirmed = await modals.push({
+      key: 'confirm-modal',
+      component: ConfirmModal,
+      props: {
+        title: '반려동물 등록 정보를 삭제할까요?',
+        description: '삭제된 반려동물 등록 정보는 복구할 수 없어요.',
+        confirmText: '삭제',
+      },
+    });
+
+    if (confirmed) {
+      toast.promise(
+        deleteAnimalMutateAsync(
+          { id },
+          {
+            onSuccess: ({ data }) => {
+              router.push(`/@${data.owner.username}`);
+            },
+          },
+        ),
+        {
+          loading: '반려동물 등록 정보를 삭제하고 있어요...',
+          success: '반려동물 등록 정보가 삭제되었어요!',
+          error: '반려동물 등록 정보 삭제에 실패했어요.',
+        },
+      );
+    }
   };
 
   return (
@@ -355,6 +393,17 @@ function AnimalForm({ animal }: Props) {
                 }`}
               />
             </div>
+            {isEdit && (
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteAnimalButtonClick(animal.id)}
+                  className="cursor-pointer text-sm text-red-500 underline underline-offset-4 transition-colors hover:text-red-400 dark:text-red-400 dark:hover:text-red-400/90"
+                >
+                  반려동물 등록 정보 삭제
+                </button>
+              </div>
+            )}
           </div>
         </form>
       </div>

@@ -3,32 +3,32 @@
 import { useAnimalControllerAllSuspense } from '@/api/animal';
 import { AnimalResponse } from '@/api/index.schemas';
 import { Sheet } from '@/components/sheet';
-import { ModalControllerProps } from '@/stores/modal';
 import { Check, LucideCat, LucideDog } from 'lucide-react';
 import Image from 'next/image';
-import { Dispatch, SetStateAction, Suspense, useState } from 'react';
+import { Dispatch, SetStateAction, Suspense } from 'react';
 
-interface SelectAnimalSheetProps extends ModalControllerProps<AnimalResponse[]> {
-  initialAnimals: AnimalResponse[];
+interface SelectAnimalSheetProps {
+  isOpen: boolean;
+  selectedAnimals: AnimalResponse[];
+  setSelectedAnimals: Dispatch<SetStateAction<AnimalResponse[]>>;
+  onConfirm: () => void;
+  onClose: () => void;
+  onCloseEnd: () => void;
+  onCreateAnimalButtonClick: () => void;
 }
 
-function SelectAnimalSheet({ resolve, initialAnimals }: SelectAnimalSheetProps) {
-  const [isOpen, setIsOpen] = useState(true);
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(initialAnimals);
-
-  const handleConfirm = () => {
-    setIsConfirmed(true);
-    setIsOpen(false);
-  };
-
-  const handleCloseEnd = () => {
-    resolve(isConfirmed ? selectedAnimals : initialAnimals);
-  };
-
+function SelectAnimalSheet({
+  isOpen,
+  selectedAnimals,
+  setSelectedAnimals,
+  onConfirm: handleConfirm,
+  onClose: handleClose,
+  onCloseEnd: handleCloseEnd,
+  onCreateAnimalButtonClick: handleCreateAnimalButtonClick,
+}: SelectAnimalSheetProps) {
   return (
-    <Sheet.Root isOpen={isOpen} detent="content" onClose={() => setIsOpen(false)} onCloseEnd={handleCloseEnd}>
-      <Sheet.Backdrop onTap={() => setIsOpen(false)} />
+    <Sheet.Root isOpen={isOpen} detent="content" onClose={handleClose} onCloseEnd={handleCloseEnd}>
+      <Sheet.Backdrop onTap={handleClose} />
       <Sheet.Container>
         <Sheet.Header>
           <Sheet.DragIndicator />

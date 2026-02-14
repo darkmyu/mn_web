@@ -12,7 +12,9 @@
 
 @theme {
   --animate-fade-in: fade-in 0.15s ease-in-out;
-  --animate-fade-up: fade-up 0.3s ease-out;
+  --animate-fade-out: fade-out 0.2s ease-in-out;
+  --animate-fade-up: fade-up 0.3s ease-in-out;
+  --animate-fade-down: fade-down 0.2s ease-in-out;
 }
 
 @keyframes fade-in {
@@ -24,6 +26,15 @@
   }
 }
 
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes fade-up {
   0% {
     opacity: 0;
@@ -32,6 +43,17 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(48px);
   }
 }
 

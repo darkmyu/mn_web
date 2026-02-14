@@ -1,37 +1,56 @@
 import { useBreedControllerAllSuspense } from '@/api/breed';
 import { BreedResponse, BreedResponseSpecies } from '@/api/index.schemas';
-import SelectBreedSheet from '@/components/sheet/SelectBreedSheet';
 import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps } from '@/stores/modal';
 import { getChoseong } from 'es-hangul';
 import { Check, Search, X } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { Modal } from '.';
+import SelectBreedSheet from '../sheet/SelectBreedSheet';
 
 interface SelectBreedModalProps extends ModalControllerProps<BreedResponse | null> {
   initialBreed: BreedResponse | null;
   initialSpecies: BreedResponseSpecies;
 }
 
-function SelectBreedModal(props: SelectBreedModalProps) {
-  const { resolve, initialBreed, initialSpecies } = props;
+function SelectBreedModal({ resolve, initialBreed, initialSpecies }: SelectBreedModalProps) {
   const isLaptop = useMediaQuery(LAPTOP_QUERY);
+  const [isOpen, setIsOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(initialBreed);
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) resolve(null);
+  const handleOpenChange = () => {
+    setIsOpen(false);
+  };
+
+  const handleOpenChangeComplete = () => {
+    if (!isOpen) {
+      resolve(selectedBreed);
+    }
   };
 
   const handleBreedClick = (breed: BreedResponse) => {
-    resolve(breed);
+    setIsOpen(false);
+    setSelectedBreed(breed);
   };
 
   if (!isLaptop) {
-    return <SelectBreedSheet {...props} />;
+    return (
+      <SelectBreedSheet
+        isOpen={isOpen}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        initialSpecies={initialSpecies}
+        selectedBreed={selectedBreed}
+        onClose={handleOpenChange}
+        onCloseEnd={handleOpenChangeComplete}
+        onBreedClick={handleBreedClick}
+      />
+    );
   }
 
   return (
-    <Modal.Root open={true} onOpenChange={handleOpenChange}>
+    <Modal.Root open={isOpen} onOpenChange={handleOpenChange} onOpenChangeComplete={handleOpenChangeComplete}>
       <Modal.Popup>
         <div className="flex w-[28rem] flex-col gap-6 p-6">
           <div className="flex items-center justify-between">
@@ -77,7 +96,7 @@ interface BreedListProps {
   onBreedClick: (breed: BreedResponse) => void;
 }
 
-function BreedList({ searchQuery, initialBreed, initialSpecies, onBreedClick }: BreedListProps) {
+function BreedList({ searchQuery, initialBreed, initialSpecies, onBreedClick: handleBreedClick }: BreedListProps) {
   const selectedItemRef = useRef<HTMLLIElement>(null);
 
   const {
@@ -100,7 +119,7 @@ function BreedList({ searchQuery, initialBreed, initialSpecies, onBreedClick }: 
   );
 
   useEffect(() => {
-    selectedItemRef.current?.scrollIntoView({ block: 'start' });
+    selectedItemRef.current?.scrollIntoView({ block: 'center' });
   }, []);
 
   return (
@@ -115,7 +134,7 @@ function BreedList({ searchQuery, initialBreed, initialSpecies, onBreedClick }: 
             render={
               <li
                 ref={isSelected ? selectedItemRef : null}
-                onClick={() => onBreedClick(breed)}
+                onClick={() => handleBreedClick(breed)}
                 className={`cursor-pointer rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700/40 ${
                   isSelected && 'flex items-center justify-between'
                 }`}

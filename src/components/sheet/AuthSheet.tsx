@@ -1,35 +1,32 @@
 'use client';
 
-import { getAuthControllerGoogleUrl, getAuthControllerKakaoUrl, getAuthControllerNaverUrl } from '@/api/auth';
 import GoogleLogo from '@/assets/images/google.png';
 import KakaoLogo from '@/assets/images/kakao.png';
 import NaverLogo from '@/assets/images/naver.png';
 import { Sheet } from '@/components/sheet';
-import { ModalControllerProps } from '@/stores/modal';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 
-type Props = ModalControllerProps<boolean>;
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+  onCloseEnd: () => void;
+  onGoogleLogin: () => void;
+  onNaverLogin: () => void;
+  onKakaoLogin: () => void;
+}
 
-function AuthSheet({ resolve }: Props) {
-  const [isOpen, setIsOpen] = useState(true);
-
-  const handleGoogleLogin = () => {
-    window.location.href = `${getAuthControllerGoogleUrl()}?redirect=${window.location.href}`;
-  };
-
-  const handleNaverLogin = () => {
-    window.location.href = `${getAuthControllerNaverUrl()}?redirect=${window.location.href}`;
-  };
-
-  const handleKakaoLogin = () => {
-    window.location.href = `${getAuthControllerKakaoUrl()}?redirect=${window.location.href}`;
-  };
-
+function AuthSheet({
+  isOpen,
+  onClose: handleClose,
+  onCloseEnd: handleCloseEnd,
+  onGoogleLogin: handleGoogleLogin,
+  onNaverLogin: handleNaverLogin,
+  onKakaoLogin: handleKakaoLogin,
+}: Props) {
   return (
-    <Sheet.Root isOpen={isOpen} detent="content" onClose={() => setIsOpen(false)} onCloseEnd={() => resolve(false)}>
-      <Sheet.Backdrop onTap={() => setIsOpen(false)} />
+    <Sheet.Root isOpen={isOpen} detent="content" onClose={handleClose} onCloseEnd={handleCloseEnd}>
+      <Sheet.Backdrop onTap={handleClose} />
       <Sheet.Container>
         <Sheet.Content>
           <div className="flex flex-col gap-6 p-6 pb-10">

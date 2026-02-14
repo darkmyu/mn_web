@@ -9,13 +9,24 @@ import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps } from '@/stores/modal';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Modal } from '.';
 
 type Props = ModalControllerProps<boolean>;
 
-function AuthModal(props: Props) {
-  const { resolve } = props;
+function AuthModal({ resolve }: Props) {
+  const [isOpen, setIsOpen] = useState(true);
   const isLaptop = useMediaQuery(LAPTOP_QUERY);
+
+  const handleOpenChange = () => {
+    setIsOpen(false);
+  };
+
+  const handleOpenChangeComplete = () => {
+    if (!isOpen) {
+      resolve(false);
+    }
+  };
 
   const handleGoogleLogin = () => {
     window.location.href = `${getAuthControllerGoogleUrl()}?redirect=${window.location.href}`;
@@ -30,11 +41,20 @@ function AuthModal(props: Props) {
   };
 
   if (!isLaptop) {
-    return <AuthSheet {...props} />;
+    return (
+      <AuthSheet
+        isOpen={isOpen}
+        onClose={handleOpenChange}
+        onCloseEnd={handleOpenChangeComplete}
+        onGoogleLogin={handleGoogleLogin}
+        onNaverLogin={handleNaverLogin}
+        onKakaoLogin={handleKakaoLogin}
+      />
+    );
   }
 
   return (
-    <Modal.Root open={true} onOpenChange={() => resolve(false)}>
+    <Modal.Root open={isOpen} onOpenChange={handleOpenChange} onOpenChangeComplete={handleOpenChangeComplete}>
       <Modal.Popup className="w-[24rem] p-6">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">

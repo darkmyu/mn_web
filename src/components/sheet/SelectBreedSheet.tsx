@@ -3,34 +3,34 @@
 import { useBreedControllerAllSuspense } from '@/api/breed';
 import { BreedResponse, BreedResponseSpecies } from '@/api/index.schemas';
 import { Sheet } from '@/components/sheet';
-import { ModalControllerProps } from '@/stores/modal';
 import { getChoseong } from 'es-hangul';
 import { Check, Search } from 'lucide-react';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, Suspense, useEffect, useRef } from 'react';
 
-interface SelectBreedSheetProps extends ModalControllerProps<BreedResponse | null> {
-  initialBreed: BreedResponse | null;
+interface SelectBreedSheetProps {
+  isOpen: boolean;
+  searchQuery: string;
+  setSearchQuery: Dispatch<SetStateAction<string>>;
   initialSpecies: BreedResponseSpecies;
+  selectedBreed: BreedResponse | null;
+  onClose: () => void;
+  onCloseEnd: () => void;
+  onBreedClick: (breed: BreedResponse) => void;
 }
 
-function SelectBreedSheet({ resolve, initialBreed, initialSpecies }: SelectBreedSheetProps) {
-  const [isOpen, setIsOpen] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(initialBreed);
-
-  const handleBreedClick = (breed: BreedResponse) => {
-    setSelectedBreed(breed);
-    setIsOpen(false);
-  };
-
+function SelectBreedSheet({
+  isOpen,
+  searchQuery,
+  setSearchQuery,
+  initialSpecies,
+  selectedBreed,
+  onClose: handleClose,
+  onCloseEnd: handleCloseEnd,
+  onBreedClick: handleBreedClick,
+}: SelectBreedSheetProps) {
   return (
-    <Sheet.Root
-      isOpen={isOpen}
-      detent="content"
-      onClose={() => setIsOpen(false)}
-      onCloseEnd={() => resolve(selectedBreed)}
-    >
-      <Sheet.Backdrop onTap={() => setIsOpen(false)} />
+    <Sheet.Root isOpen={isOpen} detent="content" onClose={handleClose} onCloseEnd={handleCloseEnd}>
+      <Sheet.Backdrop onTap={handleClose} />
       <Sheet.Container>
         <Sheet.Header>
           <Sheet.DragIndicator />

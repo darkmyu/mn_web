@@ -14,20 +14,28 @@ interface SelectAnimalModalProps extends ModalControllerProps<AnimalResponse[]> 
   initialAnimals: AnimalResponse[];
 }
 
-function SelectAnimalModal(props: SelectAnimalModalProps) {
-  const { resolve, initialAnimals } = props;
+function SelectAnimalModal({ resolve, initialAnimals }: SelectAnimalModalProps) {
   const isLaptop = useMediaQuery(LAPTOP_QUERY);
   const modals = useModalStore();
   const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(true);
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [selectedAnimals, setSelectedAnimals] = useState(initialAnimals);
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) resolve(initialAnimals);
+  const handleConfirm = () => {
+    setIsOpen(false);
+    setIsConfirmed(true);
   };
 
-  const handleConfirm = () => {
-    resolve(selectedAnimals);
+  const handleOpenChange = () => {
+    setIsOpen(false);
+  };
+
+  const handleOpenChangeComplete = () => {
+    if (!isOpen) {
+      resolve(isConfirmed ? selectedAnimals : initialAnimals);
+    }
   };
 
   const handleCreateAnimalButtonClick = async () => {
@@ -48,11 +56,21 @@ function SelectAnimalModal(props: SelectAnimalModalProps) {
   };
 
   if (!isLaptop) {
-    return <SelectAnimalSheet {...props} />;
+    return (
+      <SelectAnimalSheet
+        isOpen={isOpen}
+        selectedAnimals={selectedAnimals}
+        setSelectedAnimals={setSelectedAnimals}
+        onConfirm={handleConfirm}
+        onClose={handleOpenChange}
+        onCloseEnd={handleOpenChangeComplete}
+        onCreateAnimalButtonClick={handleCreateAnimalButtonClick}
+      />
+    );
   }
 
   return (
-    <Modal.Root open={true} onOpenChange={handleOpenChange}>
+    <Modal.Root open={isOpen} onOpenChange={handleOpenChange} onOpenChangeComplete={handleOpenChangeComplete}>
       <Modal.Popup>
         <div className="flex w-[28rem] flex-col gap-6 p-6">
           <div className="flex items-center justify-between">

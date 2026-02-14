@@ -1,26 +1,46 @@
 'use client';
 
-import { useProfileControllerAnimalsSuspense } from '@/api/profile';
-import { ROUTE_ANIMALS_WRITE_PAGE } from '@/constants/route';
+import { AnimalResponse } from '@/api/index.schemas';
+import { getProfileControllerAnimalsQueryKey, useProfileControllerAnimalsSuspense } from '@/api/profile';
 import { useAuthStore } from '@/stores/auth';
+import { useModalStore } from '@/stores/modal';
 import dayjs from '@/utils/dayjs';
 import { formatAge } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
+import { useQueryClient } from '@tanstack/react-query';
 import { LucideCake, LucideCat, LucideDog, LucideMars, LucideVenus, Plus } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
+import AnimalFormModal from '../modal/AnimalFormModal';
 
 interface Props {
   username: string;
 }
 
 function ProfileAnimalList({ username }: Props) {
+  const modals = useModalStore();
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
   const isOwner = user?.username === username;
 
   const {
     data: { data: animals },
   } = useProfileControllerAnimalsSuspense(username);
+
+  const handleAnimalFormOpen = async (animal?: AnimalResponse) => {
+    const response = await modals.push({
+      key: 'animal-form-modal',
+      component: AnimalFormModal,
+      props: {
+        animal,
+      },
+    });
+
+    if (response) {
+      queryClient.invalidateQueries({
+        queryKey: getProfileControllerAnimalsQueryKey(username),
+      });
+    }
+  };
 
   if (!isOwner && animals.items.length === 0) return null;
 
@@ -77,12 +97,12 @@ function ProfileAnimalList({ username }: Props) {
                     </li>
                   </ul>
                   {isOwner && (
-                    <Link
-                      href={`${ROUTE_ANIMALS_WRITE_PAGE}/${animal.id}`}
+                    <button
+                      onClick={() => handleAnimalFormOpen(animal)}
                       className="cursor-pointer rounded-lg border-1 border-zinc-300 p-2.5 text-center text-sm font-semibold text-zinc-500 outline-none dark:border-zinc-200 dark:text-zinc-200"
                     >
                       반려동물 정보 수정
-                    </Link>
+                    </button>
                   )}
                 </div>
               </Popover.Popup>
@@ -91,15 +111,15 @@ function ProfileAnimalList({ username }: Props) {
         </Popover.Root>
       ))}
       {isOwner && (
-        <Link
-          href={ROUTE_ANIMALS_WRITE_PAGE}
+        <button
+          onClick={() => handleAnimalFormOpen()}
           className="flex shrink-0 cursor-pointer items-center gap-3 rounded-full border-2 border-dashed border-zinc-300 p-1.5 pr-4 text-zinc-500 transition-colors hover:border-zinc-400 hover:text-zinc-600 dark:border-zinc-600 dark:text-zinc-400 dark:hover:border-zinc-500 dark:hover:text-zinc-400"
         >
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
             <Plus size={20} />
           </div>
           <p className="text-sm font-semibold">반려동물 등록</p>
-        </Link>
+        </button>
       )}
     </div>
   );

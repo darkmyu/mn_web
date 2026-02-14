@@ -1,12 +1,14 @@
-import { useAnimalControllerAllSuspense } from '@/api/animal';
+import { getAnimalControllerAllQueryKey, useAnimalControllerAllSuspense } from '@/api/animal';
 import { AnimalResponse } from '@/api/index.schemas';
 import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
-import { ModalControllerProps } from '@/stores/modal';
-import { LucideCat, LucideCheck, LucideDog, X } from 'lucide-react';
+import { ModalControllerProps, useModalStore } from '@/stores/modal';
+import { useQueryClient } from '@tanstack/react-query';
+import { LucideCat, LucideCheck, LucideDog, LucidePlus, X } from 'lucide-react';
 import Image from 'next/image';
-import { Dispatch, SetStateAction, Suspense, useState } from 'react';
+import { Dispatch, SetStateAction, Suspense, useRef, useState } from 'react';
 import { Modal } from '.';
 import SelectAnimalSheet from '../sheet/SelectAnimalSheet';
+import AnimalFormModal from './AnimalFormModal';
 
 interface SelectAnimalModalProps extends ModalControllerProps<AnimalResponse[]> {
   initialAnimals: AnimalResponse[];
@@ -15,6 +17,9 @@ interface SelectAnimalModalProps extends ModalControllerProps<AnimalResponse[]> 
 function SelectAnimalModal(props: SelectAnimalModalProps) {
   const { resolve, initialAnimals } = props;
   const isLaptop = useMediaQuery(LAPTOP_QUERY);
+  const modals = useModalStore();
+  const queryClient = useQueryClient();
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [selectedAnimals, setSelectedAnimals] = useState(initialAnimals);
 
   const handleOpenChange = (open: boolean) => {
@@ -23,6 +28,23 @@ function SelectAnimalModal(props: SelectAnimalModalProps) {
 
   const handleConfirm = () => {
     resolve(selectedAnimals);
+  };
+
+  const handleCreateAnimalButtonClick = async () => {
+    const animal = await modals.push({
+      key: 'animal-form-modal',
+      component: AnimalFormModal,
+    });
+
+    if (animal) {
+      await queryClient.invalidateQueries({
+        queryKey: getAnimalControllerAllQueryKey(),
+      });
+
+      setTimeout(() => {
+        scrollerRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 0);
+    }
   };
 
   if (!isLaptop) {
@@ -43,22 +65,32 @@ function SelectAnimalModal(props: SelectAnimalModalProps) {
               }
             />
           </div>
-          <div className="scrollbar-hide h-80 overflow-y-auto">
+          <div className="scrollbar-hide flex max-h-80 flex-col gap-2 overflow-y-auto">
             <Suspense fallback={<AnimalListSkeleton />}>
               <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
             </Suspense>
+            <div ref={scrollerRef} />
           </div>
-          <Modal.Close
-            render={
-              <button
-                onClick={handleConfirm}
-                disabled={selectedAnimals.length === 0}
-                className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
-              >
-                선택 완료
-              </button>
-            }
-          />
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={handleCreateAnimalButtonClick}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-zinc-200 py-4 text-sm font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-600 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-300"
+            >
+              <LucidePlus className="h-4.5 w-4.5" />
+              반려동물 프로필 등록
+            </button>
+            <Modal.Close
+              render={
+                <button
+                  onClick={handleConfirm}
+                  disabled={selectedAnimals.length === 0}
+                  className="cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+                >
+                  선택 완료
+                </button>
+              }
+            />
+          </div>
         </div>
       </Modal.Popup>
     </Modal.Root>
@@ -74,6 +106,8 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
   const {
     data: { data: animals },
   } = useAnimalControllerAllSuspense();
+
+  if (animals.items.length === 0) return null;
 
   return (
     <ul className="flex flex-col gap-2">

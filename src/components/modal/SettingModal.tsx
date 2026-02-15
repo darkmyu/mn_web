@@ -16,14 +16,15 @@ import SettingSheet from '../sheet/SettingSheet';
 
 type Props = ModalControllerProps<boolean>;
 
-type Tab = 'profile' | 'account' | 'display';
+export type SettingView = 'menu' | 'profile' | 'account' | 'display';
 
-function SettingModal(props: Props) {
-  const { resolve } = props;
+function SettingModal({ resolve }: Props) {
   const router = useRouter();
   const { setUser } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<Tab>('profile');
   const isLaptop = useMediaQuery(LAPTOP_QUERY);
+  const [isOpen, setIsOpen] = useState(true);
+  const [currentView, setCurrentView] = useState<SettingView>('menu');
+  const activeTab = currentView === 'menu' ? 'profile' : currentView;
 
   const { mutate: logoutMutate } = useAuthControllerLogout({
     mutation: {
@@ -34,10 +35,34 @@ function SettingModal(props: Props) {
     },
   });
 
-  if (!isLaptop) return <SettingSheet {...props} />;
+  const handleOpenChange = () => {
+    setIsOpen(false);
+  };
+
+  const handleOpenChangeComplete = () => {
+    if (!isOpen) {
+      resolve(false);
+    }
+  };
+
+  const handleLogoutButtonClick = () => {
+    logoutMutate();
+  };
+
+  if (!isLaptop)
+    return (
+      <SettingSheet
+        isOpen={isOpen}
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        onClose={handleOpenChange}
+        onCloseEnd={handleOpenChangeComplete}
+        onLogoutButtonClick={handleLogoutButtonClick}
+      />
+    );
 
   return (
-    <Modal.Root open={true} onOpenChange={() => resolve(false)}>
+    <Modal.Root open={isOpen} onOpenChange={handleOpenChange} onOpenChangeComplete={handleOpenChangeComplete}>
       <Modal.Popup>
         <div className="flex h-[800px] w-[800px] max-w-[95vw] flex-col overflow-hidden rounded-lg">
           <div className="flex items-center justify-between border-b border-zinc-200 p-6 dark:border-zinc-700">
@@ -54,7 +79,7 @@ function SettingModal(props: Props) {
             <aside className="w-64 border-r border-zinc-200 p-4 dark:border-zinc-700">
               <nav className="flex flex-col gap-3">
                 <button
-                  onClick={() => setActiveTab('profile')}
+                  onClick={() => setCurrentView('profile')}
                   className={`flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 ${
                     activeTab === 'profile'
                       ? 'bg-zinc-100 dark:bg-zinc-700/40'
@@ -65,7 +90,7 @@ function SettingModal(props: Props) {
                   <span className="font-medium">프로필</span>
                 </button>
                 <button
-                  onClick={() => setActiveTab('account')}
+                  onClick={() => setCurrentView('account')}
                   className={`flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 ${
                     activeTab === 'account'
                       ? 'bg-zinc-100 dark:bg-zinc-700/40'
@@ -76,7 +101,7 @@ function SettingModal(props: Props) {
                   <span className="font-medium">내 계정</span>
                 </button>
                 <button
-                  onClick={() => setActiveTab('display')}
+                  onClick={() => setCurrentView('display')}
                   className={`flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 ${
                     activeTab === 'display'
                       ? 'bg-zinc-100 dark:bg-zinc-700/40'
@@ -91,7 +116,7 @@ function SettingModal(props: Props) {
                   render={
                     <button
                       className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
-                      onClick={() => logoutMutate()}
+                      onClick={handleLogoutButtonClick}
                     >
                       <LucideLogOut className="h-4 w-4" />
                       <span className="font-medium">로그아웃</span>

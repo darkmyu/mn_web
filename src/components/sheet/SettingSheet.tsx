@@ -1,9 +1,5 @@
 'use client';
 
-import { useAuthControllerLogout } from '@/api/auth';
-import { ROUTE_HOME_PAGE } from '@/constants/route';
-import { useAuthStore } from '@/stores/auth';
-import { ModalControllerProps } from '@/stores/modal';
 import {
   LucideChevronLeft,
   LucideChevronRight,
@@ -13,16 +9,21 @@ import {
   LucideUserRoundPen,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Sheet } from '.';
+import { SettingView } from '../modal/SettingModal';
 import SettingAccountMobile from '../setting/SettingAccountMobile';
 import SettingDisplayMobile from '../setting/SettingDisplayMobile';
 import SettingProfileMobile from '../setting/SettingProfileMobile';
 
-type Props = ModalControllerProps<boolean>;
-
-type View = 'menu' | 'profile' | 'account' | 'display';
+interface Props {
+  isOpen: boolean;
+  currentView: SettingView;
+  setCurrentView: Dispatch<SetStateAction<SettingView>>;
+  onClose: () => void;
+  onCloseEnd: () => void;
+  onLogoutButtonClick: () => void;
+}
 
 const variants = {
   enter: (direction: number) => ({
@@ -39,24 +40,17 @@ const variants = {
   }),
 };
 
-function SettingSheet({ resolve }: Props) {
-  const router = useRouter();
-  const { setUser } = useAuthStore();
-  const [isOpen, setIsOpen] = useState(true);
-  const [currentView, setCurrentView] = useState<View>('menu');
+function SettingSheet({
+  isOpen,
+  currentView,
+  setCurrentView,
+  onClose: handleClose,
+  onCloseEnd: handleCloseEnd,
+  onLogoutButtonClick: handleLogoutButtonClick,
+}: Props) {
   const [direction, setDirection] = useState(0);
 
-  const { mutate: logoutMutate } = useAuthControllerLogout({
-    mutation: {
-      onSuccess: () => {
-        setUser(null);
-        setIsOpen(false);
-        router.push(ROUTE_HOME_PAGE);
-      },
-    },
-  });
-
-  const handleNavigate = (view: View) => {
+  const handleForward = (view: SettingView) => {
     setDirection(1);
     setCurrentView(view);
   };
@@ -66,7 +60,7 @@ function SettingSheet({ resolve }: Props) {
     setCurrentView('menu');
   };
 
-  const getViewTitle = (view: View) => {
+  const getViewTitle = (view: SettingView) => {
     switch (view) {
       case 'menu':
         return '설정';
@@ -80,8 +74,8 @@ function SettingSheet({ resolve }: Props) {
   };
 
   return (
-    <Sheet.Root isOpen={isOpen} onClose={() => setIsOpen(false)} onCloseEnd={() => resolve(false)} detent="content">
-      <Sheet.Backdrop onTap={() => setIsOpen(false)} />
+    <Sheet.Root isOpen={isOpen} onClose={handleClose} onCloseEnd={handleCloseEnd} detent="content">
+      <Sheet.Backdrop onTap={handleClose} />
       <Sheet.Container>
         <Sheet.Header>
           <div className="relative flex items-center justify-center border-b border-zinc-200 p-4 dark:border-zinc-800">
@@ -112,7 +106,7 @@ function SettingSheet({ resolve }: Props) {
                 >
                   <nav className="flex flex-col">
                     <button
-                      onClick={() => handleNavigate('profile')}
+                      onClick={() => handleForward('profile')}
                       className="flex cursor-pointer items-center justify-between rounded-lg p-6"
                     >
                       <div className="flex items-center gap-3">
@@ -122,7 +116,7 @@ function SettingSheet({ resolve }: Props) {
                       <LucideChevronRight className="h-5 w-5 text-zinc-400" />
                     </button>
                     <button
-                      onClick={() => handleNavigate('account')}
+                      onClick={() => handleForward('account')}
                       className="flex cursor-pointer items-center justify-between rounded-lg p-6"
                     >
                       <div className="flex items-center gap-3">
@@ -132,7 +126,7 @@ function SettingSheet({ resolve }: Props) {
                       <LucideChevronRight className="h-5 w-5 text-zinc-400" />
                     </button>
                     <button
-                      onClick={() => handleNavigate('display')}
+                      onClick={() => handleForward('display')}
                       className="flex cursor-pointer items-center justify-between rounded-lg p-6"
                     >
                       <div className="flex items-center gap-3">
@@ -143,7 +137,7 @@ function SettingSheet({ resolve }: Props) {
                     </button>
                     <hr className="my-2 border-zinc-200 dark:border-zinc-800" />
                     <button
-                      onClick={() => logoutMutate()}
+                      onClick={handleLogoutButtonClick}
                       className="flex cursor-pointer items-center gap-3 rounded-lg p-6"
                     >
                       <LucideLogOut className="h-5 w-5" />

@@ -1,6 +1,7 @@
 'use client';
 
 import { ModalControllerProps } from '@/stores/modal';
+import { useState } from 'react';
 import { Modal } from '.';
 
 interface Props extends ModalControllerProps<boolean> {
@@ -11,12 +12,26 @@ interface Props extends ModalControllerProps<boolean> {
 }
 
 function ConfirmModal({ resolve, title, description, confirmText = '확인', cancelText = '취소' }: Props) {
-  const handleOpenChange = (open: boolean) => {
-    if (!open) resolve(false);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
+  const handleOpenChange = () => {
+    setIsOpen(false);
+  };
+
+  const handleOpenChangeComplete = () => {
+    if (!isOpen) {
+      resolve(isConfirmed);
+    }
+  };
+
+  const handleConfirmButtonClick = () => {
+    setIsOpen(false);
+    setIsConfirmed(true);
   };
 
   return (
-    <Modal.Root open={true} onOpenChange={handleOpenChange}>
+    <Modal.Root open={isOpen} onOpenChange={handleOpenChange} onOpenChangeComplete={handleOpenChangeComplete}>
       <Modal.Popup className="w-[20rem] p-6">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
@@ -32,8 +47,8 @@ function ConfirmModal({ resolve, title, description, confirmText = '확인', can
               }
             />
             <button
+              onClick={handleConfirmButtonClick}
               className="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-emerald-50 transition-colors hover:bg-emerald-600/90 focus:outline-none dark:bg-emerald-800"
-              onClick={() => resolve(true)}
             >
               {confirmText}
             </button>

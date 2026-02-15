@@ -1,58 +1,65 @@
 'use client';
 
 import {
-  useAnimalControllerCreate,
-  useAnimalControllerDelete,
-  useAnimalControllerUpdate,
-  useAnimalControllerUpload,
-} from '@/api/animal';
-import {
   AnimalCreateRequest,
   AnimalResponse,
   AnimalResponseGender,
-  AnimalUpdateRequest,
   BreedResponse,
   BreedResponseSpecies,
 } from '@/api/index.schemas';
-import { useAnimalForm } from '@/hooks/forms/animal';
-import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
-import { ModalControllerProps, useModalStore } from '@/stores/modal';
-import dayjs from '@/utils/dayjs';
-import { debounce } from 'es-toolkit';
+import { useAnimalFormContext } from '@/hooks/forms/animal';
 import { Camera, LucideX, Search } from 'lucide-react';
 import Image from 'next/image';
-import { useMemo, useRef, useState } from 'react';
-import { FormProvider, SubmitHandler } from 'react-hook-form';
-import toast from 'react-hot-toast';
-import { Modal } from '.';
-import AnimalFormSheet from '../sheet/AnimalFormSheet';
-import ConfirmModal from './ConfirmModal';
-import SelectBreedModal from './SelectBreedModal';
+import { RefObject } from 'react';
+import { SubmitHandler } from 'react-hook-form';
+import { Sheet } from '.';
 
-interface Props extends ModalControllerProps<AnimalResponse | null> {
+interface Props {
+  isOpen: boolean;
   animal?: AnimalResponse;
+  thumbnailRef: RefObject<HTMLInputElement | null>;
+  isUploadAnimalThumbnailPending: boolean;
+  selectedSpecies: BreedResponseSpecies;
+  selectedBreed: BreedResponse | null;
+  onClose: () => void;
+  onCloseEnd: () => void;
+  onThumbnailClick: () => void;
+  onThumbnailCancel: () => void;
+  onThumbnailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSpeciesClick: (species: BreedResponseSpecies) => void;
+  onBreedClick: () => Promise<void>;
+  onGenderClick: (gender: AnimalResponseGender) => void;
+  onBirthdayChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDeleteAnimalButtonClick: (id: number) => Promise<void>;
+  onSubmit: SubmitHandler<AnimalCreateRequest>;
 }
 
-function AnimalFormModal({ resolve, animal }: Props) {
-  const methods = useAnimalForm(
-    animal && {
-      breedId: animal.breed.id,
-      name: animal.name,
-      gender: animal.gender,
-      birthday: dayjs(animal.birthday).format('YYYY-MM-DD'),
-      thumbnail: animal.thumbnail,
-    },
-  );
-
+function AnimalFormSheet({
+  isOpen,
+  animal,
+  thumbnailRef,
+  isUploadAnimalThumbnailPending,
+  selectedSpecies,
+  selectedBreed,
+  onClose: handleClose,
+  onCloseEnd: handleCloseEnd,
+  onThumbnailClick: handleThumbnailClick,
+  onThumbnailCancel: handleThumbnailCancel,
+  onThumbnailChange: handleThumbnailChange,
+  onSpeciesClick: handleSpeciesClick,
+  onBreedClick: handleBreedClick,
+  onGenderClick: handleGenderClick,
+  onBirthdayChange: handleBirthdayChange,
+  onDeleteAnimalButtonClick: handleDeleteAnimalButtonClick,
+  onSubmit,
+}: Props) {
   const {
     watch,
-    reset,
     register,
     setValue,
-    getValues,
     handleSubmit,
     formState: { errors, isValid },
-  } = methods;
+  } = useAnimalFormContext();
 
   const isEdit = !!animal;
   const name = watch('name');
@@ -60,214 +67,29 @@ function AnimalFormModal({ resolve, animal }: Props) {
   const birthday = watch('birthday');
   const thumbnail = watch('thumbnail');
 
-  const modals = useModalStore();
-  const isLaptop = useMediaQuery(LAPTOP_QUERY);
-  const thumbnailRef = useRef<HTMLInputElement>(null);
-  const [isOpen, setIsOpen] = useState(true);
-  const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(animal?.breed ?? null);
-  const [selectedSpecies, setSelectedSpecie] = useState<BreedResponseSpecies>(animal?.breed.species ?? 'DOG');
-
-  const { mutate: createAnimalMutate } = useAnimalControllerCreate();
-  const { mutate: updateAnimalMutate } = useAnimalControllerUpdate();
-  const { mutateAsync: deleteAnimalMutateAsync } = useAnimalControllerDelete();
-
-  const { mutate: uploadAnimalThumbnail, isPending: isUploadAnimalThumbnailPending } = useAnimalControllerUpload({
-    mutation: {
-      onSuccess: (response) => {
-        setValue('thumbnail', response.data.path);
-      },
-      onError: () => {
-        /** @TODO alert error */
-      },
-    },
-  });
-
-  const debouncedCreateAnimalMutate = useMemo(
-    () =>
-      debounce((data: AnimalCreateRequest) => {
-        createAnimalMutate(
-          { data },
-          {
-            onSuccess: (response) => {
-              resolve(response.data);
-            },
-          },
-        );
-      }, 300),
-    [createAnimalMutate, resolve],
-  );
-
-  const debouncedUpdateAnimalMutate = useMemo(
-    () =>
-      debounce((id: number, data: AnimalUpdateRequest) => {
-        updateAnimalMutate(
-          {
-            id,
-            data,
-          },
-          {
-            onSuccess: (response) => {
-              resolve(response.data);
-            },
-          },
-        );
-      }, 300),
-    [updateAnimalMutate, resolve],
-  );
-
-  const onSubmit: SubmitHandler<AnimalCreateRequest> = (body) => {
-    const payload = {
-      ...body,
-      birthday: dayjs(body.birthday).toISOString(),
-    };
-
-    if (!isEdit) {
-      debouncedCreateAnimalMutate(payload);
-    } else {
-      debouncedUpdateAnimalMutate(animal.id, payload);
-    }
-  };
-
-  const handleGenderClick = (gender: AnimalResponseGender) => {
-    setValue('gender', gender);
-  };
-
-  const handleSpeciesClick = (species: BreedResponseSpecies) => {
-    setSelectedSpecie(species);
-    setSelectedBreed(null);
-
-    const values = getValues();
-    reset({ ...values, breedId: undefined });
-  };
-
-  const handleBreedClick = async () => {
-    const breed = await modals.push({
-      key: 'select-breed-modal',
-      component: SelectBreedModal,
-      props: {
-        initialBreed: selectedBreed,
-        initialSpecies: selectedSpecies,
-      },
-    });
-
-    if (breed) {
-      setSelectedBreed(breed);
-      setValue('breedId', breed.id, { shouldValidate: true });
-    }
-  };
-
-  const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 8);
-    const formatted = value.replace(/(\d{4})(\d)/, '$1-$2').replace(/(\d{4}-\d{2})(\d)/, '$1-$2');
-
-    setValue('birthday', formatted, { shouldValidate: true });
-  };
-
-  const handleThumbnailClick = () => {
-    thumbnailRef.current?.click();
-  };
-
-  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const thumbnail = e.target.files?.[0];
-    if (!thumbnail) return;
-
-    uploadAnimalThumbnail({
-      data: { thumbnail },
-    });
-  };
-
-  const handleThumbnailCancel = () => {
-    setValue('thumbnail', null, { shouldValidate: true });
-  };
-
-  const handleDeleteAnimalButtonClick = async (id: number) => {
-    const confirmed = await modals.push({
-      key: 'confirm-modal',
-      component: ConfirmModal,
-      props: {
-        title: '반려동물 등록 정보를 삭제할까요?',
-        description: '삭제된 반려동물 등록 정보는 복구할 수 없어요.',
-        confirmText: '삭제',
-      },
-    });
-
-    if (confirmed) {
-      toast.promise(
-        deleteAnimalMutateAsync(
-          { id },
-          {
-            onSuccess: (response) => {
-              resolve(response.data);
-            },
-          },
-        ),
-        {
-          loading: '반려동물 등록 정보를 삭제하고 있어요...',
-          success: '반려동물 등록 정보가 삭제되었어요!',
-          error: '반려동물 등록 정보 삭제에 실패했어요.',
-        },
-      );
-    }
-  };
-
-  const handleOpenChange = () => {
-    setIsOpen(false);
-  };
-
-  const handleOpenChangeComplete = () => {
-    if (!isOpen) {
-      resolve(null);
-    }
-  };
-
-  if (!isLaptop) {
-    return (
-      <FormProvider {...methods}>
-        <AnimalFormSheet
-          isOpen={isOpen}
-          animal={animal}
-          thumbnailRef={thumbnailRef}
-          isUploadAnimalThumbnailPending={isUploadAnimalThumbnailPending}
-          selectedSpecies={selectedSpecies}
-          selectedBreed={selectedBreed}
-          onClose={handleOpenChange}
-          onCloseEnd={handleOpenChangeComplete}
-          onThumbnailClick={handleThumbnailClick}
-          onThumbnailCancel={handleThumbnailCancel}
-          onThumbnailChange={handleThumbnailChange}
-          onSpeciesClick={handleSpeciesClick}
-          onBreedClick={handleBreedClick}
-          onGenderClick={handleGenderClick}
-          onBirthdayChange={handleBirthdayChange}
-          onDeleteAnimalButtonClick={handleDeleteAnimalButtonClick}
-          onSubmit={onSubmit}
-        />
-      </FormProvider>
-    );
-  }
-
   return (
-    <Modal.Root open={isOpen} onOpenChange={handleOpenChange} onOpenChangeComplete={handleOpenChangeComplete}>
-      <Modal.Popup>
-        <div className="relative flex max-h-[90dvh] w-4xl flex-col overflow-hidden rounded-lg">
-          <header className="sticky top-0 z-10 flex items-center justify-between bg-zinc-50 px-6 py-4 dark:bg-zinc-900">
+    <Sheet.Root isOpen={isOpen} onClose={handleClose} onCloseEnd={handleCloseEnd} detent="full" disableDrag>
+      <Sheet.Container>
+        <Sheet.Header>
+          <header className="flex items-center justify-between p-4">
             <div className="flex flex-col gap-0.5">
               <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
                 {!isEdit ? '# 반려동물 프로필 등록' : '# 반려동물 프로필 수정'}
               </p>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 반려동물의 정보를 입력하고 소중한 기록을 남겨보세요.
               </p>
             </div>
-            <Modal.Close
-              render={
-                <button className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-                  <LucideX className="h-5 w-5" />
-                </button>
-              }
-            />
+            <button
+              onClick={handleClose}
+              className="cursor-pointer text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+            >
+              <LucideX className="h-5 w-5" />
+            </button>
           </header>
-          <form className="flex flex-1 items-center gap-24 overflow-y-auto p-20 pr-12 pl-24">
+        </Sheet.Header>
+        <Sheet.Content>
+          <form className="flex flex-col gap-12 px-4 pt-8 pb-25">
             <div className="flex flex-1 flex-col items-center gap-6">
               <div
                 onClick={handleThumbnailClick}
@@ -448,19 +270,19 @@ function AnimalFormModal({ resolve, animal }: Props) {
               )}
             </div>
           </form>
-          <footer className="flex justify-end bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent px-12 py-8 dark:from-zinc-900 dark:via-zinc-900">
+          <footer className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent p-4 pt-10 dark:from-zinc-900 dark:via-zinc-900">
             <button
               onClick={handleSubmit(onSubmit)}
               disabled={!isValid || isUploadAnimalThumbnailPending}
-              className="cursor-pointer rounded-lg bg-emerald-600 px-4 py-3 text-sm font-medium text-emerald-50 transition-all duration-300 hover:bg-emerald-600/90 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+              className="w-full cursor-pointer rounded-lg bg-emerald-600 py-3 text-sm font-medium text-emerald-50 transition-all duration-300 hover:bg-emerald-600/90 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
             >
               {!isEdit ? '등록하기' : '수정하기'}
             </button>
           </footer>
-        </div>
-      </Modal.Popup>
-    </Modal.Root>
+        </Sheet.Content>
+      </Sheet.Container>
+    </Sheet.Root>
   );
 }
 
-export default AnimalFormModal;
+export default AnimalFormSheet;

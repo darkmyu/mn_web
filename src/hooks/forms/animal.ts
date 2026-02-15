@@ -1,7 +1,7 @@
 import { AnimalCreateRequest } from '@/api/index.schemas';
 import dayjs from '@/utils/dayjs';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import * as z from 'zod';
 
 export function useAnimalForm(defaultValues?: AnimalCreateRequest) {
@@ -30,4 +30,8 @@ export function useAnimalForm(defaultValues?: AnimalCreateRequest) {
       ...defaultValues,
     },
   });
+}
+
+export function useAnimalFormContext() {
+  return useFormContext<AnimalCreateRequest>();
 }

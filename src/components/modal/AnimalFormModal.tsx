@@ -64,6 +64,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
   const isLaptop = useMediaQuery(LAPTOP_QUERY);
   const thumbnailRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(true);
+  const [response, setResponse] = useState<AnimalResponse | null>(null);
   const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(animal?.breed ?? null);
   const [selectedSpecies, setSelectedSpecie] = useState<BreedResponseSpecies>(animal?.breed.species ?? 'DOG');
 
@@ -89,12 +90,13 @@ function AnimalFormModal({ resolve, animal }: Props) {
           { data },
           {
             onSuccess: (response) => {
-              resolve(response.data);
+              setResponse(response.data);
+              setIsOpen(false);
             },
           },
         );
       }, 300),
-    [createAnimalMutate, resolve],
+    [createAnimalMutate],
   );
 
   const debouncedUpdateAnimalMutate = useMemo(
@@ -107,12 +109,13 @@ function AnimalFormModal({ resolve, animal }: Props) {
           },
           {
             onSuccess: (response) => {
-              resolve(response.data);
+              setResponse(response.data);
+              setIsOpen(false);
             },
           },
         );
       }, 300),
-    [updateAnimalMutate, resolve],
+    [updateAnimalMutate],
   );
 
   const onSubmit: SubmitHandler<AnimalCreateRequest> = (body) => {
@@ -197,7 +200,8 @@ function AnimalFormModal({ resolve, animal }: Props) {
           { id },
           {
             onSuccess: (response) => {
-              resolve(response.data);
+              setResponse(response.data);
+              setIsOpen(false);
             },
           },
         ),
@@ -216,7 +220,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
 
   const handleOpenChangeComplete = () => {
     if (!isOpen) {
-      resolve(null);
+      resolve(response);
     }
   };
 

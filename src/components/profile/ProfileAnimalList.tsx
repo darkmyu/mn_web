@@ -97,12 +97,16 @@ function ProfileAnimalList({ username }: Props) {
                     </li>
                   </ul>
                   {isOwner && (
-                    <button
-                      onClick={() => handleAnimalFormOpen(animal)}
-                      className="cursor-pointer rounded-lg border-1 border-zinc-300 p-2.5 text-center text-sm font-semibold text-zinc-500 outline-none dark:border-zinc-200 dark:text-zinc-200"
-                    >
-                      반려동물 정보 수정
-                    </button>
+                    <Popover.Close
+                      render={
+                        <button
+                          onClick={() => handleAnimalFormOpen(animal)}
+                          className="cursor-pointer rounded-lg border-1 border-zinc-300 p-2.5 text-center text-sm font-semibold text-zinc-500 outline-none dark:border-zinc-200 dark:text-zinc-200"
+                        >
+                          반려동물 정보 수정
+                        </button>
+                      }
+                    />
                   )}
                 </div>
               </Popover.Popup>

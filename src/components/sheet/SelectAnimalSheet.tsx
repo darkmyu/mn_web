@@ -3,7 +3,7 @@
 import { useAnimalControllerAllSuspense } from '@/api/animal';
 import { AnimalResponse } from '@/api/index.schemas';
 import { Sheet } from '@/components/sheet';
-import { Check, LucideCat, LucideDog } from 'lucide-react';
+import { Check, LucideCat, LucideDog, LucidePlus } from 'lucide-react';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, Suspense } from 'react';
 
@@ -35,12 +35,19 @@ function SelectAnimalSheet({
           <h1 className="p-4 font-medium">반려동물 선택</h1>
         </Sheet.Header>
         <Sheet.Content>
-          <div className="relative h-[70dvh]">
+          <section className="relative h-[70dvh]">
             <Suspense fallback={<AnimalListSkeleton />}>
               <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
             </Suspense>
-          </div>
-          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent p-4 pt-10 dark:from-zinc-900 dark:via-zinc-900">
+          </section>
+          <footer className="absolute bottom-0 left-0 flex w-full flex-col gap-4 bg-zinc-50 p-4 dark:bg-zinc-900">
+            <button
+              onClick={handleCreateAnimalButtonClick}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-zinc-200 bg-zinc-50 py-4 text-sm font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-300"
+            >
+              <LucidePlus className="h-4.5 w-4.5" />
+              반려동물 프로필 등록
+            </button>
             <button
               onClick={handleConfirm}
               disabled={selectedAnimals.length === 0}
@@ -48,7 +55,7 @@ function SelectAnimalSheet({
             >
               선택 완료
             </button>
-          </div>
+          </footer>
         </Sheet.Content>
       </Sheet.Container>
     </Sheet.Root>
@@ -66,7 +73,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
   } = useAnimalControllerAllSuspense();
 
   return (
-    <ul className="flex flex-col pb-25">
+    <ul className="flex flex-col pb-38">
       {animals.items.map((animal) => {
         const isSelected = selectedAnimals.some((v) => v.id === animal.id);
 

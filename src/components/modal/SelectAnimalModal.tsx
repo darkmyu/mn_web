@@ -73,7 +73,7 @@ function SelectAnimalModal({ resolve, initialAnimals }: SelectAnimalModalProps) 
     <Modal.Root open={isOpen} onOpenChange={handleOpenChange} onOpenChangeComplete={handleOpenChangeComplete}>
       <Modal.Popup>
         <div className="flex w-[28rem] flex-col gap-6 p-6">
-          <div className="flex items-center justify-between">
+          <header className="flex items-center justify-between">
             <h1 className="font-medium">반려동물 선택</h1>
             <Modal.Close
               render={
@@ -82,14 +82,14 @@ function SelectAnimalModal({ resolve, initialAnimals }: SelectAnimalModalProps) 
                 </button>
               }
             />
-          </div>
-          <div className="scrollbar-hide flex max-h-80 flex-col gap-2 overflow-y-auto">
+          </header>
+          <section className="scrollbar-hide flex max-h-80 flex-col gap-2 overflow-y-auto">
             <Suspense fallback={<AnimalListSkeleton />}>
               <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
             </Suspense>
             <div ref={scrollerRef} />
-          </div>
-          <div className="flex flex-col gap-4">
+          </section>
+          <footer className="flex flex-col gap-4">
             <button
               onClick={handleCreateAnimalButtonClick}
               className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-zinc-200 py-4 text-sm font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-600 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-300"
@@ -108,7 +108,7 @@ function SelectAnimalModal({ resolve, initialAnimals }: SelectAnimalModalProps) 
                 </button>
               }
             />
-          </div>
+          </footer>
         </div>
       </Modal.Popup>
     </Modal.Root>

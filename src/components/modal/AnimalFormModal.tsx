@@ -68,8 +68,8 @@ function AnimalFormModal({ resolve, animal }: Props) {
   const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(animal?.breed ?? null);
   const [selectedSpecies, setSelectedSpecie] = useState<BreedResponseSpecies>(animal?.breed.species ?? 'DOG');
 
-  const { mutate: createAnimalMutate } = useAnimalControllerCreate();
-  const { mutate: updateAnimalMutate } = useAnimalControllerUpdate();
+  const { mutateAsync: createAnimalMutateAsync } = useAnimalControllerCreate();
+  const { mutateAsync: updateAnimalMutateAsync } = useAnimalControllerUpdate();
   const { mutateAsync: deleteAnimalMutateAsync } = useAnimalControllerDelete();
 
   const { mutate: uploadAnimalThumbnail, isPending: isUploadAnimalThumbnailPending } = useAnimalControllerUpload({
@@ -83,39 +83,53 @@ function AnimalFormModal({ resolve, animal }: Props) {
     },
   });
 
-  const debouncedCreateAnimalMutate = useMemo(
+  const debouncedCreateAnimalMutateAsync = useMemo(
     () =>
       debounce((data: AnimalCreateRequest) => {
-        createAnimalMutate(
-          { data },
-          {
-            onSuccess: (response) => {
-              setResponse(response.data);
-              setIsOpen(false);
+        toast.promise(
+          createAnimalMutateAsync(
+            { data },
+            {
+              onSuccess: (response) => {
+                setResponse(response.data);
+                setIsOpen(false);
+              },
             },
+          ),
+          {
+            loading: '반려동물 정보를 등록하고 있어요...',
+            success: '반려동물 정보가 등록되었어요!',
+            error: '반려동물 정보 등록에 실패했어요.',
           },
         );
       }, 300),
-    [createAnimalMutate],
+    [createAnimalMutateAsync],
   );
 
-  const debouncedUpdateAnimalMutate = useMemo(
+  const debouncedUpdateAnimalMutateAsync = useMemo(
     () =>
       debounce((id: number, data: AnimalUpdateRequest) => {
-        updateAnimalMutate(
-          {
-            id,
-            data,
-          },
-          {
-            onSuccess: (response) => {
-              setResponse(response.data);
-              setIsOpen(false);
+        toast.promise(
+          updateAnimalMutateAsync(
+            {
+              id,
+              data,
             },
+            {
+              onSuccess: (response) => {
+                setResponse(response.data);
+                setIsOpen(false);
+              },
+            },
+          ),
+          {
+            loading: '반려동물 정보를 수정하고 있어요...',
+            success: '반려동물 정보가 수정되었어요!',
+            error: '반려동물 정보 수정에 실패했어요.',
           },
         );
       }, 300),
-    [updateAnimalMutate],
+    [updateAnimalMutateAsync],
   );
 
   const onSubmit: SubmitHandler<AnimalCreateRequest> = (body) => {
@@ -125,9 +139,9 @@ function AnimalFormModal({ resolve, animal }: Props) {
     };
 
     if (!isEdit) {
-      debouncedCreateAnimalMutate(payload);
+      debouncedCreateAnimalMutateAsync(payload);
     } else {
-      debouncedUpdateAnimalMutate(animal.id, payload);
+      debouncedUpdateAnimalMutateAsync(animal.id, payload);
     }
   };
 

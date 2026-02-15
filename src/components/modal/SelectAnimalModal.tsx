@@ -83,7 +83,7 @@ function SelectAnimalModal({ resolve, initialAnimals }: SelectAnimalModalProps) 
               }
             />
           </header>
-          <section className="scrollbar-hide flex max-h-80 flex-col gap-2 overflow-y-auto">
+          <section className="scrollbar-hide flex h-80 flex-col gap-2 overflow-y-auto">
             <Suspense fallback={<AnimalListSkeleton />}>
               <AnimalList selectedAnimals={selectedAnimals} setSelectedAnimals={setSelectedAnimals} />
             </Suspense>

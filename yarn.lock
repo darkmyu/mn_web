@@ -4640,6 +4640,11 @@ swagger2openapi@^7.0.8:
     yaml "^1.10.0"
     yargs "^17.0.1"
 
+swiper@^12.1.1:
+  version "12.1.1"
+  resolved "https://registry.yarnpkg.com/swiper/-/swiper-12.1.1.tgz#cd894643a70f308d7d59e0a918f1e551c81975ac"
+  integrity sha512-NB8Uvpu6m725Xf68l2hZBHD184v/ZAi6WIvAorDuR3gRuwCWbGSam233/8seeeIrMJ9isHGk/CTKFdpgeT5u2Q==
+
 tabbable@^6.3.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-6.4.0.tgz#36eb7a06d80b3924a22095daf45740dea3bf5581"

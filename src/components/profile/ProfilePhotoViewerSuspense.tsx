@@ -18,7 +18,7 @@ async function ProfilePhotoViewerSuspense({ username, id }: Props) {
 
   queryClient.prefetchQuery(
     getProfileControllerPhotoQueryOptions(username, id, {
-      fetch: {
+      request: {
         headers: {
           cookie,
         },

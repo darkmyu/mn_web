@@ -10,15 +10,12 @@ export default defineConfig({
       target: './src/api/index.ts',
       client: 'react-query',
       httpClient: 'fetch',
-      baseUrl: 'http://localhost:4000',
       prettier: true,
       tsconfig: './tsconfig.json',
       override: {
-        fetch: {
-          forceSuccessResponse: true,
-        },
-        requestOptions: {
-          credentials: 'include',
+        mutator: {
+          path: './src/api/mutator/custom-fetch.ts',
+          name: 'customFetch',
         },
         query: {
           useQuery: true,

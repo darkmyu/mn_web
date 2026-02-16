@@ -17,7 +17,7 @@ async function ProfileSuspense({ username }: Props) {
 
   queryClient.prefetchQuery(
     getProfileControllerReadQueryOptions(username, {
-      fetch: {
+      request: {
         headers: {
           cookie,
         },

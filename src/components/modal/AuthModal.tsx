@@ -29,15 +29,15 @@ function AuthModal({ resolve }: Props) {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${getAuthControllerGoogleUrl()}?redirect=${window.location.href}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}${getAuthControllerGoogleUrl()}?redirect=${window.location.href}`;
   };
 
   const handleNaverLogin = () => {
-    window.location.href = `${getAuthControllerNaverUrl()}?redirect=${window.location.href}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}${getAuthControllerNaverUrl()}?redirect=${window.location.href}`;
   };
 
   const handleKakaoLogin = () => {
-    window.location.href = `${getAuthControllerKakaoUrl()}?redirect=${window.location.href}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}${getAuthControllerKakaoUrl()}?redirect=${window.location.href}`;
   };
 
   if (!isLaptop) {

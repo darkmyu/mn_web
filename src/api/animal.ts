@@ -43,6 +43,10 @@ import type {
   FileResponse,
 } from './index.schemas';
 
+import { customFetch } from './mutator/custom-fetch';
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 export type animalControllerAllResponse200 = {
   data: AnimalControllerAll200;
   status: 200;
@@ -51,6 +55,8 @@ export type animalControllerAllResponse200 = {
 export type animalControllerAllResponseSuccess = animalControllerAllResponse200 & {
   headers: Headers;
 };
+export type animalControllerAllResponse = animalControllerAllResponseSuccess;
+
 export const getAnimalControllerAllUrl = (params?: AnimalControllerAllParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -62,39 +68,26 @@ export const getAnimalControllerAllUrl = (params?: AnimalControllerAllParams) =>
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `http://localhost:4000/api/v1/animals?${stringifiedParams}`
-    : `http://localhost:4000/api/v1/animals`;
+  return stringifiedParams.length > 0 ? `/api/v1/animals?${stringifiedParams}` : `/api/v1/animals`;
 };
 
 export const animalControllerAll = async (
   params?: AnimalControllerAllParams,
   options?: RequestInit,
-): Promise<animalControllerAllResponseSuccess> => {
-  const res = await fetch(getAnimalControllerAllUrl(params), {
+): Promise<animalControllerAllResponse> => {
+  return customFetch<animalControllerAllResponse>(getAnimalControllerAllUrl(params), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: animalControllerAllResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as animalControllerAllResponseSuccess;
 };
 
 export const getAnimalControllerAllInfiniteQueryKey = (params?: AnimalControllerAllParams) => {
-  return ['infinite', `http://localhost:4000/api/v1/animals`, ...(params ? [params] : [])] as const;
+  return ['infinite', `/api/v1/animals`, ...(params ? [params] : [])] as const;
 };
 
 export const getAnimalControllerAllQueryKey = (params?: AnimalControllerAllParams) => {
-  return [`http://localhost:4000/api/v1/animals`, ...(params ? [params] : [])] as const;
+  return [`/api/v1/animals`, ...(params ? [params] : [])] as const;
 };
 
 export const getAnimalControllerAllInfiniteQueryOptions = <
@@ -112,10 +105,10 @@ export const getAnimalControllerAllInfiniteQueryOptions = <
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllInfiniteQueryKey(params);
 
@@ -124,7 +117,7 @@ export const getAnimalControllerAllInfiniteQueryOptions = <
     QueryKey,
     AnimalControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    animalControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    animalControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
@@ -162,7 +155,7 @@ export function useAnimalControllerAllInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -190,7 +183,7 @@ export function useAnimalControllerAllInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -209,7 +202,7 @@ export function useAnimalControllerAllInfinite<
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -229,7 +222,7 @@ export function useAnimalControllerAllInfinite<
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -260,7 +253,7 @@ export const prefetchAnimalControllerAllInfiniteQuery = async <
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAnimalControllerAllInfiniteQueryOptions(params, options);
@@ -277,15 +270,15 @@ export const getAnimalControllerAllQueryOptions = <
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerAll>>> = ({ signal }) =>
-    animalControllerAll(params, { signal, ...fetchOptions });
+    animalControllerAll(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
@@ -309,7 +302,7 @@ export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalC
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -325,7 +318,7 @@ export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalC
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -333,7 +326,7 @@ export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalC
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -342,7 +335,7 @@ export function useAnimalControllerAll<TData = Awaited<ReturnType<typeof animalC
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -365,7 +358,7 @@ export const prefetchAnimalControllerAllQuery = async <
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAnimalControllerAllQueryOptions(params, options);
@@ -382,15 +375,15 @@ export const getAnimalControllerAllSuspenseQueryOptions = <
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerAll>>> = ({ signal }) =>
-    animalControllerAll(params, { signal, ...fetchOptions });
+    animalControllerAll(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
@@ -409,7 +402,7 @@ export function useAnimalControllerAllSuspense<
   params: undefined | AnimalControllerAllParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -420,7 +413,7 @@ export function useAnimalControllerAllSuspense<
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -431,7 +424,7 @@ export function useAnimalControllerAllSuspense<
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -443,7 +436,7 @@ export function useAnimalControllerAllSuspense<
   params?: AnimalControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -473,10 +466,10 @@ export const getAnimalControllerAllSuspenseInfiniteQueryOptions = <
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerAllInfiniteQueryKey(params);
 
@@ -485,7 +478,7 @@ export const getAnimalControllerAllSuspenseInfiniteQueryOptions = <
     QueryKey,
     AnimalControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    animalControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    animalControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerAll>>,
@@ -516,7 +509,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -535,7 +528,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -554,7 +547,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -574,7 +567,7 @@ export function useAnimalControllerAllSuspenseInfinite<
         AnimalControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -597,32 +590,23 @@ export type animalControllerCreateResponse201 = {
 export type animalControllerCreateResponseSuccess = animalControllerCreateResponse201 & {
   headers: Headers;
 };
+export type animalControllerCreateResponse = animalControllerCreateResponseSuccess;
+
 export const getAnimalControllerCreateUrl = () => {
-  return `http://localhost:4000/api/v1/animals`;
+  return `/api/v1/animals`;
 };
 
 export const animalControllerCreate = async (
   animalCreateRequest: AnimalCreateRequest,
   options?: RequestInit,
-): Promise<animalControllerCreateResponseSuccess> => {
-  const res = await fetch(getAnimalControllerCreateUrl(), {
+): Promise<animalControllerCreateResponse> => {
+  return customFetch<animalControllerCreateResponse>(getAnimalControllerCreateUrl(), {
     credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(animalCreateRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: animalControllerCreateResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as animalControllerCreateResponseSuccess;
 };
 
 export const getAnimalControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -632,7 +616,7 @@ export const getAnimalControllerCreateMutationOptions = <TError = unknown, TCont
     { data: AnimalCreateRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof animalControllerCreate>>,
   TError,
@@ -640,11 +624,11 @@ export const getAnimalControllerCreateMutationOptions = <TError = unknown, TCont
   TContext
 > => {
   const mutationKey = ['animalControllerCreate'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof animalControllerCreate>>,
@@ -652,7 +636,7 @@ export const getAnimalControllerCreateMutationOptions = <TError = unknown, TCont
   > = (props) => {
     const { data } = props ?? {};
 
-    return animalControllerCreate(data, fetchOptions);
+    return animalControllerCreate(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -670,7 +654,7 @@ export const useAnimalControllerCreate = <TError = unknown, TContext = unknown>(
       { data: AnimalCreateRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -691,38 +675,29 @@ export type animalControllerReadResponse200 = {
 export type animalControllerReadResponseSuccess = animalControllerReadResponse200 & {
   headers: Headers;
 };
+export type animalControllerReadResponse = animalControllerReadResponseSuccess;
+
 export const getAnimalControllerReadUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/animals/${id}`;
+  return `/api/v1/animals/${id}`;
 };
 
 export const animalControllerRead = async (
   id: number,
   options?: RequestInit,
-): Promise<animalControllerReadResponseSuccess> => {
-  const res = await fetch(getAnimalControllerReadUrl(id), {
+): Promise<animalControllerReadResponse> => {
+  return customFetch<animalControllerReadResponse>(getAnimalControllerReadUrl(id), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: animalControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as animalControllerReadResponseSuccess;
 };
 
 export const getAnimalControllerReadInfiniteQueryKey = (id?: number) => {
-  return ['infinite', `http://localhost:4000/api/v1/animals/${id}`] as const;
+  return ['infinite', `/api/v1/animals/${id}`] as const;
 };
 
 export const getAnimalControllerReadQueryKey = (id?: number) => {
-  return [`http://localhost:4000/api/v1/animals/${id}`] as const;
+  return [`/api/v1/animals/${id}`] as const;
 };
 
 export const getAnimalControllerReadInfiniteQueryOptions = <
@@ -732,15 +707,15 @@ export const getAnimalControllerReadInfiniteQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerReadInfiniteQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerRead>>> = ({ signal }) =>
-    animalControllerRead(id, { signal, ...fetchOptions });
+    animalControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerRead>>,
@@ -767,7 +742,7 @@ export function useAnimalControllerReadInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -786,7 +761,7 @@ export function useAnimalControllerReadInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -797,7 +772,7 @@ export function useAnimalControllerReadInfinite<
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -809,7 +784,7 @@ export function useAnimalControllerReadInfinite<
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -832,7 +807,7 @@ export const prefetchAnimalControllerReadInfiniteQuery = async <
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAnimalControllerReadInfiniteQueryOptions(id, options);
@@ -849,15 +824,15 @@ export const getAnimalControllerReadQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerReadQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerRead>>> = ({ signal }) =>
-    animalControllerRead(id, { signal, ...fetchOptions });
+    animalControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof animalControllerRead>>,
@@ -881,7 +856,7 @@ export function useAnimalControllerRead<TData = Awaited<ReturnType<typeof animal
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -897,7 +872,7 @@ export function useAnimalControllerRead<TData = Awaited<ReturnType<typeof animal
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -905,7 +880,7 @@ export function useAnimalControllerRead<TData = Awaited<ReturnType<typeof animal
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -914,7 +889,7 @@ export function useAnimalControllerRead<TData = Awaited<ReturnType<typeof animal
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -937,7 +912,7 @@ export const prefetchAnimalControllerReadQuery = async <
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAnimalControllerReadQueryOptions(id, options);
@@ -954,15 +929,15 @@ export const getAnimalControllerReadSuspenseQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerReadQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerRead>>> = ({ signal }) =>
-    animalControllerRead(id, { signal, ...fetchOptions });
+    animalControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof animalControllerRead>>,
@@ -981,7 +956,7 @@ export function useAnimalControllerReadSuspense<
   id: number,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -992,7 +967,7 @@ export function useAnimalControllerReadSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1003,7 +978,7 @@ export function useAnimalControllerReadSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1015,7 +990,7 @@ export function useAnimalControllerReadSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1037,15 +1012,15 @@ export const getAnimalControllerReadSuspenseInfiniteQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAnimalControllerReadInfiniteQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof animalControllerRead>>> = ({ signal }) =>
-    animalControllerRead(id, { signal, ...fetchOptions });
+    animalControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof animalControllerRead>>,
@@ -1066,7 +1041,7 @@ export function useAnimalControllerReadSuspenseInfinite<
   id: number,
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1077,7 +1052,7 @@ export function useAnimalControllerReadSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1088,7 +1063,7 @@ export function useAnimalControllerReadSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1100,7 +1075,7 @@ export function useAnimalControllerReadSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof animalControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1123,33 +1098,24 @@ export type animalControllerUpdateResponse200 = {
 export type animalControllerUpdateResponseSuccess = animalControllerUpdateResponse200 & {
   headers: Headers;
 };
+export type animalControllerUpdateResponse = animalControllerUpdateResponseSuccess;
+
 export const getAnimalControllerUpdateUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/animals/${id}`;
+  return `/api/v1/animals/${id}`;
 };
 
 export const animalControllerUpdate = async (
   id: number,
   animalUpdateRequest: AnimalUpdateRequest,
   options?: RequestInit,
-): Promise<animalControllerUpdateResponseSuccess> => {
-  const res = await fetch(getAnimalControllerUpdateUrl(id), {
+): Promise<animalControllerUpdateResponse> => {
+  return customFetch<animalControllerUpdateResponse>(getAnimalControllerUpdateUrl(id), {
     credentials: 'include',
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(animalUpdateRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: animalControllerUpdateResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as animalControllerUpdateResponseSuccess;
 };
 
 export const getAnimalControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -1159,7 +1125,7 @@ export const getAnimalControllerUpdateMutationOptions = <TError = unknown, TCont
     { id: number; data: AnimalUpdateRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof animalControllerUpdate>>,
   TError,
@@ -1167,11 +1133,11 @@ export const getAnimalControllerUpdateMutationOptions = <TError = unknown, TCont
   TContext
 > => {
   const mutationKey = ['animalControllerUpdate'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof animalControllerUpdate>>,
@@ -1179,7 +1145,7 @@ export const getAnimalControllerUpdateMutationOptions = <TError = unknown, TCont
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return animalControllerUpdate(id, data, fetchOptions);
+    return animalControllerUpdate(id, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1197,7 +1163,7 @@ export const useAnimalControllerUpdate = <TError = unknown, TContext = unknown>(
       { id: number; data: AnimalUpdateRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -1218,47 +1184,38 @@ export type animalControllerDeleteResponse200 = {
 export type animalControllerDeleteResponseSuccess = animalControllerDeleteResponse200 & {
   headers: Headers;
 };
+export type animalControllerDeleteResponse = animalControllerDeleteResponseSuccess;
+
 export const getAnimalControllerDeleteUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/animals/${id}`;
+  return `/api/v1/animals/${id}`;
 };
 
 export const animalControllerDelete = async (
   id: number,
   options?: RequestInit,
-): Promise<animalControllerDeleteResponseSuccess> => {
-  const res = await fetch(getAnimalControllerDeleteUrl(id), {
+): Promise<animalControllerDeleteResponse> => {
+  return customFetch<animalControllerDeleteResponse>(getAnimalControllerDeleteUrl(id), {
     credentials: 'include',
     ...options,
     method: 'DELETE',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: animalControllerDeleteResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as animalControllerDeleteResponseSuccess;
 };
 
 export const getAnimalControllerDeleteMutationOptions = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<Awaited<ReturnType<typeof animalControllerDelete>>, TError, { id: number }, TContext>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<Awaited<ReturnType<typeof animalControllerDelete>>, TError, { id: number }, TContext> => {
   const mutationKey = ['animalControllerDelete'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof animalControllerDelete>>, { id: number }> = (props) => {
     const { id } = props ?? {};
 
-    return animalControllerDelete(id, fetchOptions);
+    return animalControllerDelete(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1271,7 +1228,7 @@ export type AnimalControllerDeleteMutationError = unknown;
 export const useAnimalControllerDelete = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<Awaited<ReturnType<typeof animalControllerDelete>>, TError, { id: number }, TContext>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof animalControllerDelete>>, TError, { id: number }, TContext> => {
@@ -1287,34 +1244,25 @@ export type animalControllerUploadResponse201 = {
 export type animalControllerUploadResponseSuccess = animalControllerUploadResponse201 & {
   headers: Headers;
 };
+export type animalControllerUploadResponse = animalControllerUploadResponseSuccess;
+
 export const getAnimalControllerUploadUrl = () => {
-  return `http://localhost:4000/api/v1/animals/thumbnail`;
+  return `/api/v1/animals/thumbnail`;
 };
 
 export const animalControllerUpload = async (
   animalControllerUploadBody: AnimalControllerUploadBody,
   options?: RequestInit,
-): Promise<animalControllerUploadResponseSuccess> => {
+): Promise<animalControllerUploadResponse> => {
   const formData = new FormData();
   formData.append(`thumbnail`, animalControllerUploadBody.thumbnail);
 
-  const res = await fetch(getAnimalControllerUploadUrl(), {
+  return customFetch<animalControllerUploadResponse>(getAnimalControllerUploadUrl(), {
     credentials: 'include',
     ...options,
     method: 'POST',
     body: formData,
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: animalControllerUploadResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as animalControllerUploadResponseSuccess;
 };
 
 export const getAnimalControllerUploadMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -1324,7 +1272,7 @@ export const getAnimalControllerUploadMutationOptions = <TError = unknown, TCont
     { data: AnimalControllerUploadBody },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof animalControllerUpload>>,
   TError,
@@ -1332,11 +1280,11 @@ export const getAnimalControllerUploadMutationOptions = <TError = unknown, TCont
   TContext
 > => {
   const mutationKey = ['animalControllerUpload'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof animalControllerUpload>>,
@@ -1344,7 +1292,7 @@ export const getAnimalControllerUploadMutationOptions = <TError = unknown, TCont
   > = (props) => {
     const { data } = props ?? {};
 
-    return animalControllerUpload(data, fetchOptions);
+    return animalControllerUpload(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1362,7 +1310,7 @@ export const useAnimalControllerUpload = <TError = unknown, TContext = unknown>(
       { data: AnimalControllerUploadBody },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<

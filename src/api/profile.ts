@@ -43,6 +43,10 @@ import type {
   ProfileResponse,
 } from './index.schemas';
 
+import { customFetch } from './mutator/custom-fetch';
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 export type profileControllerReadResponse200 = {
   data: ProfileResponse;
   status: 200;
@@ -51,38 +55,29 @@ export type profileControllerReadResponse200 = {
 export type profileControllerReadResponseSuccess = profileControllerReadResponse200 & {
   headers: Headers;
 };
+export type profileControllerReadResponse = profileControllerReadResponseSuccess;
+
 export const getProfileControllerReadUrl = (username: string) => {
-  return `http://localhost:4000/api/v1/profiles/${username}`;
+  return `/api/v1/profiles/${username}`;
 };
 
 export const profileControllerRead = async (
   username: string,
   options?: RequestInit,
-): Promise<profileControllerReadResponseSuccess> => {
-  const res = await fetch(getProfileControllerReadUrl(username), {
+): Promise<profileControllerReadResponse> => {
+  return customFetch<profileControllerReadResponse>(getProfileControllerReadUrl(username), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: profileControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as profileControllerReadResponseSuccess;
 };
 
 export const getProfileControllerReadInfiniteQueryKey = (username?: string) => {
-  return ['infinite', `http://localhost:4000/api/v1/profiles/${username}`] as const;
+  return ['infinite', `/api/v1/profiles/${username}`] as const;
 };
 
 export const getProfileControllerReadQueryKey = (username?: string) => {
-  return [`http://localhost:4000/api/v1/profiles/${username}`] as const;
+  return [`/api/v1/profiles/${username}`] as const;
 };
 
 export const getProfileControllerReadInfiniteQueryOptions = <
@@ -92,15 +87,15 @@ export const getProfileControllerReadInfiniteQueryOptions = <
   username: string,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerReadInfiniteQueryKey(username);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerRead>>> = ({ signal }) =>
-    profileControllerRead(username, { signal, ...fetchOptions });
+    profileControllerRead(username, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerRead>>,
@@ -127,7 +122,7 @@ export function useProfileControllerReadInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -146,7 +141,7 @@ export function useProfileControllerReadInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -157,7 +152,7 @@ export function useProfileControllerReadInfinite<
   username: string,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -169,7 +164,7 @@ export function useProfileControllerReadInfinite<
   username: string,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -192,7 +187,7 @@ export const prefetchProfileControllerReadInfiniteQuery = async <
   username: string,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerReadInfiniteQueryOptions(username, options);
@@ -209,15 +204,15 @@ export const getProfileControllerReadQueryOptions = <
   username: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerReadQueryKey(username);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerRead>>> = ({ signal }) =>
-    profileControllerRead(username, { signal, ...fetchOptions });
+    profileControllerRead(username, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof profileControllerRead>>,
@@ -241,7 +236,7 @@ export function useProfileControllerRead<TData = Awaited<ReturnType<typeof profi
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -257,7 +252,7 @@ export function useProfileControllerRead<TData = Awaited<ReturnType<typeof profi
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -265,7 +260,7 @@ export function useProfileControllerRead<TData = Awaited<ReturnType<typeof profi
   username: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -274,7 +269,7 @@ export function useProfileControllerRead<TData = Awaited<ReturnType<typeof profi
   username: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -297,7 +292,7 @@ export const prefetchProfileControllerReadQuery = async <
   username: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerReadQueryOptions(username, options);
@@ -314,15 +309,15 @@ export const getProfileControllerReadSuspenseQueryOptions = <
   username: string,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerReadQueryKey(username);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerRead>>> = ({ signal }) =>
-    profileControllerRead(username, { signal, ...fetchOptions });
+    profileControllerRead(username, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof profileControllerRead>>,
@@ -341,7 +336,7 @@ export function useProfileControllerReadSuspense<
   username: string,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -352,7 +347,7 @@ export function useProfileControllerReadSuspense<
   username: string,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -363,7 +358,7 @@ export function useProfileControllerReadSuspense<
   username: string,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -375,7 +370,7 @@ export function useProfileControllerReadSuspense<
   username: string,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -397,15 +392,15 @@ export const getProfileControllerReadSuspenseInfiniteQueryOptions = <
   username: string,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerReadInfiniteQueryKey(username);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerRead>>> = ({ signal }) =>
-    profileControllerRead(username, { signal, ...fetchOptions });
+    profileControllerRead(username, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerRead>>,
@@ -426,7 +421,7 @@ export function useProfileControllerReadSuspenseInfinite<
   username: string,
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -437,7 +432,7 @@ export function useProfileControllerReadSuspenseInfinite<
   username: string,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -448,7 +443,7 @@ export function useProfileControllerReadSuspenseInfinite<
   username: string,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -460,7 +455,7 @@ export function useProfileControllerReadSuspenseInfinite<
   username: string,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -483,6 +478,8 @@ export type profileControllerAnimalsResponse200 = {
 export type profileControllerAnimalsResponseSuccess = profileControllerAnimalsResponse200 & {
   headers: Headers;
 };
+export type profileControllerAnimalsResponse = profileControllerAnimalsResponseSuccess;
+
 export const getProfileControllerAnimalsUrl = (username: string, params?: ProfileControllerAnimalsParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -495,46 +492,31 @@ export const getProfileControllerAnimalsUrl = (username: string, params?: Profil
   const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
-    ? `http://localhost:4000/api/v1/profiles/${username}/animals?${stringifiedParams}`
-    : `http://localhost:4000/api/v1/profiles/${username}/animals`;
+    ? `/api/v1/profiles/${username}/animals?${stringifiedParams}`
+    : `/api/v1/profiles/${username}/animals`;
 };
 
 export const profileControllerAnimals = async (
   username: string,
   params?: ProfileControllerAnimalsParams,
   options?: RequestInit,
-): Promise<profileControllerAnimalsResponseSuccess> => {
-  const res = await fetch(getProfileControllerAnimalsUrl(username, params), {
+): Promise<profileControllerAnimalsResponse> => {
+  return customFetch<profileControllerAnimalsResponse>(getProfileControllerAnimalsUrl(username, params), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: profileControllerAnimalsResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as profileControllerAnimalsResponseSuccess;
 };
 
 export const getProfileControllerAnimalsInfiniteQueryKey = (
   username?: string,
   params?: ProfileControllerAnimalsParams,
 ) => {
-  return [
-    'infinite',
-    `http://localhost:4000/api/v1/profiles/${username}/animals`,
-    ...(params ? [params] : []),
-  ] as const;
+  return ['infinite', `/api/v1/profiles/${username}/animals`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfileControllerAnimalsQueryKey = (username?: string, params?: ProfileControllerAnimalsParams) => {
-  return [`http://localhost:4000/api/v1/profiles/${username}/animals`, ...(params ? [params] : [])] as const;
+  return [`/api/v1/profiles/${username}/animals`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfileControllerAnimalsInfiniteQueryOptions = <
@@ -553,10 +535,10 @@ export const getProfileControllerAnimalsInfiniteQueryOptions = <
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsInfiniteQueryKey(username, params);
 
@@ -568,7 +550,7 @@ export const getProfileControllerAnimalsInfiniteQueryOptions = <
     profileControllerAnimals(
       username,
       { ...params, cursor: pageParam || params?.['cursor'] },
-      { signal, ...fetchOptions },
+      { signal, ...requestOptions },
     );
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
@@ -610,7 +592,7 @@ export function useProfileControllerAnimalsInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -639,7 +621,7 @@ export function useProfileControllerAnimalsInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -659,7 +641,7 @@ export function useProfileControllerAnimalsInfinite<
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -680,7 +662,7 @@ export function useProfileControllerAnimalsInfinite<
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -712,7 +694,7 @@ export const prefetchProfileControllerAnimalsInfiniteQuery = async <
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerAnimalsInfiniteQueryOptions(username, params, options);
@@ -730,15 +712,15 @@ export const getProfileControllerAnimalsQueryOptions = <
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsQueryKey(username, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerAnimals>>> = ({ signal }) =>
-    profileControllerAnimals(username, params, { signal, ...fetchOptions });
+    profileControllerAnimals(username, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
@@ -766,7 +748,7 @@ export function useProfileControllerAnimals<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -786,7 +768,7 @@ export function useProfileControllerAnimals<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -798,7 +780,7 @@ export function useProfileControllerAnimals<
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -811,7 +793,7 @@ export function useProfileControllerAnimals<
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -835,7 +817,7 @@ export const prefetchProfileControllerAnimalsQuery = async <
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerAnimalsQueryOptions(username, params, options);
@@ -853,15 +835,15 @@ export const getProfileControllerAnimalsSuspenseQueryOptions = <
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsQueryKey(username, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerAnimals>>> = ({ signal }) =>
-    profileControllerAnimals(username, params, { signal, ...fetchOptions });
+    profileControllerAnimals(username, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof profileControllerAnimals>>,
@@ -883,7 +865,7 @@ export function useProfileControllerAnimalsSuspense<
   params: undefined | ProfileControllerAnimalsParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -895,7 +877,7 @@ export function useProfileControllerAnimalsSuspense<
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -907,7 +889,7 @@ export function useProfileControllerAnimalsSuspense<
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -920,7 +902,7 @@ export function useProfileControllerAnimalsSuspense<
   params?: ProfileControllerAnimalsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerAnimals>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -951,10 +933,10 @@ export const getProfileControllerAnimalsSuspenseInfiniteQueryOptions = <
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerAnimalsInfiniteQueryKey(username, params);
 
@@ -966,7 +948,7 @@ export const getProfileControllerAnimalsSuspenseInfiniteQueryOptions = <
     profileControllerAnimals(
       username,
       { ...params, cursor: pageParam || params?.['cursor'] },
-      { signal, ...fetchOptions },
+      { signal, ...requestOptions },
     );
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
@@ -999,7 +981,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1019,7 +1001,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1039,7 +1021,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1060,7 +1042,7 @@ export function useProfileControllerAnimalsSuspenseInfinite<
         ProfileControllerAnimalsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1083,6 +1065,8 @@ export type profileControllerPhotosResponse200 = {
 export type profileControllerPhotosResponseSuccess = profileControllerPhotosResponse200 & {
   headers: Headers;
 };
+export type profileControllerPhotosResponse = profileControllerPhotosResponseSuccess;
+
 export const getProfileControllerPhotosUrl = (username: string, params?: ProfileControllerPhotosParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -1095,42 +1079,31 @@ export const getProfileControllerPhotosUrl = (username: string, params?: Profile
   const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
-    ? `http://localhost:4000/api/v1/profiles/${username}/photos?${stringifiedParams}`
-    : `http://localhost:4000/api/v1/profiles/${username}/photos`;
+    ? `/api/v1/profiles/${username}/photos?${stringifiedParams}`
+    : `/api/v1/profiles/${username}/photos`;
 };
 
 export const profileControllerPhotos = async (
   username: string,
   params?: ProfileControllerPhotosParams,
   options?: RequestInit,
-): Promise<profileControllerPhotosResponseSuccess> => {
-  const res = await fetch(getProfileControllerPhotosUrl(username, params), {
+): Promise<profileControllerPhotosResponse> => {
+  return customFetch<profileControllerPhotosResponse>(getProfileControllerPhotosUrl(username, params), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: profileControllerPhotosResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as profileControllerPhotosResponseSuccess;
 };
 
 export const getProfileControllerPhotosInfiniteQueryKey = (
   username?: string,
   params?: ProfileControllerPhotosParams,
 ) => {
-  return ['infinite', `http://localhost:4000/api/v1/profiles/${username}/photos`, ...(params ? [params] : [])] as const;
+  return ['infinite', `/api/v1/profiles/${username}/photos`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfileControllerPhotosQueryKey = (username?: string, params?: ProfileControllerPhotosParams) => {
-  return [`http://localhost:4000/api/v1/profiles/${username}/photos`, ...(params ? [params] : [])] as const;
+  return [`/api/v1/profiles/${username}/photos`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfileControllerPhotosInfiniteQueryOptions = <
@@ -1149,10 +1122,10 @@ export const getProfileControllerPhotosInfiniteQueryOptions = <
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotosInfiniteQueryKey(username, params);
 
@@ -1164,7 +1137,7 @@ export const getProfileControllerPhotosInfiniteQueryOptions = <
     profileControllerPhotos(
       username,
       { ...params, cursor: pageParam || params?.['cursor'] },
-      { signal, ...fetchOptions },
+      { signal, ...requestOptions },
     );
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
@@ -1206,7 +1179,7 @@ export function useProfileControllerPhotosInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1235,7 +1208,7 @@ export function useProfileControllerPhotosInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1255,7 +1228,7 @@ export function useProfileControllerPhotosInfinite<
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1276,7 +1249,7 @@ export function useProfileControllerPhotosInfinite<
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1308,7 +1281,7 @@ export const prefetchProfileControllerPhotosInfiniteQuery = async <
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerPhotosInfiniteQueryOptions(username, params, options);
@@ -1326,15 +1299,15 @@ export const getProfileControllerPhotosQueryOptions = <
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotosQueryKey(username, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhotos>>> = ({ signal }) =>
-    profileControllerPhotos(username, params, { signal, ...fetchOptions });
+    profileControllerPhotos(username, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhotos>>,
@@ -1362,7 +1335,7 @@ export function useProfileControllerPhotos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1382,7 +1355,7 @@ export function useProfileControllerPhotos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1394,7 +1367,7 @@ export function useProfileControllerPhotos<
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1407,7 +1380,7 @@ export function useProfileControllerPhotos<
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1431,7 +1404,7 @@ export const prefetchProfileControllerPhotosQuery = async <
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerPhotosQueryOptions(username, params, options);
@@ -1449,15 +1422,15 @@ export const getProfileControllerPhotosSuspenseQueryOptions = <
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotosQueryKey(username, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhotos>>> = ({ signal }) =>
-    profileControllerPhotos(username, params, { signal, ...fetchOptions });
+    profileControllerPhotos(username, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhotos>>,
@@ -1479,7 +1452,7 @@ export function useProfileControllerPhotosSuspense<
   params: undefined | ProfileControllerPhotosParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1491,7 +1464,7 @@ export function useProfileControllerPhotosSuspense<
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1503,7 +1476,7 @@ export function useProfileControllerPhotosSuspense<
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1516,7 +1489,7 @@ export function useProfileControllerPhotosSuspense<
   params?: ProfileControllerPhotosParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhotos>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1547,10 +1520,10 @@ export const getProfileControllerPhotosSuspenseInfiniteQueryOptions = <
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotosInfiniteQueryKey(username, params);
 
@@ -1562,7 +1535,7 @@ export const getProfileControllerPhotosSuspenseInfiniteQueryOptions = <
     profileControllerPhotos(
       username,
       { ...params, cursor: pageParam || params?.['cursor'] },
-      { signal, ...fetchOptions },
+      { signal, ...requestOptions },
     );
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
@@ -1595,7 +1568,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1615,7 +1588,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1635,7 +1608,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1656,7 +1629,7 @@ export function useProfileControllerPhotosSuspenseInfinite<
         ProfileControllerPhotosParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1679,39 +1652,30 @@ export type profileControllerPhotoResponse200 = {
 export type profileControllerPhotoResponseSuccess = profileControllerPhotoResponse200 & {
   headers: Headers;
 };
+export type profileControllerPhotoResponse = profileControllerPhotoResponseSuccess;
+
 export const getProfileControllerPhotoUrl = (username: string, id: number) => {
-  return `http://localhost:4000/api/v1/profiles/${username}/photos/${id}`;
+  return `/api/v1/profiles/${username}/photos/${id}`;
 };
 
 export const profileControllerPhoto = async (
   username: string,
   id: number,
   options?: RequestInit,
-): Promise<profileControllerPhotoResponseSuccess> => {
-  const res = await fetch(getProfileControllerPhotoUrl(username, id), {
+): Promise<profileControllerPhotoResponse> => {
+  return customFetch<profileControllerPhotoResponse>(getProfileControllerPhotoUrl(username, id), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: profileControllerPhotoResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as profileControllerPhotoResponseSuccess;
 };
 
 export const getProfileControllerPhotoInfiniteQueryKey = (username?: string, id?: number) => {
-  return ['infinite', `http://localhost:4000/api/v1/profiles/${username}/photos/${id}`] as const;
+  return ['infinite', `/api/v1/profiles/${username}/photos/${id}`] as const;
 };
 
 export const getProfileControllerPhotoQueryKey = (username?: string, id?: number) => {
-  return [`http://localhost:4000/api/v1/profiles/${username}/photos/${id}`] as const;
+  return [`/api/v1/profiles/${username}/photos/${id}`] as const;
 };
 
 export const getProfileControllerPhotoInfiniteQueryOptions = <
@@ -1722,15 +1686,15 @@ export const getProfileControllerPhotoInfiniteQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoInfiniteQueryKey(username, id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
-    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+    profileControllerPhoto(username, id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!(username && id), ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhoto>>,
@@ -1758,7 +1722,7 @@ export function useProfileControllerPhotoInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1778,7 +1742,7 @@ export function useProfileControllerPhotoInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1790,7 +1754,7 @@ export function useProfileControllerPhotoInfinite<
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1803,7 +1767,7 @@ export function useProfileControllerPhotoInfinite<
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1827,7 +1791,7 @@ export const prefetchProfileControllerPhotoInfiniteQuery = async <
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerPhotoInfiniteQueryOptions(username, id, options);
@@ -1845,15 +1809,15 @@ export const getProfileControllerPhotoQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoQueryKey(username, id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
-    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+    profileControllerPhoto(username, id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!(username && id), ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhoto>>,
@@ -1878,7 +1842,7 @@ export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof prof
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1895,7 +1859,7 @@ export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof prof
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1904,7 +1868,7 @@ export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof prof
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1914,7 +1878,7 @@ export function useProfileControllerPhoto<TData = Awaited<ReturnType<typeof prof
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1938,7 +1902,7 @@ export const prefetchProfileControllerPhotoQuery = async <
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getProfileControllerPhotoQueryOptions(username, id, options);
@@ -1956,15 +1920,15 @@ export const getProfileControllerPhotoSuspenseQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoQueryKey(username, id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
-    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+    profileControllerPhoto(username, id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhoto>>,
@@ -1984,7 +1948,7 @@ export function useProfileControllerPhotoSuspense<
   id: number,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1996,7 +1960,7 @@ export function useProfileControllerPhotoSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2008,7 +1972,7 @@ export function useProfileControllerPhotoSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2021,7 +1985,7 @@ export function useProfileControllerPhotoSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2044,15 +2008,15 @@ export const getProfileControllerPhotoSuspenseInfiniteQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getProfileControllerPhotoInfiniteQueryKey(username, id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerPhoto>>> = ({ signal }) =>
-    profileControllerPhoto(username, id, { signal, ...fetchOptions });
+    profileControllerPhoto(username, id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof profileControllerPhoto>>,
@@ -2074,7 +2038,7 @@ export function useProfileControllerPhotoSuspenseInfinite<
   id: number,
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2086,7 +2050,7 @@ export function useProfileControllerPhotoSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2098,7 +2062,7 @@ export function useProfileControllerPhotoSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2111,7 +2075,7 @@ export function useProfileControllerPhotoSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof profileControllerPhoto>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2134,30 +2098,21 @@ export type profileControllerFollowResponse201 = {
 export type profileControllerFollowResponseSuccess = profileControllerFollowResponse201 & {
   headers: Headers;
 };
+export type profileControllerFollowResponse = profileControllerFollowResponseSuccess;
+
 export const getProfileControllerFollowUrl = (username: string) => {
-  return `http://localhost:4000/api/v1/profiles/${username}/follows`;
+  return `/api/v1/profiles/${username}/follows`;
 };
 
 export const profileControllerFollow = async (
   username: string,
   options?: RequestInit,
-): Promise<profileControllerFollowResponseSuccess> => {
-  const res = await fetch(getProfileControllerFollowUrl(username), {
+): Promise<profileControllerFollowResponse> => {
+  return customFetch<profileControllerFollowResponse>(getProfileControllerFollowUrl(username), {
     credentials: 'include',
     ...options,
     method: 'POST',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: profileControllerFollowResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as profileControllerFollowResponseSuccess;
 };
 
 export const getProfileControllerFollowMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -2167,21 +2122,21 @@ export const getProfileControllerFollowMutationOptions = <TError = unknown, TCon
     { username: string },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<Awaited<ReturnType<typeof profileControllerFollow>>, TError, { username: string }, TContext> => {
   const mutationKey = ['profileControllerFollow'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof profileControllerFollow>>, { username: string }> = (
     props,
   ) => {
     const { username } = props ?? {};
 
-    return profileControllerFollow(username, fetchOptions);
+    return profileControllerFollow(username, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -2199,7 +2154,7 @@ export const useProfileControllerFollow = <TError = unknown, TContext = unknown>
       { username: string },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof profileControllerFollow>>, TError, { username: string }, TContext> => {
@@ -2215,30 +2170,21 @@ export type profileControllerUnfollowResponse200 = {
 export type profileControllerUnfollowResponseSuccess = profileControllerUnfollowResponse200 & {
   headers: Headers;
 };
+export type profileControllerUnfollowResponse = profileControllerUnfollowResponseSuccess;
+
 export const getProfileControllerUnfollowUrl = (username: string) => {
-  return `http://localhost:4000/api/v1/profiles/${username}/follows`;
+  return `/api/v1/profiles/${username}/follows`;
 };
 
 export const profileControllerUnfollow = async (
   username: string,
   options?: RequestInit,
-): Promise<profileControllerUnfollowResponseSuccess> => {
-  const res = await fetch(getProfileControllerUnfollowUrl(username), {
+): Promise<profileControllerUnfollowResponse> => {
+  return customFetch<profileControllerUnfollowResponse>(getProfileControllerUnfollowUrl(username), {
     credentials: 'include',
     ...options,
     method: 'DELETE',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: profileControllerUnfollowResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as profileControllerUnfollowResponseSuccess;
 };
 
 export const getProfileControllerUnfollowMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -2248,7 +2194,7 @@ export const getProfileControllerUnfollowMutationOptions = <TError = unknown, TC
     { username: string },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof profileControllerUnfollow>>,
   TError,
@@ -2256,18 +2202,18 @@ export const getProfileControllerUnfollowMutationOptions = <TError = unknown, TC
   TContext
 > => {
   const mutationKey = ['profileControllerUnfollow'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof profileControllerUnfollow>>, { username: string }> = (
     props,
   ) => {
     const { username } = props ?? {};
 
-    return profileControllerUnfollow(username, fetchOptions);
+    return profileControllerUnfollow(username, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -2287,7 +2233,7 @@ export const useProfileControllerUnfollow = <TError = unknown, TContext = unknow
       { username: string },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof profileControllerUnfollow>>, TError, { username: string }, TContext> => {

@@ -20,7 +20,7 @@ async function ProfilePhotoCommentListSuspense({ id }: Props) {
       id,
       {},
       {
-        fetch: {
+        request: {
           headers: {
             cookie,
           },

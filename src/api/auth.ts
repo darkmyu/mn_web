@@ -35,6 +35,10 @@ import type {
 
 import type { AuthCheckDuplicateUsernameRequest, AuthInfoResponse, AuthRegisterRequest } from './index.schemas';
 
+import { customFetch } from './mutator/custom-fetch';
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 export type authControllerInfoResponse200 = {
   data: AuthInfoResponse;
   status: 200;
@@ -43,35 +47,26 @@ export type authControllerInfoResponse200 = {
 export type authControllerInfoResponseSuccess = authControllerInfoResponse200 & {
   headers: Headers;
 };
+export type authControllerInfoResponse = authControllerInfoResponseSuccess;
+
 export const getAuthControllerInfoUrl = () => {
-  return `http://localhost:4000/api/v1/auth/info`;
+  return `/api/v1/auth/info`;
 };
 
-export const authControllerInfo = async (options?: RequestInit): Promise<authControllerInfoResponseSuccess> => {
-  const res = await fetch(getAuthControllerInfoUrl(), {
+export const authControllerInfo = async (options?: RequestInit): Promise<authControllerInfoResponse> => {
+  return customFetch<authControllerInfoResponse>(getAuthControllerInfoUrl(), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: authControllerInfoResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as authControllerInfoResponseSuccess;
 };
 
 export const getAuthControllerInfoInfiniteQueryKey = () => {
-  return ['infinite', `http://localhost:4000/api/v1/auth/info`] as const;
+  return ['infinite', `/api/v1/auth/info`] as const;
 };
 
 export const getAuthControllerInfoQueryKey = () => {
-  return [`http://localhost:4000/api/v1/auth/info`] as const;
+  return [`/api/v1/auth/info`] as const;
 };
 
 export const getAuthControllerInfoInfiniteQueryOptions = <
@@ -79,14 +74,14 @@ export const getAuthControllerInfoInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerInfoInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerInfo>>> = ({ signal }) =>
-    authControllerInfo({ signal, ...fetchOptions });
+    authControllerInfo({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerInfo>>,
@@ -112,7 +107,7 @@ export function useAuthControllerInfoInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -130,7 +125,7 @@ export function useAuthControllerInfoInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -140,7 +135,7 @@ export function useAuthControllerInfoInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -151,7 +146,7 @@ export function useAuthControllerInfoInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -173,7 +168,7 @@ export const prefetchAuthControllerInfoInfiniteQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerInfoInfiniteQueryOptions(options);
@@ -188,14 +183,14 @@ export const getAuthControllerInfoQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerInfoQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerInfo>>> = ({ signal }) =>
-    authControllerInfo({ signal, ...fetchOptions });
+    authControllerInfo({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof authControllerInfo>>,
@@ -218,7 +213,7 @@ export function useAuthControllerInfo<TData = Awaited<ReturnType<typeof authCont
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -233,14 +228,14 @@ export function useAuthControllerInfo<TData = Awaited<ReturnType<typeof authCont
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthControllerInfo<TData = Awaited<ReturnType<typeof authControllerInfo>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -248,7 +243,7 @@ export function useAuthControllerInfo<TData = Awaited<ReturnType<typeof authCont
 export function useAuthControllerInfo<TData = Awaited<ReturnType<typeof authControllerInfo>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -270,7 +265,7 @@ export const prefetchAuthControllerInfoQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerInfoQueryOptions(options);
@@ -285,14 +280,14 @@ export const getAuthControllerInfoSuspenseQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerInfoQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerInfo>>> = ({ signal }) =>
-    authControllerInfo({ signal, ...fetchOptions });
+    authControllerInfo({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof authControllerInfo>>,
@@ -307,21 +302,21 @@ export type AuthControllerInfoSuspenseQueryError = unknown;
 export function useAuthControllerInfoSuspense<TData = Awaited<ReturnType<typeof authControllerInfo>>, TError = unknown>(
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthControllerInfoSuspense<TData = Awaited<ReturnType<typeof authControllerInfo>>, TError = unknown>(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthControllerInfoSuspense<TData = Awaited<ReturnType<typeof authControllerInfo>>, TError = unknown>(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -329,7 +324,7 @@ export function useAuthControllerInfoSuspense<TData = Awaited<ReturnType<typeof 
 export function useAuthControllerInfoSuspense<TData = Awaited<ReturnType<typeof authControllerInfo>>, TError = unknown>(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -349,14 +344,14 @@ export const getAuthControllerInfoSuspenseInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerInfoInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerInfo>>> = ({ signal }) =>
-    authControllerInfo({ signal, ...fetchOptions });
+    authControllerInfo({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerInfo>>,
@@ -374,7 +369,7 @@ export function useAuthControllerInfoSuspenseInfinite<
 >(
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -384,7 +379,7 @@ export function useAuthControllerInfoSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -394,7 +389,7 @@ export function useAuthControllerInfoSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -405,7 +400,7 @@ export function useAuthControllerInfoSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerInfo>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -428,35 +423,26 @@ export type authControllerGoogleResponse200 = {
 export type authControllerGoogleResponseSuccess = authControllerGoogleResponse200 & {
   headers: Headers;
 };
+export type authControllerGoogleResponse = authControllerGoogleResponseSuccess;
+
 export const getAuthControllerGoogleUrl = () => {
-  return `http://localhost:4000/api/v1/auth/google`;
+  return `/api/v1/auth/google`;
 };
 
-export const authControllerGoogle = async (options?: RequestInit): Promise<authControllerGoogleResponseSuccess> => {
-  const res = await fetch(getAuthControllerGoogleUrl(), {
+export const authControllerGoogle = async (options?: RequestInit): Promise<authControllerGoogleResponse> => {
+  return customFetch<authControllerGoogleResponse>(getAuthControllerGoogleUrl(), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: authControllerGoogleResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as authControllerGoogleResponseSuccess;
 };
 
 export const getAuthControllerGoogleInfiniteQueryKey = () => {
-  return ['infinite', `http://localhost:4000/api/v1/auth/google`] as const;
+  return ['infinite', `/api/v1/auth/google`] as const;
 };
 
 export const getAuthControllerGoogleQueryKey = () => {
-  return [`http://localhost:4000/api/v1/auth/google`] as const;
+  return [`/api/v1/auth/google`] as const;
 };
 
 export const getAuthControllerGoogleInfiniteQueryOptions = <
@@ -464,14 +450,14 @@ export const getAuthControllerGoogleInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerGoogleInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogle>>> = ({ signal }) =>
-    authControllerGoogle({ signal, ...fetchOptions });
+    authControllerGoogle({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerGoogle>>,
@@ -497,7 +483,7 @@ export function useAuthControllerGoogleInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -515,7 +501,7 @@ export function useAuthControllerGoogleInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -525,7 +511,7 @@ export function useAuthControllerGoogleInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -536,7 +522,7 @@ export function useAuthControllerGoogleInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -558,7 +544,7 @@ export const prefetchAuthControllerGoogleInfiniteQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerGoogleInfiniteQueryOptions(options);
@@ -573,14 +559,14 @@ export const getAuthControllerGoogleQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerGoogleQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogle>>> = ({ signal }) =>
-    authControllerGoogle({ signal, ...fetchOptions });
+    authControllerGoogle({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof authControllerGoogle>>,
@@ -603,7 +589,7 @@ export function useAuthControllerGoogle<TData = Awaited<ReturnType<typeof authCo
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -618,14 +604,14 @@ export function useAuthControllerGoogle<TData = Awaited<ReturnType<typeof authCo
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthControllerGoogle<TData = Awaited<ReturnType<typeof authControllerGoogle>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -633,7 +619,7 @@ export function useAuthControllerGoogle<TData = Awaited<ReturnType<typeof authCo
 export function useAuthControllerGoogle<TData = Awaited<ReturnType<typeof authControllerGoogle>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -655,7 +641,7 @@ export const prefetchAuthControllerGoogleQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerGoogleQueryOptions(options);
@@ -670,14 +656,14 @@ export const getAuthControllerGoogleSuspenseQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerGoogleQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogle>>> = ({ signal }) =>
-    authControllerGoogle({ signal, ...fetchOptions });
+    authControllerGoogle({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof authControllerGoogle>>,
@@ -695,7 +681,7 @@ export function useAuthControllerGoogleSuspense<
 >(
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -705,7 +691,7 @@ export function useAuthControllerGoogleSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -715,7 +701,7 @@ export function useAuthControllerGoogleSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -726,7 +712,7 @@ export function useAuthControllerGoogleSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -746,14 +732,14 @@ export const getAuthControllerGoogleSuspenseInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerGoogleInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogle>>> = ({ signal }) =>
-    authControllerGoogle({ signal, ...fetchOptions });
+    authControllerGoogle({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerGoogle>>,
@@ -773,7 +759,7 @@ export function useAuthControllerGoogleSuspenseInfinite<
 >(
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -783,7 +769,7 @@ export function useAuthControllerGoogleSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -793,7 +779,7 @@ export function useAuthControllerGoogleSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -804,7 +790,7 @@ export function useAuthControllerGoogleSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerGoogle>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -827,35 +813,26 @@ export type authControllerNaverResponse200 = {
 export type authControllerNaverResponseSuccess = authControllerNaverResponse200 & {
   headers: Headers;
 };
+export type authControllerNaverResponse = authControllerNaverResponseSuccess;
+
 export const getAuthControllerNaverUrl = () => {
-  return `http://localhost:4000/api/v1/auth/naver`;
+  return `/api/v1/auth/naver`;
 };
 
-export const authControllerNaver = async (options?: RequestInit): Promise<authControllerNaverResponseSuccess> => {
-  const res = await fetch(getAuthControllerNaverUrl(), {
+export const authControllerNaver = async (options?: RequestInit): Promise<authControllerNaverResponse> => {
+  return customFetch<authControllerNaverResponse>(getAuthControllerNaverUrl(), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: authControllerNaverResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as authControllerNaverResponseSuccess;
 };
 
 export const getAuthControllerNaverInfiniteQueryKey = () => {
-  return ['infinite', `http://localhost:4000/api/v1/auth/naver`] as const;
+  return ['infinite', `/api/v1/auth/naver`] as const;
 };
 
 export const getAuthControllerNaverQueryKey = () => {
-  return [`http://localhost:4000/api/v1/auth/naver`] as const;
+  return [`/api/v1/auth/naver`] as const;
 };
 
 export const getAuthControllerNaverInfiniteQueryOptions = <
@@ -863,14 +840,14 @@ export const getAuthControllerNaverInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerNaverInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerNaver>>> = ({ signal }) =>
-    authControllerNaver({ signal, ...fetchOptions });
+    authControllerNaver({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerNaver>>,
@@ -896,7 +873,7 @@ export function useAuthControllerNaverInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -914,7 +891,7 @@ export function useAuthControllerNaverInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -924,7 +901,7 @@ export function useAuthControllerNaverInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -935,7 +912,7 @@ export function useAuthControllerNaverInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -957,7 +934,7 @@ export const prefetchAuthControllerNaverInfiniteQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerNaverInfiniteQueryOptions(options);
@@ -972,14 +949,14 @@ export const getAuthControllerNaverQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerNaverQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerNaver>>> = ({ signal }) =>
-    authControllerNaver({ signal, ...fetchOptions });
+    authControllerNaver({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof authControllerNaver>>,
@@ -1002,7 +979,7 @@ export function useAuthControllerNaver<TData = Awaited<ReturnType<typeof authCon
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1017,14 +994,14 @@ export function useAuthControllerNaver<TData = Awaited<ReturnType<typeof authCon
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthControllerNaver<TData = Awaited<ReturnType<typeof authControllerNaver>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1032,7 +1009,7 @@ export function useAuthControllerNaver<TData = Awaited<ReturnType<typeof authCon
 export function useAuthControllerNaver<TData = Awaited<ReturnType<typeof authControllerNaver>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1054,7 +1031,7 @@ export const prefetchAuthControllerNaverQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerNaverQueryOptions(options);
@@ -1069,14 +1046,14 @@ export const getAuthControllerNaverSuspenseQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerNaverQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerNaver>>> = ({ signal }) =>
-    authControllerNaver({ signal, ...fetchOptions });
+    authControllerNaver({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof authControllerNaver>>,
@@ -1094,7 +1071,7 @@ export function useAuthControllerNaverSuspense<
 >(
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1104,7 +1081,7 @@ export function useAuthControllerNaverSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1114,7 +1091,7 @@ export function useAuthControllerNaverSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1125,7 +1102,7 @@ export function useAuthControllerNaverSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1145,14 +1122,14 @@ export const getAuthControllerNaverSuspenseInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerNaverInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerNaver>>> = ({ signal }) =>
-    authControllerNaver({ signal, ...fetchOptions });
+    authControllerNaver({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerNaver>>,
@@ -1172,7 +1149,7 @@ export function useAuthControllerNaverSuspenseInfinite<
 >(
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1182,7 +1159,7 @@ export function useAuthControllerNaverSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1192,7 +1169,7 @@ export function useAuthControllerNaverSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1203,7 +1180,7 @@ export function useAuthControllerNaverSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerNaver>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1226,35 +1203,26 @@ export type authControllerKakaoResponse200 = {
 export type authControllerKakaoResponseSuccess = authControllerKakaoResponse200 & {
   headers: Headers;
 };
+export type authControllerKakaoResponse = authControllerKakaoResponseSuccess;
+
 export const getAuthControllerKakaoUrl = () => {
-  return `http://localhost:4000/api/v1/auth/kakao`;
+  return `/api/v1/auth/kakao`;
 };
 
-export const authControllerKakao = async (options?: RequestInit): Promise<authControllerKakaoResponseSuccess> => {
-  const res = await fetch(getAuthControllerKakaoUrl(), {
+export const authControllerKakao = async (options?: RequestInit): Promise<authControllerKakaoResponse> => {
+  return customFetch<authControllerKakaoResponse>(getAuthControllerKakaoUrl(), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: authControllerKakaoResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as authControllerKakaoResponseSuccess;
 };
 
 export const getAuthControllerKakaoInfiniteQueryKey = () => {
-  return ['infinite', `http://localhost:4000/api/v1/auth/kakao`] as const;
+  return ['infinite', `/api/v1/auth/kakao`] as const;
 };
 
 export const getAuthControllerKakaoQueryKey = () => {
-  return [`http://localhost:4000/api/v1/auth/kakao`] as const;
+  return [`/api/v1/auth/kakao`] as const;
 };
 
 export const getAuthControllerKakaoInfiniteQueryOptions = <
@@ -1262,14 +1230,14 @@ export const getAuthControllerKakaoInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerKakaoInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerKakao>>> = ({ signal }) =>
-    authControllerKakao({ signal, ...fetchOptions });
+    authControllerKakao({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerKakao>>,
@@ -1295,7 +1263,7 @@ export function useAuthControllerKakaoInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1313,7 +1281,7 @@ export function useAuthControllerKakaoInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1323,7 +1291,7 @@ export function useAuthControllerKakaoInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1334,7 +1302,7 @@ export function useAuthControllerKakaoInfinite<
 >(
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1356,7 +1324,7 @@ export const prefetchAuthControllerKakaoInfiniteQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerKakaoInfiniteQueryOptions(options);
@@ -1371,14 +1339,14 @@ export const getAuthControllerKakaoQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerKakaoQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerKakao>>> = ({ signal }) =>
-    authControllerKakao({ signal, ...fetchOptions });
+    authControllerKakao({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof authControllerKakao>>,
@@ -1401,7 +1369,7 @@ export function useAuthControllerKakao<TData = Awaited<ReturnType<typeof authCon
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1416,14 +1384,14 @@ export function useAuthControllerKakao<TData = Awaited<ReturnType<typeof authCon
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthControllerKakao<TData = Awaited<ReturnType<typeof authControllerKakao>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1431,7 +1399,7 @@ export function useAuthControllerKakao<TData = Awaited<ReturnType<typeof authCon
 export function useAuthControllerKakao<TData = Awaited<ReturnType<typeof authControllerKakao>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1453,7 +1421,7 @@ export const prefetchAuthControllerKakaoQuery = async <
   queryClient: QueryClient,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getAuthControllerKakaoQueryOptions(options);
@@ -1468,14 +1436,14 @@ export const getAuthControllerKakaoSuspenseQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerKakaoQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerKakao>>> = ({ signal }) =>
-    authControllerKakao({ signal, ...fetchOptions });
+    authControllerKakao({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof authControllerKakao>>,
@@ -1493,7 +1461,7 @@ export function useAuthControllerKakaoSuspense<
 >(
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1503,7 +1471,7 @@ export function useAuthControllerKakaoSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1513,7 +1481,7 @@ export function useAuthControllerKakaoSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1524,7 +1492,7 @@ export function useAuthControllerKakaoSuspense<
 >(
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1544,14 +1512,14 @@ export const getAuthControllerKakaoSuspenseInfiniteQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAuthControllerKakaoInfiniteQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerKakao>>> = ({ signal }) =>
-    authControllerKakao({ signal, ...fetchOptions });
+    authControllerKakao({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof authControllerKakao>>,
@@ -1571,7 +1539,7 @@ export function useAuthControllerKakaoSuspenseInfinite<
 >(
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1581,7 +1549,7 @@ export function useAuthControllerKakaoSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1591,7 +1559,7 @@ export function useAuthControllerKakaoSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1602,7 +1570,7 @@ export function useAuthControllerKakaoSuspenseInfinite<
 >(
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerKakao>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1625,32 +1593,23 @@ export type authControllerRegisterResponse200 = {
 export type authControllerRegisterResponseSuccess = authControllerRegisterResponse200 & {
   headers: Headers;
 };
+export type authControllerRegisterResponse = authControllerRegisterResponseSuccess;
+
 export const getAuthControllerRegisterUrl = () => {
-  return `http://localhost:4000/api/v1/auth/register`;
+  return `/api/v1/auth/register`;
 };
 
 export const authControllerRegister = async (
   authRegisterRequest: AuthRegisterRequest,
   options?: RequestInit,
-): Promise<authControllerRegisterResponseSuccess> => {
-  const res = await fetch(getAuthControllerRegisterUrl(), {
+): Promise<authControllerRegisterResponse> => {
+  return customFetch<authControllerRegisterResponse>(getAuthControllerRegisterUrl(), {
     credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(authRegisterRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: authControllerRegisterResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as authControllerRegisterResponseSuccess;
 };
 
 export const getAuthControllerRegisterMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -1660,7 +1619,7 @@ export const getAuthControllerRegisterMutationOptions = <TError = unknown, TCont
     { data: AuthRegisterRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authControllerRegister>>,
   TError,
@@ -1668,11 +1627,11 @@ export const getAuthControllerRegisterMutationOptions = <TError = unknown, TCont
   TContext
 > => {
   const mutationKey = ['authControllerRegister'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authControllerRegister>>,
@@ -1680,7 +1639,7 @@ export const getAuthControllerRegisterMutationOptions = <TError = unknown, TCont
   > = (props) => {
     const { data } = props ?? {};
 
-    return authControllerRegister(data, fetchOptions);
+    return authControllerRegister(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1698,7 +1657,7 @@ export const useAuthControllerRegister = <TError = unknown, TContext = unknown>(
       { data: AuthRegisterRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -1719,32 +1678,23 @@ export type authControllerCheckDuplicateUsernameResponse200 = {
 export type authControllerCheckDuplicateUsernameResponseSuccess = authControllerCheckDuplicateUsernameResponse200 & {
   headers: Headers;
 };
+export type authControllerCheckDuplicateUsernameResponse = authControllerCheckDuplicateUsernameResponseSuccess;
+
 export const getAuthControllerCheckDuplicateUsernameUrl = () => {
-  return `http://localhost:4000/api/v1/auth/check-duplicate-username`;
+  return `/api/v1/auth/check-duplicate-username`;
 };
 
 export const authControllerCheckDuplicateUsername = async (
   authCheckDuplicateUsernameRequest: AuthCheckDuplicateUsernameRequest,
   options?: RequestInit,
-): Promise<authControllerCheckDuplicateUsernameResponseSuccess> => {
-  const res = await fetch(getAuthControllerCheckDuplicateUsernameUrl(), {
+): Promise<authControllerCheckDuplicateUsernameResponse> => {
+  return customFetch<authControllerCheckDuplicateUsernameResponse>(getAuthControllerCheckDuplicateUsernameUrl(), {
     credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(authCheckDuplicateUsernameRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: authControllerCheckDuplicateUsernameResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as authControllerCheckDuplicateUsernameResponseSuccess;
 };
 
 export const getAuthControllerCheckDuplicateUsernameMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -1754,7 +1704,7 @@ export const getAuthControllerCheckDuplicateUsernameMutationOptions = <TError = 
     { data: AuthCheckDuplicateUsernameRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authControllerCheckDuplicateUsername>>,
   TError,
@@ -1762,11 +1712,11 @@ export const getAuthControllerCheckDuplicateUsernameMutationOptions = <TError = 
   TContext
 > => {
   const mutationKey = ['authControllerCheckDuplicateUsername'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authControllerCheckDuplicateUsername>>,
@@ -1774,7 +1724,7 @@ export const getAuthControllerCheckDuplicateUsernameMutationOptions = <TError = 
   > = (props) => {
     const { data } = props ?? {};
 
-    return authControllerCheckDuplicateUsername(data, fetchOptions);
+    return authControllerCheckDuplicateUsername(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1794,7 +1744,7 @@ export const useAuthControllerCheckDuplicateUsername = <TError = unknown, TConte
       { data: AuthCheckDuplicateUsernameRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -1815,42 +1765,33 @@ export type authControllerLogoutResponse201 = {
 export type authControllerLogoutResponseSuccess = authControllerLogoutResponse201 & {
   headers: Headers;
 };
+export type authControllerLogoutResponse = authControllerLogoutResponseSuccess;
+
 export const getAuthControllerLogoutUrl = () => {
-  return `http://localhost:4000/api/v1/auth/logout`;
+  return `/api/v1/auth/logout`;
 };
 
-export const authControllerLogout = async (options?: RequestInit): Promise<authControllerLogoutResponseSuccess> => {
-  const res = await fetch(getAuthControllerLogoutUrl(), {
+export const authControllerLogout = async (options?: RequestInit): Promise<authControllerLogoutResponse> => {
+  return customFetch<authControllerLogoutResponse>(getAuthControllerLogoutUrl(), {
     credentials: 'include',
     ...options,
     method: 'POST',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: authControllerLogoutResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as authControllerLogoutResponseSuccess;
 };
 
 export const getAuthControllerLogoutMutationOptions = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError, void, TContext>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError, void, TContext> => {
   const mutationKey = ['authControllerLogout'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogout>>, void> = () => {
-    return authControllerLogout(fetchOptions);
+    return authControllerLogout(requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1863,7 +1804,7 @@ export type AuthControllerLogoutMutationError = unknown;
 export const useAuthControllerLogout = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError, void, TContext>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof authControllerLogout>>, TError, void, TContext> => {

@@ -50,6 +50,10 @@ import type {
   PhotoUpdateRequest,
 } from './index.schemas';
 
+import { customFetch } from './mutator/custom-fetch';
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 export type photoControllerAllResponse200 = {
   data: PhotoControllerAll200;
   status: 200;
@@ -58,6 +62,8 @@ export type photoControllerAllResponse200 = {
 export type photoControllerAllResponseSuccess = photoControllerAllResponse200 & {
   headers: Headers;
 };
+export type photoControllerAllResponse = photoControllerAllResponseSuccess;
+
 export const getPhotoControllerAllUrl = (params?: PhotoControllerAllParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -69,39 +75,26 @@ export const getPhotoControllerAllUrl = (params?: PhotoControllerAllParams) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `http://localhost:4000/api/v1/photos?${stringifiedParams}`
-    : `http://localhost:4000/api/v1/photos`;
+  return stringifiedParams.length > 0 ? `/api/v1/photos?${stringifiedParams}` : `/api/v1/photos`;
 };
 
 export const photoControllerAll = async (
   params?: PhotoControllerAllParams,
   options?: RequestInit,
-): Promise<photoControllerAllResponseSuccess> => {
-  const res = await fetch(getPhotoControllerAllUrl(params), {
+): Promise<photoControllerAllResponse> => {
+  return customFetch<photoControllerAllResponse>(getPhotoControllerAllUrl(params), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerAllResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerAllResponseSuccess;
 };
 
 export const getPhotoControllerAllInfiniteQueryKey = (params?: PhotoControllerAllParams) => {
-  return ['infinite', `http://localhost:4000/api/v1/photos`, ...(params ? [params] : [])] as const;
+  return ['infinite', `/api/v1/photos`, ...(params ? [params] : [])] as const;
 };
 
 export const getPhotoControllerAllQueryKey = (params?: PhotoControllerAllParams) => {
-  return [`http://localhost:4000/api/v1/photos`, ...(params ? [params] : [])] as const;
+  return [`/api/v1/photos`, ...(params ? [params] : [])] as const;
 };
 
 export const getPhotoControllerAllInfiniteQueryOptions = <
@@ -119,10 +112,10 @@ export const getPhotoControllerAllInfiniteQueryOptions = <
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllInfiniteQueryKey(params);
 
@@ -131,7 +124,7 @@ export const getPhotoControllerAllInfiniteQueryOptions = <
     QueryKey,
     PhotoControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    photoControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    photoControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof photoControllerAll>>,
@@ -169,7 +162,7 @@ export function usePhotoControllerAllInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -197,7 +190,7 @@ export function usePhotoControllerAllInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -216,7 +209,7 @@ export function usePhotoControllerAllInfinite<
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -236,7 +229,7 @@ export function usePhotoControllerAllInfinite<
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -267,7 +260,7 @@ export const prefetchPhotoControllerAllInfiniteQuery = async <
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerAllInfiniteQueryOptions(params, options);
@@ -284,15 +277,15 @@ export const getPhotoControllerAllQueryOptions = <
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerAll>>> = ({ signal }) =>
-    photoControllerAll(params, { signal, ...fetchOptions });
+    photoControllerAll(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof photoControllerAll>>,
@@ -316,7 +309,7 @@ export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoCon
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -332,7 +325,7 @@ export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoCon
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -340,7 +333,7 @@ export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoCon
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -349,7 +342,7 @@ export function usePhotoControllerAll<TData = Awaited<ReturnType<typeof photoCon
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -372,7 +365,7 @@ export const prefetchPhotoControllerAllQuery = async <
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerAllQueryOptions(params, options);
@@ -389,15 +382,15 @@ export const getPhotoControllerAllSuspenseQueryOptions = <
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerAll>>> = ({ signal }) =>
-    photoControllerAll(params, { signal, ...fetchOptions });
+    photoControllerAll(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof photoControllerAll>>,
@@ -413,7 +406,7 @@ export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof 
   params: undefined | PhotoControllerAllParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -421,7 +414,7 @@ export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof 
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -429,7 +422,7 @@ export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof 
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -438,7 +431,7 @@ export function usePhotoControllerAllSuspense<TData = Awaited<ReturnType<typeof 
   params?: PhotoControllerAllParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerAll>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -468,10 +461,10 @@ export const getPhotoControllerAllSuspenseInfiniteQueryOptions = <
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerAllInfiniteQueryKey(params);
 
@@ -480,7 +473,7 @@ export const getPhotoControllerAllSuspenseInfiniteQueryOptions = <
     QueryKey,
     PhotoControllerAllParams['cursor']
   > = ({ signal, pageParam }) =>
-    photoControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    photoControllerAll({ ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof photoControllerAll>>,
@@ -509,7 +502,7 @@ export function usePhotoControllerAllSuspenseInfinite<
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -528,7 +521,7 @@ export function usePhotoControllerAllSuspenseInfinite<
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -547,7 +540,7 @@ export function usePhotoControllerAllSuspenseInfinite<
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -567,7 +560,7 @@ export function usePhotoControllerAllSuspenseInfinite<
         PhotoControllerAllParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -590,32 +583,23 @@ export type photoControllerCreateResponse201 = {
 export type photoControllerCreateResponseSuccess = photoControllerCreateResponse201 & {
   headers: Headers;
 };
+export type photoControllerCreateResponse = photoControllerCreateResponseSuccess;
+
 export const getPhotoControllerCreateUrl = () => {
-  return `http://localhost:4000/api/v1/photos`;
+  return `/api/v1/photos`;
 };
 
 export const photoControllerCreate = async (
   photoCreateRequest: PhotoCreateRequest,
   options?: RequestInit,
-): Promise<photoControllerCreateResponseSuccess> => {
-  const res = await fetch(getPhotoControllerCreateUrl(), {
+): Promise<photoControllerCreateResponse> => {
+  return customFetch<photoControllerCreateResponse>(getPhotoControllerCreateUrl(), {
     credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(photoCreateRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerCreateResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerCreateResponseSuccess;
 };
 
 export const getPhotoControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -625,7 +609,7 @@ export const getPhotoControllerCreateMutationOptions = <TError = unknown, TConte
     { data: PhotoCreateRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof photoControllerCreate>>,
   TError,
@@ -633,11 +617,11 @@ export const getPhotoControllerCreateMutationOptions = <TError = unknown, TConte
   TContext
 > => {
   const mutationKey = ['photoControllerCreate'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof photoControllerCreate>>,
@@ -645,7 +629,7 @@ export const getPhotoControllerCreateMutationOptions = <TError = unknown, TConte
   > = (props) => {
     const { data } = props ?? {};
 
-    return photoControllerCreate(data, fetchOptions);
+    return photoControllerCreate(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -663,7 +647,7 @@ export const usePhotoControllerCreate = <TError = unknown, TContext = unknown>(
       { data: PhotoCreateRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -684,38 +668,26 @@ export type photoControllerReadResponse200 = {
 export type photoControllerReadResponseSuccess = photoControllerReadResponse200 & {
   headers: Headers;
 };
+export type photoControllerReadResponse = photoControllerReadResponseSuccess;
+
 export const getPhotoControllerReadUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}`;
+  return `/api/v1/photos/${id}`;
 };
 
-export const photoControllerRead = async (
-  id: number,
-  options?: RequestInit,
-): Promise<photoControllerReadResponseSuccess> => {
-  const res = await fetch(getPhotoControllerReadUrl(id), {
+export const photoControllerRead = async (id: number, options?: RequestInit): Promise<photoControllerReadResponse> => {
+  return customFetch<photoControllerReadResponse>(getPhotoControllerReadUrl(id), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerReadResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerReadResponseSuccess;
 };
 
 export const getPhotoControllerReadInfiniteQueryKey = (id?: number) => {
-  return ['infinite', `http://localhost:4000/api/v1/photos/${id}`] as const;
+  return ['infinite', `/api/v1/photos/${id}`] as const;
 };
 
 export const getPhotoControllerReadQueryKey = (id?: number) => {
-  return [`http://localhost:4000/api/v1/photos/${id}`] as const;
+  return [`/api/v1/photos/${id}`] as const;
 };
 
 export const getPhotoControllerReadInfiniteQueryOptions = <
@@ -725,15 +697,15 @@ export const getPhotoControllerReadInfiniteQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerReadInfiniteQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerRead>>> = ({ signal }) =>
-    photoControllerRead(id, { signal, ...fetchOptions });
+    photoControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof photoControllerRead>>,
@@ -760,7 +732,7 @@ export function usePhotoControllerReadInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -779,7 +751,7 @@ export function usePhotoControllerReadInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -790,7 +762,7 @@ export function usePhotoControllerReadInfinite<
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -802,7 +774,7 @@ export function usePhotoControllerReadInfinite<
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -825,7 +797,7 @@ export const prefetchPhotoControllerReadInfiniteQuery = async <
   id: number,
   options?: {
     query?: Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerReadInfiniteQueryOptions(id, options);
@@ -842,15 +814,15 @@ export const getPhotoControllerReadQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerReadQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerRead>>> = ({ signal }) =>
-    photoControllerRead(id, { signal, ...fetchOptions });
+    photoControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof photoControllerRead>>,
@@ -874,7 +846,7 @@ export function usePhotoControllerRead<TData = Awaited<ReturnType<typeof photoCo
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -890,7 +862,7 @@ export function usePhotoControllerRead<TData = Awaited<ReturnType<typeof photoCo
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -898,7 +870,7 @@ export function usePhotoControllerRead<TData = Awaited<ReturnType<typeof photoCo
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -907,7 +879,7 @@ export function usePhotoControllerRead<TData = Awaited<ReturnType<typeof photoCo
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -930,7 +902,7 @@ export const prefetchPhotoControllerReadQuery = async <
   id: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerReadQueryOptions(id, options);
@@ -947,15 +919,15 @@ export const getPhotoControllerReadSuspenseQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerReadQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerRead>>> = ({ signal }) =>
-    photoControllerRead(id, { signal, ...fetchOptions });
+    photoControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof photoControllerRead>>,
@@ -974,7 +946,7 @@ export function usePhotoControllerReadSuspense<
   id: number,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -985,7 +957,7 @@ export function usePhotoControllerReadSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -996,7 +968,7 @@ export function usePhotoControllerReadSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1008,7 +980,7 @@ export function usePhotoControllerReadSuspense<
   id: number,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1030,15 +1002,15 @@ export const getPhotoControllerReadSuspenseInfiniteQueryOptions = <
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerReadInfiniteQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerRead>>> = ({ signal }) =>
-    photoControllerRead(id, { signal, ...fetchOptions });
+    photoControllerRead(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof photoControllerRead>>,
@@ -1059,7 +1031,7 @@ export function usePhotoControllerReadSuspenseInfinite<
   id: number,
   options: {
     query: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1070,7 +1042,7 @@ export function usePhotoControllerReadSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1081,7 +1053,7 @@ export function usePhotoControllerReadSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1093,7 +1065,7 @@ export function usePhotoControllerReadSuspenseInfinite<
   id: number,
   options?: {
     query?: Partial<UseSuspenseInfiniteQueryOptions<Awaited<ReturnType<typeof photoControllerRead>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1116,33 +1088,24 @@ export type photoControllerUpdateResponse200 = {
 export type photoControllerUpdateResponseSuccess = photoControllerUpdateResponse200 & {
   headers: Headers;
 };
+export type photoControllerUpdateResponse = photoControllerUpdateResponseSuccess;
+
 export const getPhotoControllerUpdateUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}`;
+  return `/api/v1/photos/${id}`;
 };
 
 export const photoControllerUpdate = async (
   id: number,
   photoUpdateRequest: PhotoUpdateRequest,
   options?: RequestInit,
-): Promise<photoControllerUpdateResponseSuccess> => {
-  const res = await fetch(getPhotoControllerUpdateUrl(id), {
+): Promise<photoControllerUpdateResponse> => {
+  return customFetch<photoControllerUpdateResponse>(getPhotoControllerUpdateUrl(id), {
     credentials: 'include',
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(photoUpdateRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerUpdateResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerUpdateResponseSuccess;
 };
 
 export const getPhotoControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -1152,7 +1115,7 @@ export const getPhotoControllerUpdateMutationOptions = <TError = unknown, TConte
     { id: number; data: PhotoUpdateRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof photoControllerUpdate>>,
   TError,
@@ -1160,11 +1123,11 @@ export const getPhotoControllerUpdateMutationOptions = <TError = unknown, TConte
   TContext
 > => {
   const mutationKey = ['photoControllerUpdate'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof photoControllerUpdate>>,
@@ -1172,7 +1135,7 @@ export const getPhotoControllerUpdateMutationOptions = <TError = unknown, TConte
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return photoControllerUpdate(id, data, fetchOptions);
+    return photoControllerUpdate(id, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1190,7 +1153,7 @@ export const usePhotoControllerUpdate = <TError = unknown, TContext = unknown>(
       { id: number; data: PhotoUpdateRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -1211,47 +1174,38 @@ export type photoControllerDeleteResponse200 = {
 export type photoControllerDeleteResponseSuccess = photoControllerDeleteResponse200 & {
   headers: Headers;
 };
+export type photoControllerDeleteResponse = photoControllerDeleteResponseSuccess;
+
 export const getPhotoControllerDeleteUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}`;
+  return `/api/v1/photos/${id}`;
 };
 
 export const photoControllerDelete = async (
   id: number,
   options?: RequestInit,
-): Promise<photoControllerDeleteResponseSuccess> => {
-  const res = await fetch(getPhotoControllerDeleteUrl(id), {
+): Promise<photoControllerDeleteResponse> => {
+  return customFetch<photoControllerDeleteResponse>(getPhotoControllerDeleteUrl(id), {
     credentials: 'include',
     ...options,
     method: 'DELETE',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerDeleteResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerDeleteResponseSuccess;
 };
 
 export const getPhotoControllerDeleteMutationOptions = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext> => {
   const mutationKey = ['photoControllerDelete'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof photoControllerDelete>>, { id: number }> = (props) => {
     const { id } = props ?? {};
 
-    return photoControllerDelete(id, fetchOptions);
+    return photoControllerDelete(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1264,7 +1218,7 @@ export type PhotoControllerDeleteMutationError = unknown;
 export const usePhotoControllerDelete = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof photoControllerDelete>>, TError, { id: number }, TContext> => {
@@ -1280,47 +1234,35 @@ export type photoControllerLikeResponse200 = {
 export type photoControllerLikeResponseSuccess = photoControllerLikeResponse200 & {
   headers: Headers;
 };
+export type photoControllerLikeResponse = photoControllerLikeResponseSuccess;
+
 export const getPhotoControllerLikeUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}/likes`;
+  return `/api/v1/photos/${id}/likes`;
 };
 
-export const photoControllerLike = async (
-  id: number,
-  options?: RequestInit,
-): Promise<photoControllerLikeResponseSuccess> => {
-  const res = await fetch(getPhotoControllerLikeUrl(id), {
+export const photoControllerLike = async (id: number, options?: RequestInit): Promise<photoControllerLikeResponse> => {
+  return customFetch<photoControllerLikeResponse>(getPhotoControllerLikeUrl(id), {
     credentials: 'include',
     ...options,
     method: 'POST',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerLikeResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerLikeResponseSuccess;
 };
 
 export const getPhotoControllerLikeMutationOptions = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext> => {
   const mutationKey = ['photoControllerLike'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof photoControllerLike>>, { id: number }> = (props) => {
     const { id } = props ?? {};
 
-    return photoControllerLike(id, fetchOptions);
+    return photoControllerLike(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1333,7 +1275,7 @@ export type PhotoControllerLikeMutationError = unknown;
 export const usePhotoControllerLike = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof photoControllerLike>>, TError, { id: number }, TContext> => {
@@ -1349,47 +1291,38 @@ export type photoControllerUnlikeResponse200 = {
 export type photoControllerUnlikeResponseSuccess = photoControllerUnlikeResponse200 & {
   headers: Headers;
 };
+export type photoControllerUnlikeResponse = photoControllerUnlikeResponseSuccess;
+
 export const getPhotoControllerUnlikeUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}/likes`;
+  return `/api/v1/photos/${id}/likes`;
 };
 
 export const photoControllerUnlike = async (
   id: number,
   options?: RequestInit,
-): Promise<photoControllerUnlikeResponseSuccess> => {
-  const res = await fetch(getPhotoControllerUnlikeUrl(id), {
+): Promise<photoControllerUnlikeResponse> => {
+  return customFetch<photoControllerUnlikeResponse>(getPhotoControllerUnlikeUrl(id), {
     credentials: 'include',
     ...options,
     method: 'DELETE',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerUnlikeResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerUnlikeResponseSuccess;
 };
 
 export const getPhotoControllerUnlikeMutationOptions = <TError = unknown, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext>;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext> => {
   const mutationKey = ['photoControllerUnlike'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof photoControllerUnlike>>, { id: number }> = (props) => {
     const { id } = props ?? {};
 
-    return photoControllerUnlike(id, fetchOptions);
+    return photoControllerUnlike(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -1402,7 +1335,7 @@ export type PhotoControllerUnlikeMutationError = unknown;
 export const usePhotoControllerUnlike = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<Awaited<ReturnType<typeof photoControllerUnlike>>, TError, { id: number }, TContext> => {
@@ -1418,6 +1351,8 @@ export type photoControllerGetCommentsResponse200 = {
 export type photoControllerGetCommentsResponseSuccess = photoControllerGetCommentsResponse200 & {
   headers: Headers;
 };
+export type photoControllerGetCommentsResponse = photoControllerGetCommentsResponseSuccess;
+
 export const getPhotoControllerGetCommentsUrl = (id: number, params?: PhotoControllerGetCommentsParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -1430,42 +1365,31 @@ export const getPhotoControllerGetCommentsUrl = (id: number, params?: PhotoContr
   const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
-    ? `http://localhost:4000/api/v1/photos/${id}/comments?${stringifiedParams}`
-    : `http://localhost:4000/api/v1/photos/${id}/comments`;
+    ? `/api/v1/photos/${id}/comments?${stringifiedParams}`
+    : `/api/v1/photos/${id}/comments`;
 };
 
 export const photoControllerGetComments = async (
   id: number,
   params?: PhotoControllerGetCommentsParams,
   options?: RequestInit,
-): Promise<photoControllerGetCommentsResponseSuccess> => {
-  const res = await fetch(getPhotoControllerGetCommentsUrl(id, params), {
+): Promise<photoControllerGetCommentsResponse> => {
+  return customFetch<photoControllerGetCommentsResponse>(getPhotoControllerGetCommentsUrl(id, params), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerGetCommentsResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerGetCommentsResponseSuccess;
 };
 
 export const getPhotoControllerGetCommentsInfiniteQueryKey = (
   id?: number,
   params?: PhotoControllerGetCommentsParams,
 ) => {
-  return ['infinite', `http://localhost:4000/api/v1/photos/${id}/comments`, ...(params ? [params] : [])] as const;
+  return ['infinite', `/api/v1/photos/${id}/comments`, ...(params ? [params] : [])] as const;
 };
 
 export const getPhotoControllerGetCommentsQueryKey = (id?: number, params?: PhotoControllerGetCommentsParams) => {
-  return [`http://localhost:4000/api/v1/photos/${id}/comments`, ...(params ? [params] : [])] as const;
+  return [`/api/v1/photos/${id}/comments`, ...(params ? [params] : [])] as const;
 };
 
 export const getPhotoControllerGetCommentsInfiniteQueryOptions = <
@@ -1487,10 +1411,10 @@ export const getPhotoControllerGetCommentsInfiniteQueryOptions = <
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsInfiniteQueryKey(id, params);
 
@@ -1499,7 +1423,11 @@ export const getPhotoControllerGetCommentsInfiniteQueryOptions = <
     QueryKey,
     PhotoControllerGetCommentsParams['cursor']
   > = ({ signal, pageParam }) =>
-    photoControllerGetComments(id, { ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    photoControllerGetComments(
+      id,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...requestOptions },
+    );
 
   return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseInfiniteQueryOptions<
     Awaited<ReturnType<typeof photoControllerGetComments>>,
@@ -1543,7 +1471,7 @@ export function usePhotoControllerGetCommentsInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1575,7 +1503,7 @@ export function usePhotoControllerGetCommentsInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1598,7 +1526,7 @@ export function usePhotoControllerGetCommentsInfinite<
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1622,7 +1550,7 @@ export function usePhotoControllerGetCommentsInfinite<
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1654,7 +1582,7 @@ export const prefetchPhotoControllerGetCommentsInfiniteQuery = async <
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerGetCommentsInfiniteQueryOptions(id, params, options);
@@ -1672,15 +1600,15 @@ export const getPhotoControllerGetCommentsQueryOptions = <
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsQueryKey(id, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetComments>>> = ({ signal }) =>
-    photoControllerGetComments(id, params, { signal, ...fetchOptions });
+    photoControllerGetComments(id, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof photoControllerGetComments>>,
@@ -1708,7 +1636,7 @@ export function usePhotoControllerGetComments<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1728,7 +1656,7 @@ export function usePhotoControllerGetComments<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1740,7 +1668,7 @@ export function usePhotoControllerGetComments<
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1753,7 +1681,7 @@ export function usePhotoControllerGetComments<
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1777,7 +1705,7 @@ export const prefetchPhotoControllerGetCommentsQuery = async <
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerGetCommentsQueryOptions(id, params, options);
@@ -1795,15 +1723,15 @@ export const getPhotoControllerGetCommentsSuspenseQueryOptions = <
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsQueryKey(id, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetComments>>> = ({ signal }) =>
-    photoControllerGetComments(id, params, { signal, ...fetchOptions });
+    photoControllerGetComments(id, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof photoControllerGetComments>>,
@@ -1825,7 +1753,7 @@ export function usePhotoControllerGetCommentsSuspense<
   params: undefined | PhotoControllerGetCommentsParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1837,7 +1765,7 @@ export function usePhotoControllerGetCommentsSuspense<
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1849,7 +1777,7 @@ export function usePhotoControllerGetCommentsSuspense<
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1862,7 +1790,7 @@ export function usePhotoControllerGetCommentsSuspense<
   params?: PhotoControllerGetCommentsParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetComments>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1896,10 +1824,10 @@ export const getPhotoControllerGetCommentsSuspenseInfiniteQueryOptions = <
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetCommentsInfiniteQueryKey(id, params);
 
@@ -1908,7 +1836,11 @@ export const getPhotoControllerGetCommentsSuspenseInfiniteQueryOptions = <
     QueryKey,
     PhotoControllerGetCommentsParams['cursor']
   > = ({ signal, pageParam }) =>
-    photoControllerGetComments(id, { ...params, cursor: pageParam || params?.['cursor'] }, { signal, ...fetchOptions });
+    photoControllerGetComments(
+      id,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...requestOptions },
+    );
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
     Awaited<ReturnType<typeof photoControllerGetComments>>,
@@ -1943,7 +1875,7 @@ export function usePhotoControllerGetCommentsSuspenseInfinite<
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1966,7 +1898,7 @@ export function usePhotoControllerGetCommentsSuspenseInfinite<
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -1989,7 +1921,7 @@ export function usePhotoControllerGetCommentsSuspenseInfinite<
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2013,7 +1945,7 @@ export function usePhotoControllerGetCommentsSuspenseInfinite<
         PhotoControllerGetCommentsParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2036,33 +1968,24 @@ export type photoControllerCreateCommentResponse201 = {
 export type photoControllerCreateCommentResponseSuccess = photoControllerCreateCommentResponse201 & {
   headers: Headers;
 };
+export type photoControllerCreateCommentResponse = photoControllerCreateCommentResponseSuccess;
+
 export const getPhotoControllerCreateCommentUrl = (id: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}/comments`;
+  return `/api/v1/photos/${id}/comments`;
 };
 
 export const photoControllerCreateComment = async (
   id: number,
   photoCommentCreateRequest: PhotoCommentCreateRequest,
   options?: RequestInit,
-): Promise<photoControllerCreateCommentResponseSuccess> => {
-  const res = await fetch(getPhotoControllerCreateCommentUrl(id), {
+): Promise<photoControllerCreateCommentResponse> => {
+  return customFetch<photoControllerCreateCommentResponse>(getPhotoControllerCreateCommentUrl(id), {
     credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(photoCommentCreateRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerCreateCommentResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerCreateCommentResponseSuccess;
 };
 
 export const getPhotoControllerCreateCommentMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -2072,7 +1995,7 @@ export const getPhotoControllerCreateCommentMutationOptions = <TError = unknown,
     { id: number; data: PhotoCommentCreateRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof photoControllerCreateComment>>,
   TError,
@@ -2080,11 +2003,11 @@ export const getPhotoControllerCreateCommentMutationOptions = <TError = unknown,
   TContext
 > => {
   const mutationKey = ['photoControllerCreateComment'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof photoControllerCreateComment>>,
@@ -2092,7 +2015,7 @@ export const getPhotoControllerCreateCommentMutationOptions = <TError = unknown,
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return photoControllerCreateComment(id, data, fetchOptions);
+    return photoControllerCreateComment(id, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -2112,7 +2035,7 @@ export const usePhotoControllerCreateComment = <TError = unknown, TContext = unk
       { id: number; data: PhotoCommentCreateRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -2133,6 +2056,8 @@ export type photoControllerGetRepliesResponse200 = {
 export type photoControllerGetRepliesResponseSuccess = photoControllerGetRepliesResponse200 & {
   headers: Headers;
 };
+export type photoControllerGetRepliesResponse = photoControllerGetRepliesResponseSuccess;
+
 export const getPhotoControllerGetRepliesUrl = (
   id: number,
   commentId: number,
@@ -2149,8 +2074,8 @@ export const getPhotoControllerGetRepliesUrl = (
   const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
-    ? `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies?${stringifiedParams}`
-    : `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies`;
+    ? `/api/v1/photos/${id}/comments/${commentId}/replies?${stringifiedParams}`
+    : `/api/v1/photos/${id}/comments/${commentId}/replies`;
 };
 
 export const photoControllerGetReplies = async (
@@ -2158,23 +2083,12 @@ export const photoControllerGetReplies = async (
   commentId: number,
   params?: PhotoControllerGetRepliesParams,
   options?: RequestInit,
-): Promise<photoControllerGetRepliesResponseSuccess> => {
-  const res = await fetch(getPhotoControllerGetRepliesUrl(id, commentId, params), {
+): Promise<photoControllerGetRepliesResponse> => {
+  return customFetch<photoControllerGetRepliesResponse>(getPhotoControllerGetRepliesUrl(id, commentId, params), {
     credentials: 'include',
     ...options,
     method: 'GET',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerGetRepliesResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerGetRepliesResponseSuccess;
 };
 
 export const getPhotoControllerGetRepliesInfiniteQueryKey = (
@@ -2182,11 +2096,7 @@ export const getPhotoControllerGetRepliesInfiniteQueryKey = (
   commentId?: number,
   params?: PhotoControllerGetRepliesParams,
 ) => {
-  return [
-    'infinite',
-    `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies`,
-    ...(params ? [params] : []),
-  ] as const;
+  return ['infinite', `/api/v1/photos/${id}/comments/${commentId}/replies`, ...(params ? [params] : [])] as const;
 };
 
 export const getPhotoControllerGetRepliesQueryKey = (
@@ -2194,10 +2104,7 @@ export const getPhotoControllerGetRepliesQueryKey = (
   commentId?: number,
   params?: PhotoControllerGetRepliesParams,
 ) => {
-  return [
-    `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}/replies`,
-    ...(params ? [params] : []),
-  ] as const;
+  return [`/api/v1/photos/${id}/comments/${commentId}/replies`, ...(params ? [params] : [])] as const;
 };
 
 export const getPhotoControllerGetRepliesInfiniteQueryOptions = <
@@ -2220,10 +2127,10 @@ export const getPhotoControllerGetRepliesInfiniteQueryOptions = <
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesInfiniteQueryKey(id, commentId, params);
 
@@ -2236,7 +2143,7 @@ export const getPhotoControllerGetRepliesInfiniteQueryOptions = <
       id,
       commentId,
       { ...params, cursor: pageParam || params?.['cursor'] },
-      { signal, ...fetchOptions },
+      { signal, ...requestOptions },
     );
 
   return { queryKey, queryFn, enabled: !!(id && commentId), ...queryOptions } as UseInfiniteQueryOptions<
@@ -2282,7 +2189,7 @@ export function usePhotoControllerGetRepliesInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2315,7 +2222,7 @@ export function usePhotoControllerGetRepliesInfinite<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2339,7 +2246,7 @@ export function usePhotoControllerGetRepliesInfinite<
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2364,7 +2271,7 @@ export function usePhotoControllerGetRepliesInfinite<
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2397,7 +2304,7 @@ export const prefetchPhotoControllerGetRepliesInfiniteQuery = async <
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerGetRepliesInfiniteQueryOptions(id, commentId, params, options);
@@ -2416,15 +2323,15 @@ export const getPhotoControllerGetRepliesQueryOptions = <
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesQueryKey(id, commentId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetReplies>>> = ({ signal }) =>
-    photoControllerGetReplies(id, commentId, params, { signal, ...fetchOptions });
+    photoControllerGetReplies(id, commentId, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!(id && commentId), ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof photoControllerGetReplies>>,
@@ -2453,7 +2360,7 @@ export function usePhotoControllerGetReplies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2474,7 +2381,7 @@ export function usePhotoControllerGetReplies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2487,7 +2394,7 @@ export function usePhotoControllerGetReplies<
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2501,7 +2408,7 @@ export function usePhotoControllerGetReplies<
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2526,7 +2433,7 @@ export const prefetchPhotoControllerGetRepliesQuery = async <
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ): Promise<QueryClient> => {
   const queryOptions = getPhotoControllerGetRepliesQueryOptions(id, commentId, params, options);
@@ -2545,15 +2452,15 @@ export const getPhotoControllerGetRepliesSuspenseQueryOptions = <
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesQueryKey(id, commentId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof photoControllerGetReplies>>> = ({ signal }) =>
-    photoControllerGetReplies(id, commentId, params, { signal, ...fetchOptions });
+    photoControllerGetReplies(id, commentId, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof photoControllerGetReplies>>,
@@ -2576,7 +2483,7 @@ export function usePhotoControllerGetRepliesSuspense<
   params: undefined | PhotoControllerGetRepliesParams,
   options: {
     query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2589,7 +2496,7 @@ export function usePhotoControllerGetRepliesSuspense<
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2602,7 +2509,7 @@ export function usePhotoControllerGetRepliesSuspense<
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2616,7 +2523,7 @@ export function usePhotoControllerGetRepliesSuspense<
   params?: PhotoControllerGetRepliesParams,
   options?: {
     query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof photoControllerGetReplies>>, TError, TData>>;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2651,10 +2558,10 @@ export const getPhotoControllerGetRepliesSuspenseInfiniteQueryOptions = <
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPhotoControllerGetRepliesInfiniteQueryKey(id, commentId, params);
 
@@ -2667,7 +2574,7 @@ export const getPhotoControllerGetRepliesSuspenseInfiniteQueryOptions = <
       id,
       commentId,
       { ...params, cursor: pageParam || params?.['cursor'] },
-      { signal, ...fetchOptions },
+      { signal, ...requestOptions },
     );
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
@@ -2704,7 +2611,7 @@ export function usePhotoControllerGetRepliesSuspenseInfinite<
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2728,7 +2635,7 @@ export function usePhotoControllerGetRepliesSuspenseInfinite<
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2752,7 +2659,7 @@ export function usePhotoControllerGetRepliesSuspenseInfinite<
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -2777,7 +2684,7 @@ export function usePhotoControllerGetRepliesSuspenseInfinite<
         PhotoControllerGetRepliesParams['cursor']
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2800,8 +2707,10 @@ export type photoControllerUpdateCommentResponse200 = {
 export type photoControllerUpdateCommentResponseSuccess = photoControllerUpdateCommentResponse200 & {
   headers: Headers;
 };
+export type photoControllerUpdateCommentResponse = photoControllerUpdateCommentResponseSuccess;
+
 export const getPhotoControllerUpdateCommentUrl = (id: number, commentId: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}`;
+  return `/api/v1/photos/${id}/comments/${commentId}`;
 };
 
 export const photoControllerUpdateComment = async (
@@ -2809,25 +2718,14 @@ export const photoControllerUpdateComment = async (
   commentId: number,
   photoCommentUpdateRequest: PhotoCommentUpdateRequest,
   options?: RequestInit,
-): Promise<photoControllerUpdateCommentResponseSuccess> => {
-  const res = await fetch(getPhotoControllerUpdateCommentUrl(id, commentId), {
+): Promise<photoControllerUpdateCommentResponse> => {
+  return customFetch<photoControllerUpdateCommentResponse>(getPhotoControllerUpdateCommentUrl(id, commentId), {
     credentials: 'include',
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(photoCommentUpdateRequest),
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerUpdateCommentResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerUpdateCommentResponseSuccess;
 };
 
 export const getPhotoControllerUpdateCommentMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -2837,7 +2735,7 @@ export const getPhotoControllerUpdateCommentMutationOptions = <TError = unknown,
     { id: number; commentId: number; data: PhotoCommentUpdateRequest },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof photoControllerUpdateComment>>,
   TError,
@@ -2845,11 +2743,11 @@ export const getPhotoControllerUpdateCommentMutationOptions = <TError = unknown,
   TContext
 > => {
   const mutationKey = ['photoControllerUpdateComment'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof photoControllerUpdateComment>>,
@@ -2857,7 +2755,7 @@ export const getPhotoControllerUpdateCommentMutationOptions = <TError = unknown,
   > = (props) => {
     const { id, commentId, data } = props ?? {};
 
-    return photoControllerUpdateComment(id, commentId, data, fetchOptions);
+    return photoControllerUpdateComment(id, commentId, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -2877,7 +2775,7 @@ export const usePhotoControllerUpdateComment = <TError = unknown, TContext = unk
       { id: number; commentId: number; data: PhotoCommentUpdateRequest },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -2898,31 +2796,22 @@ export type photoControllerDeleteCommentResponse200 = {
 export type photoControllerDeleteCommentResponseSuccess = photoControllerDeleteCommentResponse200 & {
   headers: Headers;
 };
+export type photoControllerDeleteCommentResponse = photoControllerDeleteCommentResponseSuccess;
+
 export const getPhotoControllerDeleteCommentUrl = (id: number, commentId: number) => {
-  return `http://localhost:4000/api/v1/photos/${id}/comments/${commentId}`;
+  return `/api/v1/photos/${id}/comments/${commentId}`;
 };
 
 export const photoControllerDeleteComment = async (
   id: number,
   commentId: number,
   options?: RequestInit,
-): Promise<photoControllerDeleteCommentResponseSuccess> => {
-  const res = await fetch(getPhotoControllerDeleteCommentUrl(id, commentId), {
+): Promise<photoControllerDeleteCommentResponse> => {
+  return customFetch<photoControllerDeleteCommentResponse>(getPhotoControllerDeleteCommentUrl(id, commentId), {
     credentials: 'include',
     ...options,
     method: 'DELETE',
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerDeleteCommentResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerDeleteCommentResponseSuccess;
 };
 
 export const getPhotoControllerDeleteCommentMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -2932,7 +2821,7 @@ export const getPhotoControllerDeleteCommentMutationOptions = <TError = unknown,
     { id: number; commentId: number },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof photoControllerDeleteComment>>,
   TError,
@@ -2940,11 +2829,11 @@ export const getPhotoControllerDeleteCommentMutationOptions = <TError = unknown,
   TContext
 > => {
   const mutationKey = ['photoControllerDeleteComment'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof photoControllerDeleteComment>>,
@@ -2952,7 +2841,7 @@ export const getPhotoControllerDeleteCommentMutationOptions = <TError = unknown,
   > = (props) => {
     const { id, commentId } = props ?? {};
 
-    return photoControllerDeleteComment(id, commentId, fetchOptions);
+    return photoControllerDeleteComment(id, commentId, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -2972,7 +2861,7 @@ export const usePhotoControllerDeleteComment = <TError = unknown, TContext = unk
       { id: number; commentId: number },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -2993,34 +2882,25 @@ export type photoControllerUploadResponse201 = {
 export type photoControllerUploadResponseSuccess = photoControllerUploadResponse201 & {
   headers: Headers;
 };
+export type photoControllerUploadResponse = photoControllerUploadResponseSuccess;
+
 export const getPhotoControllerUploadUrl = () => {
-  return `http://localhost:4000/api/v1/photos/image`;
+  return `/api/v1/photos/image`;
 };
 
 export const photoControllerUpload = async (
   photoControllerUploadBody: PhotoControllerUploadBody,
   options?: RequestInit,
-): Promise<photoControllerUploadResponseSuccess> => {
+): Promise<photoControllerUploadResponse> => {
   const formData = new FormData();
   formData.append(`image`, photoControllerUploadBody.image);
 
-  const res = await fetch(getPhotoControllerUploadUrl(), {
+  return customFetch<photoControllerUploadResponse>(getPhotoControllerUploadUrl(), {
     credentials: 'include',
     ...options,
     method: 'POST',
     body: formData,
   });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } = new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
-    err.info = data;
-    err.status = res.status;
-    throw err;
-  }
-  const data: photoControllerUploadResponseSuccess['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as photoControllerUploadResponseSuccess;
 };
 
 export const getPhotoControllerUploadMutationOptions = <TError = unknown, TContext = unknown>(options?: {
@@ -3030,7 +2910,7 @@ export const getPhotoControllerUploadMutationOptions = <TError = unknown, TConte
     { data: PhotoControllerUploadBody },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof photoControllerUpload>>,
   TError,
@@ -3038,11 +2918,11 @@ export const getPhotoControllerUploadMutationOptions = <TError = unknown, TConte
   TContext
 > => {
   const mutationKey = ['photoControllerUpload'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof photoControllerUpload>>,
@@ -3050,7 +2930,7 @@ export const getPhotoControllerUploadMutationOptions = <TError = unknown, TConte
   > = (props) => {
     const { data } = props ?? {};
 
-    return photoControllerUpload(data, fetchOptions);
+    return photoControllerUpload(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -3068,7 +2948,7 @@ export const usePhotoControllerUpload = <TError = unknown, TContext = unknown>(
       { data: PhotoControllerUploadBody },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<

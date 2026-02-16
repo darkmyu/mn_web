@@ -26,7 +26,9 @@ function ProfileAnimalList({ username }: Props) {
 
   const {
     data: { data: animals },
-  } = useProfileControllerAnimalsSuspense(username);
+  } = useProfileControllerAnimalsSuspense(username, {
+    limit: 9999,
+  });
 
   const handleAnimalFormOpen = async (animal?: AnimalResponse) => {
     const response = await modals.push({
@@ -47,7 +49,7 @@ function ProfileAnimalList({ username }: Props) {
   if (!isOwner && animals.items.length === 0) return null;
 
   return (
-    <Swiper className="w-full cursor-pointer" slidesPerView="auto" spaceBetween={16}>
+    <Swiper className="z-auto! w-full cursor-pointer" wrapperClass="z-auto!" slidesPerView="auto" spaceBetween={16}>
       {animals.items.map((animal) => (
         <SwiperSlide key={animal.id} className="w-auto!">
           <Popover.Root>

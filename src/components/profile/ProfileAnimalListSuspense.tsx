@@ -12,7 +12,11 @@ interface Props {
 function ProfileAnimalListSuspense({ username }: Props) {
   const queryClient = getQueryClient();
 
-  queryClient.prefetchQuery(getProfileControllerAnimalsQueryOptions(username));
+  queryClient.prefetchQuery(
+    getProfileControllerAnimalsQueryOptions(username, {
+      limit: 9999,
+    }),
+  );
 
   return (
     <Suspense fallback={<ProfileAnimalListSkeleton />}>

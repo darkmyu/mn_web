@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
       {
         hostname: 'k.kakaocdn.net',
       },
+      {
+        hostname: 'image.mongnyang.com',
+      },
     ],
   },
   rewrites: async () => [

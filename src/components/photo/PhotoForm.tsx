@@ -4,6 +4,7 @@ import { AnimalResponse, PhotoCreateRequest, PhotoResponse, PhotoUpdateRequest }
 import { usePhotoControllerCreate, usePhotoControllerUpdate, usePhotoControllerUpload } from '@/api/photo';
 import { usePhotoForm } from '@/hooks/forms/photo';
 import { useModalStore } from '@/stores/modal';
+import { convertHeicToJpeg } from '@/utils/converters';
 import { debounce } from 'es-toolkit';
 import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
 import Image from 'next/image';
@@ -42,6 +43,7 @@ function PhotoForm({ photo }: Props) {
   const router = useRouter();
   const modals = useModalStore();
   const imageRef = useRef<HTMLInputElement>(null);
+  const [isImageConverting, setIsImageConverting] = useState(false);
   const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(photo?.animals ?? []);
 
   const { mutate: createPhotoMutate } = usePhotoControllerCreate();
@@ -104,8 +106,12 @@ function PhotoForm({ photo }: Props) {
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const image = e.target.files?.[0];
-    if (!image) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsImageConverting(true);
+    const image = await convertHeicToJpeg(file);
+    setIsImageConverting(false);
 
     uploadPhotoImage({
       data: { image },
@@ -158,7 +164,7 @@ function PhotoForm({ photo }: Props) {
           </p>
         </div>
         <button
-          disabled={!isValid || isUploadPhotoImagePending}
+          disabled={!isValid || isUploadPhotoImagePending || isImageConverting}
           onClick={handleSubmit(onSubmit)}
           className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
         >
@@ -191,7 +197,7 @@ function PhotoForm({ photo }: Props) {
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 파일만 업로드 가능해요.</p>
                 </div>
               )}
-              {isUploadPhotoImagePending && (
+              {(isUploadPhotoImagePending || isImageConverting) && (
                 <div className="pointer-events-none absolute inset-0 flex flex-col rounded-lg bg-zinc-950/40 backdrop-blur-[1px]">
                   <div className="mt-auto h-1 overflow-hidden rounded-b-lg bg-zinc-900/60">
                     <div className="h-full w-1/3 animate-[shimmer_1.6s_ease-in-out_infinite] bg-emerald-500" />

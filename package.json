@@ -21,6 +21,7 @@
     "dayjs": "^1.11.18",
     "es-hangul": "^2.3.8",
     "es-toolkit": "^1.39.10",
+    "heic-to": "^1.4.2",
     "lucide-react": "^0.515.0",
     "motion": "^12.34.0",
     "nanoid": "^5.1.5",

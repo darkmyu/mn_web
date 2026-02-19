@@ -2,10 +2,11 @@ import { UserUpdateRequest } from '@/api/index.schemas';
 import { useUserControllerThumbnail, useUserControllerUpdate } from '@/api/user';
 import { useProfileForm } from '@/hooks/forms/profile';
 import { useAuthStore } from '@/stores/auth';
+import { convertHeicToJpeg } from '@/utils/converters';
 import { debounce } from 'es-toolkit';
 import { LucideSquarePen } from 'lucide-react';
 import Image from 'next/image';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Modal } from '../modal';
 
@@ -34,6 +35,7 @@ function SettingProfile() {
   const about = watch('about');
 
   const thumbnailRef = useRef<HTMLInputElement>(null);
+  const [isThumbnailConverting, setIsThumbnailConverting] = useState(false);
 
   const { mutate: uploadProfileThumbnailMutate, isPending: isProfileThumbnailPending } = useUserControllerThumbnail({
     mutation: {
@@ -76,9 +78,13 @@ function SettingProfile() {
     thumbnailRef.current?.click();
   };
 
-  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const thumbnail = e.target.files?.[0];
-    if (!thumbnail) return;
+  const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsThumbnailConverting(true);
+    const thumbnail = await convertHeicToJpeg(file);
+    setIsThumbnailConverting(false);
 
     uploadProfileThumbnailMutate({
       data: { thumbnail },
@@ -171,7 +177,7 @@ function SettingProfile() {
         />
         <button
           onClick={onSubmit}
-          disabled={!isValid || !isDirty || isProfileThumbnailPending}
+          disabled={!isValid || !isDirty || isProfileThumbnailPending || isThumbnailConverting}
           className="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-emerald-50 transition-colors hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
         >
           저장하기

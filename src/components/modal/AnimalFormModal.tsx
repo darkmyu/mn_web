@@ -17,6 +17,7 @@ import {
 import { useAnimalForm } from '@/hooks/forms/animal';
 import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps, useModalStore } from '@/stores/modal';
+import { convertHeicToJpeg } from '@/utils/converters';
 import dayjs from '@/utils/dayjs';
 import { debounce } from 'es-toolkit';
 import { Camera, LucideX, Search } from 'lucide-react';
@@ -65,6 +66,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
   const thumbnailRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(true);
   const [response, setResponse] = useState<AnimalResponse | null>(null);
+  const [isThumbnailConverting, setIsThumbnailConverting] = useState(false);
   const [selectedBreed, setSelectedBreed] = useState<BreedResponse | null>(animal?.breed ?? null);
   const [selectedSpecies, setSelectedSpecie] = useState<BreedResponseSpecies>(animal?.breed.species ?? 'DOG');
 
@@ -184,9 +186,13 @@ function AnimalFormModal({ resolve, animal }: Props) {
     thumbnailRef.current?.click();
   };
 
-  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const thumbnail = e.target.files?.[0];
-    if (!thumbnail) return;
+  const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsThumbnailConverting(true);
+    const thumbnail = await convertHeicToJpeg(file);
+    setIsThumbnailConverting(false);
 
     uploadAnimalThumbnail({
       data: { thumbnail },
@@ -245,6 +251,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
           isOpen={isOpen}
           animal={animal}
           thumbnailRef={thumbnailRef}
+          isThumbnailConverting={isThumbnailConverting}
           isUploadAnimalThumbnailPending={isUploadAnimalThumbnailPending}
           selectedSpecies={selectedSpecies}
           selectedBreed={selectedBreed}
@@ -298,7 +305,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">프로필 사진을 선택해주세요.</p>
                   </div>
                 )}
-                {isUploadAnimalThumbnailPending && (
+                {(isUploadAnimalThumbnailPending || isThumbnailConverting) && (
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-zinc-950/40 backdrop-blur-[1px]">
                     <div className="relative h-full w-full">
                       <div className="absolute inset-1 rounded-full border border-white/20" />
@@ -469,7 +476,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
           <footer className="flex justify-end bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent px-12 py-8 dark:from-zinc-900 dark:via-zinc-900">
             <button
               onClick={handleSubmit(onSubmit)}
-              disabled={!isValid || isUploadAnimalThumbnailPending}
+              disabled={!isValid || isUploadAnimalThumbnailPending || isThumbnailConverting}
               className="cursor-pointer rounded-lg bg-emerald-600 px-4 py-3 text-sm font-medium text-emerald-50 transition-all duration-300 hover:bg-emerald-600/90 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
             >
               {!isEdit ? '등록하기' : '수정하기'}

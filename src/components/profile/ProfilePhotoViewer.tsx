@@ -24,6 +24,7 @@ import {
   LucideTrash2,
 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
@@ -236,14 +237,17 @@ function ProfilePhotoViewer({ username, id }: Props) {
           )}
           <div className="mb-12 flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              {photo.author.thumbnail && (
-                <div className="h-10 w-10 overflow-hidden rounded-full">
-                  <Image className="object-cover" src={photo.author.thumbnail} alt="" width={40} height={40} />
-                </div>
-              )}
+              <Link
+                href={`/@${photo.author.username}`}
+                className="h-10 w-10 cursor-pointer overflow-hidden rounded-full"
+              >
+                <Image className="object-cover" src={photo.author.thumbnail ?? ''} alt="" width={40} height={40} />
+              </Link>
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold sm:text-base">{photo.author.nickname}</span>
+                  <Link href={`/@${photo.author.username}`} className="text-sm font-semibold sm:text-base">
+                    {photo.author.nickname}
+                  </Link>
                   {!photo.author.isOwner && (
                     <button
                       className="cursor-pointer rounded-lg border border-zinc-300 px-1.5 py-0.5 text-xs font-medium text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"

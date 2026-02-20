@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '몽냥',
     description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
+    url: 'https://mongnyang.com',
   },
 };
 

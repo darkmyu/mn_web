@@ -1,7 +1,7 @@
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 text-zinc-900 dark:text-zinc-50">
-      <h1 className="mb-6 text-2xl font-bold">개인정보 처리방침</h1>
+      <h1 className="mb-6 text-2xl font-bold">개인정보처리방침</h1>
       <div className="flex flex-col gap-8 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
         <section>
           <p>

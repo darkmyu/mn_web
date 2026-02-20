@@ -25,10 +25,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: '몽냥',
-  description: '소중한 반려동물을 보여주세요! 몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
+  description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
   openGraph: {
     title: '몽냥',
-    description: '소중한 반려동물을 보여주세요!&#10;몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
+    description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
   },
 };
 

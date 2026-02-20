@@ -61,13 +61,13 @@ function AuthModal({ resolve }: Props) {
             <h1 className="text-lg font-medium">당신의 반려동물을 보여주세요! 🐶🐱</h1>
             <span className="text-sm text-zinc-500">
               로그인 시{' '}
-              <Link href="/terms" className="font-medium">
+              <Modal.Close nativeButton={false} render={<Link href="/terms" className="font-medium" />}>
                 이용약관
-              </Link>{' '}
+              </Modal.Close>{' '}
               및{' '}
-              <Link href="/privacy" className="font-medium">
+              <Modal.Close nativeButton={false} render={<Link href="/privacy" className="font-medium" />}>
                 개인정보 처리방침
-              </Link>
+              </Modal.Close>
               에 동의됩니다.
             </span>
           </div>

@@ -34,11 +34,11 @@ function AuthSheet({
               <h1 className="text-lg font-medium">당신의 반려동물을 보여주세요! 🐶🐱</h1>
               <span className="text-sm text-zinc-500">
                 로그인 시{' '}
-                <Link href="/terms" className="font-medium">
+                <Link href="/terms" className="font-medium" onClick={handleClose}>
                   이용약관
                 </Link>{' '}
                 및{' '}
-                <Link href="/privacy" className="font-medium">
+                <Link href="/privacy" className="font-medium" onClick={handleClose}>
                   개인정보 처리방침
                 </Link>
                 에 동의됩니다.

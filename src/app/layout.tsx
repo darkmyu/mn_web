@@ -4,7 +4,7 @@ import Layout from '@/components/layout/Layout';
 import ModalRenderer from '@/components/modal/ModalRenderer';
 import AuthProvider from '@/components/provider/AuthProvider';
 import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';
-import { Viewport } from 'next';
+import { Metadata, Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
 import React from 'react';
@@ -21,6 +21,15 @@ const pretendardFonts = localFont({
 export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
+};
+
+export const metadata: Metadata = {
+  title: '몽냥',
+  description: '소중한 반려동물을 보여주세요! 몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
+  openGraph: {
+    title: '몽냥',
+    description: '소중한 반려동물을 보여주세요! 몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
+  },
 };
 
 export default function RootLayout({ children }: Props) {

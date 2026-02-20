@@ -66,7 +66,6 @@ export const profileControllerRead = async (
   options?: RequestInit,
 ): Promise<profileControllerReadResponse> => {
   return customFetch<profileControllerReadResponse>(getProfileControllerReadUrl(username), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -502,7 +501,6 @@ export const profileControllerAnimals = async (
   options?: RequestInit,
 ): Promise<profileControllerAnimalsResponse> => {
   return customFetch<profileControllerAnimalsResponse>(getProfileControllerAnimalsUrl(username, params), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -1089,7 +1087,6 @@ export const profileControllerPhotos = async (
   options?: RequestInit,
 ): Promise<profileControllerPhotosResponse> => {
   return customFetch<profileControllerPhotosResponse>(getProfileControllerPhotosUrl(username, params), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -1664,7 +1661,6 @@ export const profileControllerPhoto = async (
   options?: RequestInit,
 ): Promise<profileControllerPhotoResponse> => {
   return customFetch<profileControllerPhotoResponse>(getProfileControllerPhotoUrl(username, id), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -2109,7 +2105,6 @@ export const profileControllerFollow = async (
   options?: RequestInit,
 ): Promise<profileControllerFollowResponse> => {
   return customFetch<profileControllerFollowResponse>(getProfileControllerFollowUrl(username), {
-    credentials: 'include',
     ...options,
     method: 'POST',
   });
@@ -2181,7 +2176,6 @@ export const profileControllerUnfollow = async (
   options?: RequestInit,
 ): Promise<profileControllerUnfollowResponse> => {
   return customFetch<profileControllerUnfollowResponse>(getProfileControllerUnfollowUrl(username), {
-    credentials: 'include',
     ...options,
     method: 'DELETE',
   });

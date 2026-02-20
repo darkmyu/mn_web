@@ -83,7 +83,6 @@ export const photoControllerAll = async (
   options?: RequestInit,
 ): Promise<photoControllerAllResponse> => {
   return customFetch<photoControllerAllResponse>(getPhotoControllerAllUrl(params), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -594,7 +593,6 @@ export const photoControllerCreate = async (
   options?: RequestInit,
 ): Promise<photoControllerCreateResponse> => {
   return customFetch<photoControllerCreateResponse>(getPhotoControllerCreateUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -676,7 +674,6 @@ export const getPhotoControllerReadUrl = (id: number) => {
 
 export const photoControllerRead = async (id: number, options?: RequestInit): Promise<photoControllerReadResponse> => {
   return customFetch<photoControllerReadResponse>(getPhotoControllerReadUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -1100,7 +1097,6 @@ export const photoControllerUpdate = async (
   options?: RequestInit,
 ): Promise<photoControllerUpdateResponse> => {
   return customFetch<photoControllerUpdateResponse>(getPhotoControllerUpdateUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -1185,7 +1181,6 @@ export const photoControllerDelete = async (
   options?: RequestInit,
 ): Promise<photoControllerDeleteResponse> => {
   return customFetch<photoControllerDeleteResponse>(getPhotoControllerDeleteUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'DELETE',
   });
@@ -1242,7 +1237,6 @@ export const getPhotoControllerLikeUrl = (id: number) => {
 
 export const photoControllerLike = async (id: number, options?: RequestInit): Promise<photoControllerLikeResponse> => {
   return customFetch<photoControllerLikeResponse>(getPhotoControllerLikeUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'POST',
   });
@@ -1302,7 +1296,6 @@ export const photoControllerUnlike = async (
   options?: RequestInit,
 ): Promise<photoControllerUnlikeResponse> => {
   return customFetch<photoControllerUnlikeResponse>(getPhotoControllerUnlikeUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'DELETE',
   });
@@ -1375,7 +1368,6 @@ export const photoControllerGetComments = async (
   options?: RequestInit,
 ): Promise<photoControllerGetCommentsResponse> => {
   return customFetch<photoControllerGetCommentsResponse>(getPhotoControllerGetCommentsUrl(id, params), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -1980,7 +1972,6 @@ export const photoControllerCreateComment = async (
   options?: RequestInit,
 ): Promise<photoControllerCreateCommentResponse> => {
   return customFetch<photoControllerCreateCommentResponse>(getPhotoControllerCreateCommentUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -2085,7 +2076,6 @@ export const photoControllerGetReplies = async (
   options?: RequestInit,
 ): Promise<photoControllerGetRepliesResponse> => {
   return customFetch<photoControllerGetRepliesResponse>(getPhotoControllerGetRepliesUrl(id, commentId, params), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -2720,7 +2710,6 @@ export const photoControllerUpdateComment = async (
   options?: RequestInit,
 ): Promise<photoControllerUpdateCommentResponse> => {
   return customFetch<photoControllerUpdateCommentResponse>(getPhotoControllerUpdateCommentUrl(id, commentId), {
-    credentials: 'include',
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -2808,7 +2797,6 @@ export const photoControllerDeleteComment = async (
   options?: RequestInit,
 ): Promise<photoControllerDeleteCommentResponse> => {
   return customFetch<photoControllerDeleteCommentResponse>(getPhotoControllerDeleteCommentUrl(id, commentId), {
-    credentials: 'include',
     ...options,
     method: 'DELETE',
   });
@@ -2896,7 +2884,6 @@ export const photoControllerUpload = async (
   formData.append(`image`, photoControllerUploadBody.image);
 
   return customFetch<photoControllerUploadResponse>(getPhotoControllerUploadUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     body: formData,

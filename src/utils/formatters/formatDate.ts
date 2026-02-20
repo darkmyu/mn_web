@@ -20,8 +20,13 @@ export function formatDate(date: string) {
   }
 
   const diffDays = now.diff(targetDate, 'day');
-  if (diffDays < 30) {
+  if (diffDays < 14) {
     return `${diffDays}일 전`;
+  }
+
+  if (diffDays < 30) {
+    const diffWeeks = now.diff(targetDate, 'week');
+    return `${diffWeeks}주 전`;
   }
 
   const diffMonths = now.diff(targetDate, 'month');

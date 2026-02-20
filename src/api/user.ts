@@ -55,7 +55,6 @@ export const getUserControllerReadUrl = () => {
 
 export const userControllerRead = async (options?: RequestInit): Promise<userControllerReadResponse> => {
   return customFetch<userControllerReadResponse>(getUserControllerReadUrl(), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -434,7 +433,6 @@ export const userControllerUpdate = async (
   options?: RequestInit,
 ): Promise<userControllerUpdateResponse> => {
   return customFetch<userControllerUpdateResponse>(getUserControllerUpdateUrl(), {
-    credentials: 'include',
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -515,7 +513,6 @@ export const getUserControllerDeleteUrl = () => {
 
 export const userControllerDelete = async (options?: RequestInit): Promise<userControllerDeleteResponse> => {
   return customFetch<userControllerDeleteResponse>(getUserControllerDeleteUrl(), {
-    credentials: 'include',
     ...options,
     method: 'DELETE',
   });
@@ -576,7 +573,6 @@ export const userControllerThumbnail = async (
   formData.append(`thumbnail`, userControllerThumbnailBody.thumbnail);
 
   return customFetch<userControllerThumbnailResponse>(getUserControllerThumbnailUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     body: formData,

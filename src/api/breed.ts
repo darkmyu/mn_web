@@ -59,7 +59,6 @@ export const breedControllerAll = async (
   options?: RequestInit,
 ): Promise<breedControllerAllResponse> => {
   return customFetch<breedControllerAllResponse>(getBreedControllerAllUrl(params), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });

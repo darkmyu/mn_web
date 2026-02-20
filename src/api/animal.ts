@@ -76,7 +76,6 @@ export const animalControllerAll = async (
   options?: RequestInit,
 ): Promise<animalControllerAllResponse> => {
   return customFetch<animalControllerAllResponse>(getAnimalControllerAllUrl(params), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -601,7 +600,6 @@ export const animalControllerCreate = async (
   options?: RequestInit,
 ): Promise<animalControllerCreateResponse> => {
   return customFetch<animalControllerCreateResponse>(getAnimalControllerCreateUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -686,7 +684,6 @@ export const animalControllerRead = async (
   options?: RequestInit,
 ): Promise<animalControllerReadResponse> => {
   return customFetch<animalControllerReadResponse>(getAnimalControllerReadUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -1110,7 +1107,6 @@ export const animalControllerUpdate = async (
   options?: RequestInit,
 ): Promise<animalControllerUpdateResponse> => {
   return customFetch<animalControllerUpdateResponse>(getAnimalControllerUpdateUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -1195,7 +1191,6 @@ export const animalControllerDelete = async (
   options?: RequestInit,
 ): Promise<animalControllerDeleteResponse> => {
   return customFetch<animalControllerDeleteResponse>(getAnimalControllerDeleteUrl(id), {
-    credentials: 'include',
     ...options,
     method: 'DELETE',
   });
@@ -1258,7 +1253,6 @@ export const animalControllerUpload = async (
   formData.append(`thumbnail`, animalControllerUploadBody.thumbnail);
 
   return customFetch<animalControllerUploadResponse>(getAnimalControllerUploadUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     body: formData,

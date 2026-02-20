@@ -11,7 +11,7 @@ import {
 import { ROUTE_PHOTOS_WRITE_PAGE, ROUTE_TAGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
-import { formatNumber } from '@/utils/formatters';
+import { formatDate, formatNumber } from '@/utils/formatters';
 import { Popover } from '@base-ui/react/popover';
 import {
   LucideCat,
@@ -357,10 +357,10 @@ function ProfilePhotoViewer({ username, id }: Props) {
             </div>
             <div className="flex flex-col gap-4 rounded-lg bg-zinc-200/40 p-4 dark:bg-zinc-800">
               <div className="flex flex-col gap-1">
-                <div className="flex items-center">
-                  <p className="text-sm font-medium">조회수 8.5만회</p>
-                  <p className="mx-1 text-sm font-medium">•</p>
-                  <p className="text-sm font-medium">2개월 전</p>
+                <div className="flex items-center text-zinc-700 dark:text-zinc-200">
+                  {/* <p className="text-sm font-medium">조회수 0회</p>
+                  <p className="mx-1 text-sm font-medium">•</p> */}
+                  <p className="text-sm font-medium">{formatDate(photo.createdAt)}</p>
                 </div>
                 {photo.tags.length > 0 && (
                   <div className="flex items-center gap-2">

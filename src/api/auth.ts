@@ -55,7 +55,6 @@ export const getAuthControllerInfoUrl = () => {
 
 export const authControllerInfo = async (options?: RequestInit): Promise<authControllerInfoResponse> => {
   return customFetch<authControllerInfoResponse>(getAuthControllerInfoUrl(), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -431,7 +430,6 @@ export const getAuthControllerGoogleUrl = () => {
 
 export const authControllerGoogle = async (options?: RequestInit): Promise<authControllerGoogleResponse> => {
   return customFetch<authControllerGoogleResponse>(getAuthControllerGoogleUrl(), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -821,7 +819,6 @@ export const getAuthControllerNaverUrl = () => {
 
 export const authControllerNaver = async (options?: RequestInit): Promise<authControllerNaverResponse> => {
   return customFetch<authControllerNaverResponse>(getAuthControllerNaverUrl(), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -1211,7 +1208,6 @@ export const getAuthControllerKakaoUrl = () => {
 
 export const authControllerKakao = async (options?: RequestInit): Promise<authControllerKakaoResponse> => {
   return customFetch<authControllerKakaoResponse>(getAuthControllerKakaoUrl(), {
-    credentials: 'include',
     ...options,
     method: 'GET',
   });
@@ -1604,7 +1600,6 @@ export const authControllerRegister = async (
   options?: RequestInit,
 ): Promise<authControllerRegisterResponse> => {
   return customFetch<authControllerRegisterResponse>(getAuthControllerRegisterUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -1689,7 +1684,6 @@ export const authControllerCheckDuplicateUsername = async (
   options?: RequestInit,
 ): Promise<authControllerCheckDuplicateUsernameResponse> => {
   return customFetch<authControllerCheckDuplicateUsernameResponse>(getAuthControllerCheckDuplicateUsernameUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -1773,7 +1767,6 @@ export const getAuthControllerLogoutUrl = () => {
 
 export const authControllerLogout = async (options?: RequestInit): Promise<authControllerLogoutResponse> => {
   return customFetch<authControllerLogoutResponse>(getAuthControllerLogoutUrl(), {
-    credentials: 'include',
     ...options,
     method: 'POST',
   });

@@ -3,6 +3,15 @@
  * Do not edit manually.
  * OpenAPI spec version: 1.0.0
  */
+export type UserResponseProvider = (typeof UserResponseProvider)[keyof typeof UserResponseProvider];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserResponseProvider = {
+  GOOGLE: 'GOOGLE',
+  NAVER: 'NAVER',
+  KAKAO: 'KAKAO',
+} as const;
+
 export interface UserResponse {
   id: number;
   username: string;
@@ -11,6 +20,9 @@ export interface UserResponse {
   thumbnail: string | null;
   /** @nullable */
   about: string | null;
+  /** @nullable */
+  email: string | null;
+  provider: UserResponseProvider;
 }
 
 /**
@@ -115,6 +127,15 @@ export interface FileResponse {
   mimetype: string;
 }
 
+export type ProfileResponseProvider = (typeof ProfileResponseProvider)[keyof typeof ProfileResponseProvider];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ProfileResponseProvider = {
+  GOOGLE: 'GOOGLE',
+  NAVER: 'NAVER',
+  KAKAO: 'KAKAO',
+} as const;
+
 export interface ProfileResponse {
   id: number;
   username: string;
@@ -123,6 +144,9 @@ export interface ProfileResponse {
   thumbnail: string | null;
   /** @nullable */
   about: string | null;
+  /** @nullable */
+  email: string | null;
+  provider: ProfileResponseProvider;
   isFollowing: boolean;
   followers: number;
   followings: number;

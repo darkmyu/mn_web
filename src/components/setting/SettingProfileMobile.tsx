@@ -2,6 +2,9 @@
 
 import { UserUpdateRequest } from '@/api/index.schemas';
 import { useUserControllerThumbnail, useUserControllerUpdate } from '@/api/user';
+import GoogleLogo from '@/assets/images/google.png';
+import KakaoLogo from '@/assets/images/kakao.png';
+import NaverLogo from '@/assets/images/naver.png';
 import { useProfileForm } from '@/hooks/forms/profile';
 import { useAuthStore } from '@/stores/auth';
 import { convertHeicToJpeg } from '@/utils/converters';
@@ -172,6 +175,15 @@ function SettingProfileMobile() {
                 <div className="flex justify-end">
                   <span className="text-xs text-zinc-400 dark:text-zinc-500">{`${about?.length}/1000`}</span>
                 </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">이메일</label>
+              <div className="flex cursor-not-allowed items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-100/50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800/50">
+                {user?.provider === 'GOOGLE' && <Image src={GoogleLogo} alt="" width={16} height={16} />}
+                {user?.provider === 'NAVER' && <Image src={NaverLogo} alt="" width={16} height={16} />}
+                {user?.provider === 'KAKAO' && <Image src={KakaoLogo} alt="" width={16} height={16} />}
+                <span className="text-sm text-zinc-500 dark:text-zinc-400">{user?.email}</span>
               </div>
             </div>
           </div>

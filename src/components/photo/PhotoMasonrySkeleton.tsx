@@ -31,7 +31,7 @@ function PhotoMasonrySkeleton({ count = 10 }: Props) {
               style={{
                 width: position.width,
                 height: position.height,
-                transform: `translate(${position.left}px, ${position.top}px)`,
+                transform: `translate3d(${position.left}px, ${position.top}px, 0)`,
               }}
             />
           );

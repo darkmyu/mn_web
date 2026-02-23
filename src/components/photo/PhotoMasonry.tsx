@@ -28,14 +28,14 @@ function PhotoMasonry({ photos, children }: Props) {
             <Link
               key={photo.id}
               href={`/@${photo.author.username}/photos/${photo.id}`}
-              className="absolute cursor-pointer overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800"
+              className="absolute cursor-pointer overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800"
               style={{
                 width: position.width,
                 height: position.height,
-                transform: `translate(${position.left}px, ${position.top}px)`,
+                transform: `translate3d(${position.left}px, ${position.top}px, 0)`,
               }}
             >
-              <Image src={photo.image.path} alt="" fill sizes="25vw" className="object-cover" />
+              <Image src={photo.image.path} alt="" sizes="25vw" fill priority />
             </Link>
           );
         })}

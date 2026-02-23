@@ -15,9 +15,7 @@ function PhotoMasonrySkeleton({ count = 10 }: Props) {
     height: 100 * (SKELETON_RATIOS[index % SKELETON_RATIOS.length] ?? 1),
   }));
 
-  const { containerRef, layout } = useMasonryLayout({
-    dimensions,
-  });
+  const { containerRef, layout } = useMasonryLayout({ dimensions });
 
   return (
     <div className="w-full" ref={containerRef}>

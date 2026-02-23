@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface UseMasonryLayoutDimension {
   id: number;
@@ -22,10 +22,8 @@ export function useMasonryLayout({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!containerRef.current) return;
-
-    setContainerWidth(containerRef.current.offsetWidth);
 
     const observer = new ResizeObserver((entries) => {
       if (!entries[0]) return;

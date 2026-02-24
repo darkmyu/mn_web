@@ -5,17 +5,31 @@ import Link from 'next/link';
 
 interface Props {
   photos: PhotoResponse[];
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  isFetchingNextPage?: boolean;
 }
 
-function PhotoMasonry({ photos, children }: Props) {
-  const { containerRef, layout } = useMasonryLayout({
-    dimensions: photos.map((photo) => ({
-      id: photo.id,
-      width: photo.image.width,
-      height: photo.image.height,
-    })),
-  });
+const SKELETON_COUNT = 10;
+const SKELETON_RATIOS = [1, 1.25, 1.5, 0.75, 1.2, 0.8, 1.4, 1.1, 0.9, 1.3];
+
+function PhotoMasonry({ photos, children, isFetchingNextPage = false }: Props) {
+  const photoDimensions = photos.map((photo) => ({
+    id: photo.id,
+    width: photo.image.width,
+    height: photo.image.height,
+  }));
+
+  const skeletonDimensions = isFetchingNextPage
+    ? Array.from({ length: SKELETON_COUNT }).map((_, index) => ({
+        id: -1 * (index + 1),
+        width: 100,
+        height: 100 * (SKELETON_RATIOS[index % SKELETON_RATIOS.length] ?? 1),
+      }))
+    : [];
+
+  const dimensions = [...photoDimensions, ...skeletonDimensions];
+
+  const { containerRef, layout } = useMasonryLayout({ dimensions });
 
   return (
     <div className="w-full" ref={containerRef}>
@@ -37,6 +51,22 @@ function PhotoMasonry({ photos, children }: Props) {
             >
               <Image src={photo.image.path} alt="" sizes="25vw" fill priority />
             </Link>
+          );
+        })}
+        {skeletonDimensions.map((item) => {
+          const position = layout.positions[item.id];
+          if (!position) return null;
+
+          return (
+            <div
+              key={item.id}
+              className="absolute animate-pulse overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800"
+              style={{
+                width: position.width,
+                height: position.height,
+                transform: `translate3d(${position.left}px, ${position.top}px, 0)`,
+              }}
+            />
           );
         })}
       </div>

@@ -13,7 +13,7 @@ interface Props {
 function HomePhotoMasonry({ sort }: Props) {
   const { ref, inView } = useInView();
 
-  const { data, hasNextPage, isFetched, fetchNextPage } = usePhotoControllerAllSuspenseInfinite(
+  const { data, hasNextPage, isFetched, isFetchingNextPage, fetchNextPage } = usePhotoControllerAllSuspenseInfinite(
     {
       sort,
       limit: 30,
@@ -34,7 +34,7 @@ function HomePhotoMasonry({ sort }: Props) {
   }, [fetchNextPage, hasNextPage, inView, isFetched]);
 
   return (
-    <PhotoMasonry photos={photos}>
+    <PhotoMasonry photos={photos} isFetchingNextPage={isFetchingNextPage}>
       <div ref={ref} />
     </PhotoMasonry>
   );

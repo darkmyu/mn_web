@@ -15,17 +15,18 @@ interface Props {
 function ProfilePhotoMasonry({ username }: Props) {
   const { ref, inView } = useInView();
 
-  const { data, fetchNextPage, hasNextPage, isFetched } = useProfileControllerPhotosSuspenseInfinite(
-    username,
-    {
-      limit: 20,
-    },
-    {
-      query: {
-        getNextPageParam: (lastPage) => (lastPage.data.hasNextPage ? lastPage.data.cursor : undefined),
+  const { data, fetchNextPage, hasNextPage, isFetched, isFetchingNextPage } =
+    useProfileControllerPhotosSuspenseInfinite(
+      username,
+      {
+        limit: 20,
       },
-    },
-  );
+      {
+        query: {
+          getNextPageParam: (lastPage) => (lastPage.data.hasNextPage ? lastPage.data.cursor : undefined),
+        },
+      },
+    );
 
   const photos = data.pages.flatMap((page) => page.data.items);
 
@@ -40,7 +41,7 @@ function ProfilePhotoMasonry({ username }: Props) {
   }
 
   return (
-    <PhotoMasonry photos={photos}>
+    <PhotoMasonry photos={photos} isFetchingNextPage={isFetchingNextPage}>
       <div ref={ref} />
     </PhotoMasonry>
   );

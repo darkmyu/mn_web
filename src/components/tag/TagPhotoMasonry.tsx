@@ -13,7 +13,7 @@ interface Props {
 function TagPhotoMasonry({ tag }: Props) {
   const { ref, inView } = useInView();
 
-  const { data, hasNextPage, isFetched, fetchNextPage } = usePhotoControllerAllSuspenseInfinite(
+  const { data, hasNextPage, isFetched, isFetchingNextPage, fetchNextPage } = usePhotoControllerAllSuspenseInfinite(
     {
       limit: 30,
       tag,
@@ -40,7 +40,7 @@ function TagPhotoMasonry({ tag }: Props) {
         <h1 className="text-2xl font-bold">#{tag}</h1>
         <p className="text-sm text-neutral-500">{`반려동물 사진 ${formatNumber(total)}장`}</p>
       </div>
-      <PhotoMasonry photos={photos}>
+      <PhotoMasonry photos={photos} isFetchingNextPage={isFetchingNextPage}>
         <div ref={ref} />
       </PhotoMasonry>
     </div>

@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         hostname: 'pub-9d149cdc6c92422ab589264b4c9661b2.r2.dev',

@@ -4,13 +4,14 @@ import { AnimalResponse, PhotoCreateRequest, PhotoResponse, PhotoUpdateRequest }
 import { usePhotoControllerCreate, usePhotoControllerUpdate, usePhotoControllerUpload } from '@/api/photo';
 import { usePhotoForm } from '@/hooks/forms/photo';
 import { useModalStore } from '@/stores/modal';
-import { convertHeicToJpeg } from '@/utils/converters';
+import { convertOptimizeImage } from '@/utils/converters/convertOptimizeImage';
 import { debounce } from 'es-toolkit';
 import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import SelectAnimalModal from '../modal/SelectAnimalModal';
 
 interface Props {
@@ -55,7 +56,7 @@ function PhotoForm({ photo }: Props) {
         setValue('image', response.data, { shouldValidate: true });
       },
       onError: () => {
-        /** @TODO alert error */
+        toast.error('이미지 업로드에 실패했어요.');
       },
     },
   });
@@ -110,12 +111,18 @@ function PhotoForm({ photo }: Props) {
     if (!file) return;
 
     setIsImageConverting(true);
-    const image = await convertHeicToJpeg(file);
-    setIsImageConverting(false);
 
-    uploadPhotoImage({
-      data: { image },
-    });
+    try {
+      const image = await convertOptimizeImage(file);
+
+      uploadPhotoImage({
+        data: { image },
+      });
+    } catch {
+      toast.error('이미지 업로드에 실패했어요.');
+    } finally {
+      setIsImageConverting(false);
+    }
   };
 
   const handleAnimalClick = async () => {

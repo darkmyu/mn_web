@@ -7,7 +7,7 @@ import KakaoLogo from '@/assets/images/kakao.png';
 import NaverLogo from '@/assets/images/naver.png';
 import { useProfileForm } from '@/hooks/forms/profile';
 import { useAuthStore } from '@/stores/auth';
-import { convertHeicToJpeg } from '@/utils/converters';
+import { convertOptimizeImage } from '@/utils/converters/convertOptimizeImage';
 import { debounce } from 'es-toolkit';
 import { LucideSquarePen } from 'lucide-react';
 import Image from 'next/image';
@@ -45,6 +45,9 @@ function SettingProfileMobile() {
     mutation: {
       onSuccess: (response) => {
         setValue('thumbnail', response.data.path, { shouldDirty: true });
+      },
+      onError: () => {
+        toast.error('이미지 업로드에 실패했어요.');
       },
     },
   });
@@ -87,12 +90,18 @@ function SettingProfileMobile() {
     if (!file) return;
 
     setIsThumbnailConverting(true);
-    const thumbnail = await convertHeicToJpeg(file);
-    setIsThumbnailConverting(false);
 
-    uploadProfileThumbnailMutate({
-      data: { thumbnail },
-    });
+    try {
+      const thumbnail = await convertOptimizeImage(file);
+
+      uploadProfileThumbnailMutate({
+        data: { thumbnail },
+      });
+    } catch {
+      toast.error('이미지 업로드에 실패했어요.');
+    } finally {
+      setIsThumbnailConverting(false);
+    }
   };
 
   return (

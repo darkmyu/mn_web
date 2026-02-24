@@ -17,7 +17,7 @@ import {
 import { useAnimalForm } from '@/hooks/forms/animal';
 import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps, useModalStore } from '@/stores/modal';
-import { convertHeicToJpeg } from '@/utils/converters';
+import { convertOptimizeImage } from '@/utils/converters/convertOptimizeImage';
 import dayjs from '@/utils/dayjs';
 import { debounce } from 'es-toolkit';
 import { Camera, LucideX, Search } from 'lucide-react';
@@ -80,7 +80,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
         setValue('thumbnail', response.data.path);
       },
       onError: () => {
-        /** @TODO alert error */
+        toast.error('이미지 업로드에 실패했어요.');
       },
     },
   });
@@ -191,12 +191,18 @@ function AnimalFormModal({ resolve, animal }: Props) {
     if (!file) return;
 
     setIsThumbnailConverting(true);
-    const thumbnail = await convertHeicToJpeg(file);
-    setIsThumbnailConverting(false);
 
-    uploadAnimalThumbnail({
-      data: { thumbnail },
-    });
+    try {
+      const thumbnail = await convertOptimizeImage(file);
+
+      uploadAnimalThumbnail({
+        data: { thumbnail },
+      });
+    } catch {
+      toast.error('이미지 업로드에 실패했어요.');
+    } finally {
+      setIsThumbnailConverting(false);
+    }
   };
 
   const handleThumbnailCancel = () => {

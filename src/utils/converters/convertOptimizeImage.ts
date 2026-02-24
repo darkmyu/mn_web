@@ -10,5 +10,7 @@ export async function convertOptimizeImage(file: File) {
     useWebWorker: true,
   });
 
-  return compressedFile;
+  return new File([compressedFile], image.name, {
+    type: compressedFile.type,
+  });
 }

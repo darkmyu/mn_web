@@ -30,6 +30,7 @@ function SettingModal({ resolve }: Props) {
     mutation: {
       onSuccess: () => {
         setUser(null);
+        setIsOpen(false);
         router.push(ROUTE_HOME_PAGE);
       },
     },

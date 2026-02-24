@@ -17,11 +17,11 @@ import {
   LucideCat,
   LucideDog,
   LucideEllipsisVertical,
-  LucideFlag,
   LucideHeart,
   LucideShare2,
   LucideSquarePen,
   LucideTrash2,
+  LucideUserRound,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -295,8 +295,8 @@ function ProfilePhotoViewer({ username, id }: Props) {
                           {photo.author.isOwner && (
                             <>
                               <li
-                                className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
                                 onClick={() => router.push(`${ROUTE_PHOTOS_WRITE_PAGE}/${id}`)}
+                                className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
                               >
                                 <LucideSquarePen className="h-3.5 w-3.5" />
                                 <span className="text-sm">수정하기</span>
@@ -316,9 +316,16 @@ function ProfilePhotoViewer({ username, id }: Props) {
                             </>
                           )}
                           {!photo.author.isOwner && (
-                            <li className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40">
-                              <LucideFlag className="h-3.5 w-3.5" />
-                              <span className="text-sm">신고하기</span>
+                            // <li className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40">
+                            //   <LucideFlag className="h-3.5 w-3.5" />
+                            //   <span className="text-sm">신고하기</span>
+                            // </li>
+                            <li
+                              onClick={() => router.push(`/@${photo.author.username}`)}
+                              className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
+                            >
+                              <LucideUserRound className="h-3.5 w-3.5" />
+                              <span className="text-sm">작성자 프로필 보기</span>
                             </li>
                           )}
                         </ul>

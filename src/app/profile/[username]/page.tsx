@@ -14,7 +14,7 @@ export default async function ProfilePage({ params }: Props) {
   await profileControllerRead(username).catch(() => notFound());
 
   return (
-    <div className="mx-auto flex min-h-full max-w-7xl flex-col gap-12 px-4 py-8 sm:gap-20 sm:py-16">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-8 sm:gap-20 sm:py-16">
       <div className="flex flex-col gap-8 sm:gap-16">
         <ProfileSuspense username={username} />
         <ProfileAnimalListSuspense username={username} />

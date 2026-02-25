@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function CollectionsPage() {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-8 bg-zinc-50 px-4 text-center sm:gap-10 dark:bg-zinc-900">
+    <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-8 bg-zinc-50 px-4 text-center sm:gap-10 dark:bg-zinc-900">
       <Image className="w-48 sm:w-72" src={ConstructionImage} alt="" width={300} height={300} priority />
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold sm:text-3xl">서비스 준비 중이에요.</h1>

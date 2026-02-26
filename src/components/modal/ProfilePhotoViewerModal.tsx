@@ -46,7 +46,7 @@ function ProfilePhotoViewerModal({ username, id }: Props) {
               }
             />
           </header>
-          <section className="scrollbar-hide overflow-y-auto lg:p-8">
+          <section className="scrollbar-hide overflow-y-auto">
             <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 px-4 pt-8 pb-16 sm:py-16">
               <ProfilePhotoViewerClientSuspense username={username} id={id} />
               <ProfilePhotoCommentListClientSuspense id={id} />

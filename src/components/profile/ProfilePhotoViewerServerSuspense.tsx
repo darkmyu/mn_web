@@ -11,7 +11,7 @@ interface Props {
   id: number;
 }
 
-async function ProfilePhotoViewerSuspense({ username, id }: Props) {
+async function ProfilePhotoViewerServerSuspense({ username, id }: Props) {
   const queryClient = getQueryClient();
   const cookieStore = await cookies();
   const cookie = cookieStore.toString();
@@ -35,4 +35,4 @@ async function ProfilePhotoViewerSuspense({ username, id }: Props) {
   );
 }
 
-export default ProfilePhotoViewerSuspense;
+export default ProfilePhotoViewerServerSuspense;

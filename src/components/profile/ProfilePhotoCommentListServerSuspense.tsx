@@ -10,7 +10,7 @@ interface Props {
   id: number;
 }
 
-async function ProfilePhotoCommentListSuspense({ id }: Props) {
+async function ProfilePhotoCommentListServerSuspense({ id }: Props) {
   const queryClient = getQueryClient();
   const cookieStore = await cookies();
   const cookie = cookieStore.toString();
@@ -38,4 +38,4 @@ async function ProfilePhotoCommentListSuspense({ id }: Props) {
   );
 }
 
-export default ProfilePhotoCommentListSuspense;
+export default ProfilePhotoCommentListServerSuspense;

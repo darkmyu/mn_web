@@ -1,10 +1,7 @@
 import { PhotoResponse } from '@/api/index.schemas';
 import { useMasonryLayout } from '@/hooks/useMasonryLayout';
-import { useScrollStore } from '@/stores/scroll';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
 
 interface Props {
   photos: PhotoResponse[];
@@ -16,9 +13,6 @@ const SKELETON_COUNT = 10;
 const SKELETON_RATIOS = [1, 1.25, 1.5, 0.75, 1.2, 0.8, 1.4, 1.1, 0.9, 1.3];
 
 function PhotoMasonry({ photos, children, isFetchingNextPage = false }: Props) {
-  const pathname = usePathname();
-  const { setScrollPosition, getScrollPosition } = useScrollStore();
-
   const photoDimensions = photos.map((photo) => ({
     id: photo.id,
     width: photo.image.width,
@@ -37,22 +31,6 @@ function PhotoMasonry({ photos, children, isFetchingNextPage = false }: Props) {
 
   const { containerRef, layout } = useMasonryLayout({ dimensions });
 
-  const handlePhotoClick = () => {
-    setScrollPosition(pathname, window.scrollY);
-  };
-
-  useEffect(() => {
-    if (layout.height > 0 && photos.length > 0) {
-      const savedPosition = getScrollPosition(pathname);
-
-      if (savedPosition) {
-        requestAnimationFrame(() => {
-          window.scrollTo(0, savedPosition);
-        });
-      }
-    }
-  }, [getScrollPosition, layout.height, pathname, photos.length]);
-
   return (
     <div className="w-full" ref={containerRef}>
       <div className="relative" style={{ height: layout.height }}>
@@ -63,8 +41,8 @@ function PhotoMasonry({ photos, children, isFetchingNextPage = false }: Props) {
           return (
             <Link
               key={photo.id}
-              onClick={handlePhotoClick}
-              href={`/@${photo.author.username}/photos/${photo.id}`}
+              scroll={false}
+              href={`/profile/${photo.author.username}/photos/${photo.id}`}
               className="absolute cursor-pointer overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800"
               style={{
                 width: position.width,

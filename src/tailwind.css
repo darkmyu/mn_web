@@ -8,6 +8,12 @@
   body {
     @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50;
   }
+
+  @media (max-width: 1023px) {
+    * {
+      @apply scrollbar-hide;
+    }
+  }
 }
 
 @theme {

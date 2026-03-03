@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ComponentType } from 'react';
+import { ComponentProps, ComponentType } from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
@@ -9,10 +9,10 @@ export interface ModalControllerProps<T = any> {
   reject: (reason?: any) => void;
 }
 
-export interface Modal<P = any, R = any> {
+export interface Modal<T extends ComponentType<any> = any, R = any> {
   key: string;
-  component: ComponentType<P & ModalControllerProps<R>>;
-  props?: P;
+  component: T;
+  props?: Omit<ComponentProps<T>, keyof ModalControllerProps<R>>;
   resolve: (value: R | PromiseLike<R>) => void;
   reject: (reason?: any) => void;
 }
@@ -22,10 +22,10 @@ interface ModalState {
 }
 
 interface ModalAction {
-  push: <P = any, R = any>(options: {
+  push: <T extends ComponentType<any> = any, R = any>(options: {
     key: string;
-    component: ComponentType<P & ModalControllerProps<R>>;
-    props?: P;
+    component: T;
+    props?: Omit<ComponentProps<T>, keyof ModalControllerProps<R>>;
   }) => Promise<R>;
   pop: (key: string) => void;
   clear: () => void;

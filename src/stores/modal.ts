@@ -4,29 +4,30 @@ import { ComponentProps, ComponentType } from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-export interface ModalControllerProps<T = any> {
+export interface ModalControllerProps<T> {
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: any) => void;
 }
 
-export interface Modal<T extends ComponentType<any> = any, R = any> {
+interface Modal<T extends ComponentType<any> = any, R = any> extends ModalControllerProps<R> {
   key: string;
   component: T;
   props?: Omit<ComponentProps<T>, keyof ModalControllerProps<R>>;
-  resolve: (value: R | PromiseLike<R>) => void;
-  reject: (reason?: any) => void;
 }
+
+type ExtractModalResult<T extends ComponentType<any>> =
+  ComponentProps<T> extends ModalControllerProps<infer R> ? R : any;
 
 interface ModalState {
   modals: Modal[];
 }
 
 interface ModalAction {
-  push: <T extends ComponentType<any> = any, R = any>(options: {
+  push: <T extends ComponentType<any>>(options: {
     key: string;
     component: T;
-    props?: Omit<ComponentProps<T>, keyof ModalControllerProps<R>>;
-  }) => Promise<R>;
+    props?: Omit<ComponentProps<T>, keyof ModalControllerProps<any>>;
+  }) => Promise<ExtractModalResult<T>>;
   pop: (key: string) => void;
   clear: () => void;
 }

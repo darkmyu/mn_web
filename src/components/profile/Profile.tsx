@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatNumber } from '@/utils/formatters';
 import Image from 'next/image';
+import Link from 'next/link';
 import AuthModal from '../modal/AuthModal';
 import SettingModal from '../modal/SettingModal';
 
@@ -101,7 +102,7 @@ function Profile({ username }: Props) {
   return (
     <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
       <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-2 border-zinc-400 dark:border-zinc-600">
-        <Image className="rounded-full object-cover" src={target.thumbnail ?? ''} sizes="25vw" alt="" fill priority />
+        <Image className="rounded-full object-cover" src={target.thumbnail ?? ''} alt="" fill priority />
       </div>
       <div className="flex flex-col items-center gap-6 py-2 lg:items-start">
         <div className="flex flex-col gap-4 lg:gap-2">
@@ -117,8 +118,8 @@ function Profile({ username }: Props) {
             )}
             {!target.isOwner && (
               <button
-                className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                 onClick={handleFollowButtonClick}
+                className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
               >
                 {target.isFollowing ? '팔로우 중' : '팔로우'}
               </button>
@@ -127,13 +128,13 @@ function Profile({ username }: Props) {
           <div className="flex items-center">
             <p className="text-base font-semibold">{`@${target.username}`}</p>
             <span className="mx-3 text-xs text-zinc-600">•</span>
-            <p className="text-base">
+            <Link href={`/@${target.username}?tab=followers`} className="text-base">
               <span className="font-semibold">{formatNumber(target.followers)}</span> 팔로워
-            </p>
+            </Link>
             <span className="mx-3 text-xs text-zinc-600">•</span>
-            <p className="text-base">
+            <Link href={`/@${target.username}?tab=followings`} className="text-base">
               <span className="font-semibold">{formatNumber(target.followings)}</span> 팔로우
-            </p>
+            </Link>
           </div>
         </div>
         <p className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-400">{target.about}</p>

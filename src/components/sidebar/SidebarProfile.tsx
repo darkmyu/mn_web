@@ -57,6 +57,7 @@ function SidebarProfile() {
             alt=""
             width={32}
             height={32}
+            priority
           />
         }
       />

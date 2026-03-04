@@ -1,15 +1,19 @@
 import { profileControllerRead } from '@/api/profile';
 import ProfileAnimalListSuspense from '@/components/profile/ProfileAnimalListSuspense';
+import ProfileFollowerListSuspense from '@/components/profile/ProfileFollowerListSuspense';
+import ProfileFollowingListSuspense from '@/components/profile/ProfileFollowingListSuspense';
 import ProfilePhotoMasonrySuspense from '@/components/profile/ProfilePhotoMasonrySuspense';
 import ProfileSuspense from '@/components/profile/ProfileSuspense';
 import { notFound } from 'next/navigation';
 
 interface Props {
   params: Promise<{ username: string }>;
+  searchParams: Promise<{ tab?: 'photos' | 'followers' | 'followings' }>;
 }
 
-export default async function ProfilePage({ params }: Props) {
+export default async function ProfilePage({ params, searchParams }: Props) {
   const { username } = await params;
+  const { tab = 'photos' } = await searchParams;
 
   await profileControllerRead(username).catch(() => notFound());
 
@@ -19,7 +23,9 @@ export default async function ProfilePage({ params }: Props) {
         <ProfileSuspense username={username} />
         <ProfileAnimalListSuspense username={username} />
       </div>
-      <ProfilePhotoMasonrySuspense username={username} />
+      {tab === 'photos' && <ProfilePhotoMasonrySuspense username={username} />}
+      {tab === 'followers' && <ProfileFollowerListSuspense username={username} />}
+      {tab === 'followings' && <ProfileFollowingListSuspense username={username} />}
     </div>
   );
 }

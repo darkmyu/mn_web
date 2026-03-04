@@ -1,0 +1,77 @@
+'use client';
+
+import { ProfileFollowResponse } from '@/api/index.schemas';
+import { useProfileControllerFollow, useProfileControllerUnfollow } from '@/api/profile';
+import AuthModal from '@/components/modal/AuthModal';
+import { useIsClient } from '@/hooks/useIsClient';
+import { useAuthStore } from '@/stores/auth';
+import { useModalStore } from '@/stores/modal';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+interface Props {
+  follower: ProfileFollowResponse;
+}
+
+function ProfileFollowerItem({ follower }: Props) {
+  const modals = useModalStore();
+  const { user } = useAuthStore();
+  const { isClient } = useIsClient();
+  const [isFollowing, setIsFollowing] = useState(follower.isFollowing);
+
+  const { mutate: followMutate } = useProfileControllerFollow({
+    mutation: {
+      onMutate: () => setIsFollowing(true),
+    },
+  });
+
+  const { mutate: unfollowMutate } = useProfileControllerUnfollow({
+    mutation: {
+      onMutate: () => setIsFollowing(false),
+    },
+  });
+
+  const handleFollowButtonClick = () => {
+    if (!user) {
+      return modals.push({
+        key: 'auth-modal',
+        component: AuthModal,
+      });
+    }
+
+    if (!isFollowing) {
+      followMutate({ username: follower.username });
+    } else {
+      unfollowMutate({ username: follower.username });
+    }
+  };
+
+  useEffect(() => {
+    setIsFollowing(follower.isFollowing);
+  }, [follower.isFollowing]);
+
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <Link href={`/@${follower.username}`} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
+          <Image src={follower.thumbnail ?? ''} className="object-cover" alt="" fill />
+        </Link>
+        <Link href={`/@${follower.username}`} className="flex min-w-0 flex-col">
+          <p className="truncate text-sm font-medium">{follower.nickname}</p>
+          <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{`@${follower.username}`}</p>
+        </Link>
+      </div>
+      {isClient && !follower.isOwner && (
+        <button
+          onClick={handleFollowButtonClick}
+          className="shrink-0 cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+        >
+          {isFollowing ? '팔로우 중' : '팔로우'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default ProfileFollowerItem;

@@ -175,6 +175,12 @@ export interface PhotoResponse {
 }
 
 export interface ProfileFollowResponse {
+  id: number;
+  username: string;
+  nickname: string;
+  /** @nullable */
+  thumbnail: string | null;
+  isOwner: boolean;
   isFollowing: boolean;
 }
 
@@ -293,6 +299,34 @@ export type ProfileControllerPhotos200AllOf = {
 };
 
 export type ProfileControllerPhotos200 = CursorPagination & ProfileControllerPhotos200AllOf;
+
+export type ProfileControllerFollowersParams = {
+  cursor?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+};
+
+export type ProfileControllerFollowers200AllOf = {
+  items: ProfileFollowResponse[];
+};
+
+export type ProfileControllerFollowers200 = CursorPagination & ProfileControllerFollowers200AllOf;
+
+export type ProfileControllerFollowingsParams = {
+  cursor?: number;
+  /**
+   * @minimum 1
+   */
+  limit?: number;
+};
+
+export type ProfileControllerFollowings200AllOf = {
+  items: ProfileFollowResponse[];
+};
+
+export type ProfileControllerFollowings200 = CursorPagination & ProfileControllerFollowings200AllOf;
 
 export type BreedControllerAllParams = {
   cursor?: number;

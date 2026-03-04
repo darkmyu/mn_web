@@ -37,6 +37,10 @@ import type {
   PhotoResponse,
   ProfileControllerAnimals200,
   ProfileControllerAnimalsParams,
+  ProfileControllerFollowers200,
+  ProfileControllerFollowersParams,
+  ProfileControllerFollowings200,
+  ProfileControllerFollowingsParams,
   ProfileControllerPhotos200,
   ProfileControllerPhotosParams,
   ProfileFollowResponse,
@@ -2076,6 +2080,1243 @@ export function useProfileControllerPhotoSuspenseInfinite<
   queryClient?: QueryClient,
 ): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getProfileControllerPhotoSuspenseInfiniteQueryOptions(username, id, options);
+
+  const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export type profileControllerFollowersResponse200 = {
+  data: ProfileControllerFollowers200;
+  status: 200;
+};
+
+export type profileControllerFollowersResponseSuccess = profileControllerFollowersResponse200 & {
+  headers: Headers;
+};
+export type profileControllerFollowersResponse = profileControllerFollowersResponseSuccess;
+
+export const getProfileControllerFollowersUrl = (username: string, params?: ProfileControllerFollowersParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/profiles/${username}/followers?${stringifiedParams}`
+    : `/api/v1/profiles/${username}/followers`;
+};
+
+export const profileControllerFollowers = async (
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: RequestInit,
+): Promise<profileControllerFollowersResponse> => {
+  return customFetch<profileControllerFollowersResponse>(getProfileControllerFollowersUrl(username, params), {
+    ...options,
+    method: 'GET',
+  });
+};
+
+export const getProfileControllerFollowersInfiniteQueryKey = (
+  username?: string,
+  params?: ProfileControllerFollowersParams,
+) => {
+  return ['infinite', `/api/v1/profiles/${username}/followers`, ...(params ? [params] : [])] as const;
+};
+
+export const getProfileControllerFollowersQueryKey = (username?: string, params?: ProfileControllerFollowersParams) => {
+  return [`/api/v1/profiles/${username}/followers`, ...(params ? [params] : [])] as const;
+};
+
+export const getProfileControllerFollowersInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowersInfiniteQueryKey(username, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    QueryKey,
+    ProfileControllerFollowersParams['cursor']
+  > = ({ signal, pageParam }) =>
+    profileControllerFollowers(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...requestOptions },
+    );
+
+  return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    TError,
+    TData,
+    QueryKey,
+    ProfileControllerFollowersParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowersInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerFollowers>>
+>;
+export type ProfileControllerFollowersInfiniteQueryError = unknown;
+
+export function useProfileControllerFollowersInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowersParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowers>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowers>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowersInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowers>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowers>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowersInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowersInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowersInfiniteQueryOptions(username, params, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchProfileControllerFollowersInfiniteQuery = async <
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getProfileControllerFollowersInfiniteQueryOptions(username, params, options);
+
+  await queryClient.prefetchInfiniteQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getProfileControllerFollowersQueryOptions = <
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowersQueryKey(username, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerFollowers>>> = ({ signal }) =>
+    profileControllerFollowers(username, params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowersQueryResult = NonNullable<Awaited<ReturnType<typeof profileControllerFollowers>>>;
+export type ProfileControllerFollowersQueryError = unknown;
+
+export function useProfileControllerFollowers<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowersParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowers>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowers>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowers<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowers>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowers>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowers<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowers<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowersQueryOptions(username, params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchProfileControllerFollowersQuery = async <
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getProfileControllerFollowersQueryOptions(username, params, options);
+
+  await queryClient.prefetchQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getProfileControllerFollowersSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowersQueryKey(username, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerFollowers>>> = ({ signal }) =>
+    profileControllerFollowers(username, params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowersSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerFollowers>>
+>;
+export type ProfileControllerFollowersSuspenseQueryError = unknown;
+
+export function useProfileControllerFollowersSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowersParams,
+  options: {
+    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowersSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowersSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowersSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowers>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowers>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowersSuspenseQueryOptions(username, params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getProfileControllerFollowersSuspenseInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowersInfiniteQueryKey(username, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    QueryKey,
+    ProfileControllerFollowersParams['cursor']
+  > = ({ signal, pageParam }) =>
+    profileControllerFollowers(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...requestOptions },
+    );
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    TError,
+    TData,
+    QueryKey,
+    ProfileControllerFollowersParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowersSuspenseInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerFollowers>>
+>;
+export type ProfileControllerFollowersSuspenseInfiniteQueryError = unknown;
+
+export function useProfileControllerFollowersSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowersParams,
+  options: {
+    query: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowersSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowersSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowersSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowers>>,
+    ProfileControllerFollowersParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowersParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowers>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowersParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowersSuspenseInfiniteQueryOptions(username, params, options);
+
+  const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export type profileControllerFollowingsResponse200 = {
+  data: ProfileControllerFollowings200;
+  status: 200;
+};
+
+export type profileControllerFollowingsResponseSuccess = profileControllerFollowingsResponse200 & {
+  headers: Headers;
+};
+export type profileControllerFollowingsResponse = profileControllerFollowingsResponseSuccess;
+
+export const getProfileControllerFollowingsUrl = (username: string, params?: ProfileControllerFollowingsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/profiles/${username}/followings?${stringifiedParams}`
+    : `/api/v1/profiles/${username}/followings`;
+};
+
+export const profileControllerFollowings = async (
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: RequestInit,
+): Promise<profileControllerFollowingsResponse> => {
+  return customFetch<profileControllerFollowingsResponse>(getProfileControllerFollowingsUrl(username, params), {
+    ...options,
+    method: 'GET',
+  });
+};
+
+export const getProfileControllerFollowingsInfiniteQueryKey = (
+  username?: string,
+  params?: ProfileControllerFollowingsParams,
+) => {
+  return ['infinite', `/api/v1/profiles/${username}/followings`, ...(params ? [params] : [])] as const;
+};
+
+export const getProfileControllerFollowingsQueryKey = (
+  username?: string,
+  params?: ProfileControllerFollowingsParams,
+) => {
+  return [`/api/v1/profiles/${username}/followings`, ...(params ? [params] : [])] as const;
+};
+
+export const getProfileControllerFollowingsInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowingsInfiniteQueryKey(username, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    QueryKey,
+    ProfileControllerFollowingsParams['cursor']
+  > = ({ signal, pageParam }) =>
+    profileControllerFollowings(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...requestOptions },
+    );
+
+  return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    TError,
+    TData,
+    QueryKey,
+    ProfileControllerFollowingsParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowingsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerFollowings>>
+>;
+export type ProfileControllerFollowingsInfiniteQueryError = unknown;
+
+export function useProfileControllerFollowingsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowingsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowings>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowings>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowingsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowings>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowings>>,
+          QueryKey
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowingsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowingsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowingsInfiniteQueryOptions(username, params, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchProfileControllerFollowingsInfiniteQuery = async <
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getProfileControllerFollowingsInfiniteQueryOptions(username, params, options);
+
+  await queryClient.prefetchInfiniteQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getProfileControllerFollowingsQueryOptions = <
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowingsQueryKey(username, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerFollowings>>> = ({ signal }) =>
+    profileControllerFollowings(username, params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, enabled: !!username, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowingsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerFollowings>>
+>;
+export type ProfileControllerFollowingsQueryError = unknown;
+
+export function useProfileControllerFollowings<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowingsParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowings>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowings>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowings<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof profileControllerFollowings>>,
+          TError,
+          Awaited<ReturnType<typeof profileControllerFollowings>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowings<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowings<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowingsQueryOptions(username, params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const prefetchProfileControllerFollowingsQuery = async <
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  queryClient: QueryClient,
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): Promise<QueryClient> => {
+  const queryOptions = getProfileControllerFollowingsQueryOptions(username, params, options);
+
+  await queryClient.prefetchQuery(queryOptions);
+
+  return queryClient;
+};
+
+export const getProfileControllerFollowingsSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowingsQueryKey(username, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerFollowings>>> = ({ signal }) =>
+    profileControllerFollowings(username, params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowingsSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerFollowings>>
+>;
+export type ProfileControllerFollowingsSuspenseQueryError = unknown;
+
+export function useProfileControllerFollowingsSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowingsParams,
+  options: {
+    query: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowingsSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowingsSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowingsSuspense<
+  TData = Awaited<ReturnType<typeof profileControllerFollowings>>,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof profileControllerFollowings>>, TError, TData>>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowingsSuspenseQueryOptions(username, params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getProfileControllerFollowingsSuspenseInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfileControllerFollowingsInfiniteQueryKey(username, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    QueryKey,
+    ProfileControllerFollowingsParams['cursor']
+  > = ({ signal, pageParam }) =>
+    profileControllerFollowings(
+      username,
+      { ...params, cursor: pageParam || params?.['cursor'] },
+      { signal, ...requestOptions },
+    );
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    TError,
+    TData,
+    QueryKey,
+    ProfileControllerFollowingsParams['cursor']
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ProfileControllerFollowingsSuspenseInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof profileControllerFollowings>>
+>;
+export type ProfileControllerFollowingsSuspenseInfiniteQueryError = unknown;
+
+export function useProfileControllerFollowingsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params: undefined | ProfileControllerFollowingsParams,
+  options: {
+    query: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowingsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfileControllerFollowingsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useProfileControllerFollowingsSuspenseInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof profileControllerFollowings>>,
+    ProfileControllerFollowingsParams['cursor']
+  >,
+  TError = unknown,
+>(
+  username: string,
+  params?: ProfileControllerFollowingsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof profileControllerFollowings>>,
+        TError,
+        TData,
+        QueryKey,
+        ProfileControllerFollowingsParams['cursor']
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfileControllerFollowingsSuspenseInfiniteQueryOptions(username, params, options);
 
   const query = useSuspenseInfiniteQuery(queryOptions, queryClient) as UseSuspenseInfiniteQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

@@ -10,7 +10,9 @@ function Layout({ children }: Props) {
   return (
     <div className="relative flex h-full min-h-dvh flex-col lg:flex-row">
       <Sidebar />
-      <main className="flex flex-1 flex-col pb-15 lg:pb-0 lg:pl-16">{children}</main>
+      <main className="flex flex-1 flex-col pb-[calc(3.75rem+env(safe-area-inset-bottom))] lg:pb-0 lg:pl-16">
+        {children}
+      </main>
       <MobileBottomNavigation />
     </div>
   );

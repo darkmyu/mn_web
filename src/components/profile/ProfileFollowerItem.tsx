@@ -65,7 +65,7 @@ function ProfileFollowerItem({ follower }: Props) {
       {isClient && !follower.isOwner && (
         <button
           onClick={handleFollowButtonClick}
-          className="shrink-0 cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+          className="shrink-0 cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
         >
           {isFollowing ? '팔로우 중' : '팔로우'}
         </button>

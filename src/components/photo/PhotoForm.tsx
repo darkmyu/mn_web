@@ -201,7 +201,7 @@ function PhotoForm({ photo }: Props) {
                 >
                   <LucideCamera size={48} className="text-zinc-400" />
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물 사진을 선택해주세요.</p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 파일만 업로드 가능해요.</p>
+                  {/* <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 파일만 업로드 가능해요.</p> */}
                 </div>
               )}
               {(isUploadPhotoImagePending || isImageConverting) && (

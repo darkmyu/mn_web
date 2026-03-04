@@ -110,8 +110,8 @@ function Profile({ username }: Props) {
             <p className="text-xl font-medium lg:text-2xl">{target.nickname}</p>
             {target.isOwner && (
               <button
-                className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                 onClick={handleSettingButtonClick}
+                className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
               >
                 프로필 편집
               </button>
@@ -119,7 +119,7 @@ function Profile({ username }: Props) {
             {!target.isOwner && (
               <button
                 onClick={handleFollowButtonClick}
-                className="cursor-pointer rounded-lg bg-zinc-200 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
               >
                 {target.isFollowing ? '팔로우 중' : '팔로우'}
               </button>

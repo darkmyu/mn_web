@@ -237,11 +237,14 @@ function ProfilePhotoViewer({ username, id }: Props) {
           )}
           <div className="mb-12 flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Link
-                href={`/@${photo.author.username}`}
-                className="h-10 w-10 cursor-pointer overflow-hidden rounded-full"
-              >
-                <Image className="object-cover" src={photo.author.thumbnail ?? ''} alt="" width={40} height={40} />
+              <Link href={`/@${photo.author.username}`} className="size-10 cursor-pointer overflow-hidden rounded-full">
+                <Image
+                  className="size-full object-cover"
+                  src={photo.author.thumbnail ?? ''}
+                  alt=""
+                  width={40}
+                  height={40}
+                />
               </Link>
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
@@ -344,8 +347,8 @@ function ProfilePhotoViewer({ username, id }: Props) {
                   className="flex items-center gap-1.5 rounded-full bg-zinc-100 px-2.5 py-1 dark:bg-zinc-800"
                 >
                   {animal.thumbnail && (
-                    <div className="h-5 w-5 overflow-hidden rounded-full">
-                      <Image src={animal.thumbnail} alt="" width={20} height={20} className="object-cover" />
+                    <div className="size-5 overflow-hidden rounded-full">
+                      <Image src={animal.thumbnail} alt="" width={20} height={20} className="size-full object-cover" />
                     </div>
                   )}
                   {!animal.thumbnail && (

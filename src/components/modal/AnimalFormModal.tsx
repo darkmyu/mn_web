@@ -302,9 +302,11 @@ function AnimalFormModal({ resolve, animal }: Props) {
             <div className="flex flex-1 flex-col items-center gap-6">
               <div
                 onClick={handleThumbnailClick}
-                className="relative h-64 w-64 cursor-pointer rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
+                className="size-64 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
               >
-                {thumbnail && <Image src={thumbnail} alt="" fill sizes="192px" className="rounded-full object-cover" />}
+                {thumbnail && (
+                  <Image className="size-full object-cover" src={thumbnail} alt="" width={256} height={256} priority />
+                )}
                 {!thumbnail && (
                   <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-400">
                     <Camera size={32} />

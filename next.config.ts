@@ -2,11 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
-    unoptimized: true,
+    loader: 'custom',
+    loaderFile: './src/cloudflareImageLoader.ts',
     remotePatterns: [
-      {
-        hostname: 'pub-9d149cdc6c92422ab589264b4c9661b2.r2.dev',
-      },
       {
         hostname: 'lh3.googleusercontent.com',
       },
@@ -18,6 +16,9 @@ const nextConfig: NextConfig = {
       },
       {
         hostname: 'image.mongnyang.com',
+      },
+      {
+        hostname: 'image-dev.mongnyang.com',
       },
     ],
   },

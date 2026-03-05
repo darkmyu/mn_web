@@ -106,10 +106,17 @@ function SettingProfile() {
     <div className="animate-fade-in scrollbar-hide flex h-full flex-col overflow-y-auto">
       <div className="flex flex-1 flex-col gap-12 p-8">
         <div
-          className="relative flex h-24 w-24 cursor-pointer items-center justify-center"
           onClick={handleThumbnailClick}
+          className="relative flex size-24 cursor-pointer items-center justify-center"
         >
-          <Image className="rounded-full object-cover" src={thumbnail ?? ''} sizes="25vw" alt="" fill priority />
+          <Image
+            className="size-full rounded-full object-cover"
+            src={thumbnail ?? ''}
+            alt=""
+            width={96}
+            height={96}
+            priority
+          />
           <div className="absolute right-0 bottom-0 flex h-8 w-8 items-center justify-center rounded-full bg-black">
             <LucideSquarePen className="h-3.5 w-3.5 text-white" />
           </div>

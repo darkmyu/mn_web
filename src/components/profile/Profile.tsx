@@ -101,8 +101,15 @@ function Profile({ username }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
-      <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-2 border-zinc-400 dark:border-zinc-600">
-        <Image className="rounded-full object-cover" src={target.thumbnail ?? ''} alt="" fill priority />
+      <div className="flex size-32 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-400 dark:border-zinc-600">
+        <Image
+          className="size-full object-cover"
+          src={target.thumbnail ?? ''}
+          alt=""
+          width={128}
+          height={128}
+          priority
+        />
       </div>
       <div className="flex flex-col items-center gap-6 py-2 lg:items-start">
         <div className="flex flex-col gap-4 lg:gap-2">

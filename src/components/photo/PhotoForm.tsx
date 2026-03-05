@@ -191,7 +191,7 @@ function PhotoForm({ photo }: Props) {
                   className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
                   style={{ aspectRatio: image.width / image.height }}
                 >
-                  <Image className="object-cover" src={image.path} alt="" sizes="50vw" fill priority />
+                  <Image className="object-cover" src={image.path} alt="" sizes="25vw" fill priority />
                 </div>
               )}
               {!image && (

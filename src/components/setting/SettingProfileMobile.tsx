@@ -109,15 +109,15 @@ function SettingProfileMobile() {
       <div className="flex flex-1 flex-col gap-10 p-6 pb-25">
         <div className="flex justify-center">
           <div
-            className="relative flex h-28 w-28 cursor-pointer items-center justify-center"
             onClick={handleThumbnailClick}
+            className="relative flex size-28 cursor-pointer items-center justify-center"
           >
             <Image
-              className="rounded-full object-cover shadow-md"
+              className="size-full rounded-full object-cover shadow-md"
               src={thumbnail ?? ''}
-              sizes="30vw"
               alt=""
-              fill
+              width={112}
+              height={112}
               priority
             />
             <div className="absolute right-0 bottom-0 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900 shadow-lg dark:bg-zinc-100">

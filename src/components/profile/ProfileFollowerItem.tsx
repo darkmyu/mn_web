@@ -54,8 +54,8 @@ function ProfileFollowerItem({ follower }: Props) {
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <Link href={`/@${follower.username}`} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
-          <Image src={follower.thumbnail ?? ''} className="object-cover" alt="" fill />
+        <Link href={`/@${follower.username}`} className="relative size-10 shrink-0 overflow-hidden rounded-full">
+          <Image src={follower.thumbnail ?? ''} className="size-full object-cover" width={40} height={40} alt="" />
         </Link>
         <Link href={`/@${follower.username}`} className="flex min-w-0 flex-col">
           <p className="truncate text-sm font-medium">{follower.nickname}</p>

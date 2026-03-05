@@ -145,14 +145,14 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
             className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
           >
             <div className="flex items-center gap-3">
-              <div className="relative flex h-12 w-12 items-center justify-center">
+              <div className="relative flex size-12 items-center justify-center">
                 {animal.thumbnail && (
                   <Image
-                    className="aspect-square rounded-full object-cover"
+                    className="size-full rounded-full object-cover"
                     src={animal.thumbnail}
-                    sizes="2vw"
                     alt=""
-                    fill
+                    width={48}
+                    height={48}
                   />
                 )}
                 {!animal.thumbnail && (

@@ -57,14 +57,14 @@ function ProfileAnimalList({ username }: Props) {
               nativeButton={false}
               render={
                 <div className="flex shrink-0 cursor-pointer items-center gap-3 rounded-full bg-zinc-100 p-1.5 pr-4 dark:bg-zinc-800">
-                  <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
+                  <div className="relative flex size-9 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
                     {animal.thumbnail && (
                       <Image
                         className="aspect-square rounded-full object-cover"
                         src={animal.thumbnail}
-                        sizes="2vw"
                         alt=""
-                        fill
+                        width={36}
+                        height={36}
                       />
                     )}
                     {!animal.thumbnail && animal.breed.species === 'DOG' && (

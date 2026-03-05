@@ -50,7 +50,7 @@ function PhotoMasonry({ photos, children, isFetchingNextPage = false }: Props) {
                 transform: `translate3d(${position.left}px, ${position.top}px, 0)`,
               }}
             >
-              <Image src={photo.image.path} alt="" fill priority />
+              <Image src={photo.image.path} alt="" sizes="25vw" fill priority />
             </Link>
           );
         })}

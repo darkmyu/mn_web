@@ -71,7 +71,7 @@ function AnimalFormSheet({
 
   return (
     <Sheet.Root isOpen={isOpen} onClose={handleClose} onCloseEnd={handleCloseEnd} detent="full" disableDrag>
-      <Sheet.Container>
+      <Sheet.Container unstyled>
         <Sheet.Header>
           <header className="flex items-center justify-between p-4">
             <div className="flex flex-col gap-0.5">

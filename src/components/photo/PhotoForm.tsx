@@ -2,9 +2,10 @@
 
 import { AnimalResponse, PhotoCreateRequest, PhotoResponse, PhotoUpdateRequest } from '@/api/index.schemas';
 import { usePhotoControllerCreate, usePhotoControllerUpdate, usePhotoControllerUpload } from '@/api/photo';
+import { PHOTO_MAX_SIZE } from '@/constants/file';
 import { usePhotoForm } from '@/hooks/forms/photo';
 import { useModalStore } from '@/stores/modal';
-import { convertOptimizeImage } from '@/utils/converters/convertOptimizeImage';
+import { convertHeicToJpeg } from '@/utils/converters';
 import { optimizeImage } from '@/utils/optimizeImage';
 import { debounce } from 'es-toolkit';
 import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
@@ -114,7 +115,12 @@ function PhotoForm({ photo }: Props) {
     setIsImageConverting(true);
 
     try {
-      const image = await convertOptimizeImage(file);
+      const image = await convertHeicToJpeg(file);
+
+      if (image.size > PHOTO_MAX_SIZE) {
+        toast.error('30MB 이내의 이미지만 업로드 가능해요.');
+        return;
+      }
 
       uploadPhotoImage({
         data: { image },
@@ -209,7 +215,7 @@ function PhotoForm({ photo }: Props) {
                 >
                   <LucideCamera size={48} className="text-zinc-400" />
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">반려동물 사진을 선택해주세요.</p>
-                  {/* <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 파일만 업로드 가능해요.</p> */}
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">30MB 이내의 이미지만 업로드 가능해요.</p>
                 </div>
               )}
               {(isUploadPhotoImagePending || isImageConverting) && (

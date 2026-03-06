@@ -5,6 +5,7 @@ import { usePhotoControllerCreate, usePhotoControllerUpdate, usePhotoControllerU
 import { usePhotoForm } from '@/hooks/forms/photo';
 import { useModalStore } from '@/stores/modal';
 import { convertOptimizeImage } from '@/utils/converters/convertOptimizeImage';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { debounce } from 'es-toolkit';
 import { LucideCamera, LucideCat, LucideDog, LucideSearch, LucideX } from 'lucide-react';
 import Image from 'next/image';
@@ -191,7 +192,14 @@ function PhotoForm({ photo }: Props) {
                   className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
                   style={{ aspectRatio: image.width / image.height }}
                 >
-                  <Image className="object-cover" src={image.path} alt="" sizes="25vw" fill priority />
+                  <Image
+                    className="object-cover"
+                    src={optimizeImage({ src: image.path, width: 768 })}
+                    alt=""
+                    sizes="25vw"
+                    fill
+                    priority
+                  />
                 </div>
               )}
               {!image && (
@@ -249,7 +257,7 @@ function PhotoForm({ photo }: Props) {
                         {selectedAnimals[0]?.thumbnail && (
                           <Image
                             className="h-9 w-9 rounded-full object-cover"
-                            src={selectedAnimals[0].thumbnail}
+                            src={optimizeImage({ src: selectedAnimals[0].thumbnail, width: 36 })}
                             alt=""
                             width={36}
                             height={36}
@@ -282,7 +290,7 @@ function PhotoForm({ photo }: Props) {
                               {animal.thumbnail && (
                                 <Image
                                   className="h-full w-full rounded-full object-cover"
-                                  src={animal.thumbnail}
+                                  src={optimizeImage({ src: animal.thumbnail, width: 36 })}
                                   alt=""
                                   width={36}
                                   height={36}

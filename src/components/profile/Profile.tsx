@@ -10,6 +10,7 @@ import {
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatNumber } from '@/utils/formatters';
+import { optimizeImage } from '@/utils/optimizeImage';
 import Image from 'next/image';
 import Link from 'next/link';
 import AuthModal from '../modal/AuthModal';
@@ -104,7 +105,7 @@ function Profile({ username }: Props) {
       <div className="flex size-32 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-400 dark:border-zinc-600">
         <Image
           className="size-full object-cover"
-          src={target.thumbnail ?? ''}
+          src={optimizeImage({ src: target.thumbnail ?? '', width: 128 })}
           alt=""
           width={128}
           height={128}

@@ -2,6 +2,7 @@ import { getAnimalControllerAllQueryKey, useAnimalControllerAllSuspense } from '
 import { AnimalResponse } from '@/api/index.schemas';
 import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps, useModalStore } from '@/stores/modal';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { useQueryClient } from '@tanstack/react-query';
 import { LucideCat, LucideCheck, LucideDog, LucidePlus, X } from 'lucide-react';
 import Image from 'next/image';
@@ -149,7 +150,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
                 {animal.thumbnail && (
                   <Image
                     className="size-full rounded-full object-cover"
-                    src={animal.thumbnail}
+                    src={optimizeImage({ src: animal.thumbnail, width: 48 })}
                     alt=""
                     width={48}
                     height={48}

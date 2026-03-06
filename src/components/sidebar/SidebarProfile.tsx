@@ -2,6 +2,7 @@ import { useAuthControllerLogout } from '@/api/auth';
 import { ROUTE_HOME_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { Popover } from '@base-ui/react/popover';
 import { LogOut, LucideLogIn, Settings } from 'lucide-react';
 import Image from 'next/image';
@@ -53,7 +54,7 @@ function SidebarProfile() {
         render={
           <Image
             className="h-8 w-8 cursor-pointer rounded-full object-cover"
-            src={user.thumbnail ?? ''}
+            src={optimizeImage({ src: user.thumbnail ?? '', width: 32 })}
             alt=""
             width={32}
             height={32}
@@ -74,7 +75,7 @@ function SidebarProfile() {
                   {user.thumbnail && (
                     <Image
                       className="h-12 w-12 cursor-pointer rounded-full object-cover"
-                      src={user.thumbnail}
+                      src={optimizeImage({ src: user.thumbnail, width: 48 })}
                       alt=""
                       width={48}
                       height={48}

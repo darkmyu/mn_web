@@ -6,6 +6,7 @@ import AuthModal from '@/components/modal/AuthModal';
 import { useIsClient } from '@/hooks/useIsClient';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
+import { optimizeImage } from '@/utils/optimizeImage';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -55,7 +56,13 @@ function ProfileFollowerItem({ follower }: Props) {
     <div className="flex items-center justify-between gap-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Link href={`/@${follower.username}`} className="relative size-10 shrink-0 overflow-hidden rounded-full">
-          <Image src={follower.thumbnail ?? ''} className="size-full object-cover" width={40} height={40} alt="" />
+          <Image
+            src={optimizeImage({ src: follower.thumbnail ?? '', width: 40 })}
+            className="size-full object-cover"
+            width={40}
+            height={40}
+            alt=""
+          />
         </Link>
         <Link href={`/@${follower.username}`} className="flex min-w-0 flex-col">
           <p className="truncate text-sm font-medium">{follower.nickname}</p>

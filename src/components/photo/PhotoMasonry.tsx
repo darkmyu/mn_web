@@ -1,5 +1,6 @@
 import { PhotoResponse } from '@/api/index.schemas';
 import { useMasonryLayout } from '@/hooks/useMasonryLayout';
+import { optimizeImage } from '@/utils/optimizeImage';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -50,7 +51,7 @@ function PhotoMasonry({ photos, children, isFetchingNextPage = false }: Props) {
                 transform: `translate3d(${position.left}px, ${position.top}px, 0)`,
               }}
             >
-              <Image src={photo.image.path} alt="" sizes="25vw" fill priority />
+              <Image src={optimizeImage({ src: photo.image.path, width: 480 })} alt="" sizes="25vw" fill priority />
             </Link>
           );
         })}

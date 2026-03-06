@@ -9,6 +9,7 @@ import {
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatDate } from '@/utils/formatters';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { Popover } from '@base-ui/react/popover';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { LucideEllipsisVertical, LucideReply, LucideSquarePen, LucideTrash2 } from 'lucide-react';
@@ -126,7 +127,7 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
           <Link href={`/@${reply.author.username}`} className="flex h-6 w-6 items-center justify-center">
             <Image
               className="h-6 w-6 rounded-full object-cover"
-              src={reply.author.thumbnail ?? ''}
+              src={optimizeImage({ src: reply.author.thumbnail ?? '', width: 24 })}
               alt=""
               width={24}
               height={24}

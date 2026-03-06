@@ -12,6 +12,7 @@ import { ROUTE_PHOTOS_WRITE_PAGE, ROUTE_TAGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatDate, formatNumber } from '@/utils/formatters';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { Popover } from '@base-ui/react/popover';
 import {
   LucideCat,
@@ -221,13 +222,27 @@ function ProfilePhotoViewer({ username, id }: Props) {
     <div className="flex flex-col gap-12 sm:gap-24">
       <div className="relative sm:grid sm:grid-cols-4">
         <div className="absolute inset-0 opacity-50 blur-3xl sm:opacity-35">
-          <Image className="object-cover" src={photo.image.path} alt="" sizes="25vw" fill priority />
+          <Image
+            className="object-cover"
+            src={optimizeImage({ src: photo.image.path, width: 768 })}
+            alt=""
+            sizes="25vw"
+            fill
+            priority
+          />
         </div>
         <div
           className="relative col-span-2 col-start-2"
           style={{ aspectRatio: photo.image.width / photo.image.height }}
         >
-          <Image className="rounded-lg object-contain" src={photo.image.path} alt="" sizes="25vw" fill priority />
+          <Image
+            className="rounded-lg object-contain"
+            src={optimizeImage({ src: photo.image.path, width: 768 })}
+            alt=""
+            sizes="25vw"
+            fill
+            priority
+          />
         </div>
       </div>
       <div className="flex flex-col gap-12">
@@ -240,7 +255,7 @@ function ProfilePhotoViewer({ username, id }: Props) {
               <Link href={`/@${photo.author.username}`} className="size-10 cursor-pointer overflow-hidden rounded-full">
                 <Image
                   className="size-full object-cover"
-                  src={photo.author.thumbnail ?? ''}
+                  src={optimizeImage({ src: photo.author.thumbnail ?? '', width: 40 })}
                   alt=""
                   width={40}
                   height={40}
@@ -348,7 +363,13 @@ function ProfilePhotoViewer({ username, id }: Props) {
                 >
                   {animal.thumbnail && (
                     <div className="size-5 overflow-hidden rounded-full">
-                      <Image src={animal.thumbnail} alt="" width={20} height={20} className="size-full object-cover" />
+                      <Image
+                        src={optimizeImage({ src: animal.thumbnail, width: 20 })}
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="size-full object-cover"
+                      />
                     </div>
                   )}
                   {!animal.thumbnail && (

@@ -3,6 +3,7 @@
 import { useAnimalControllerAllSuspense } from '@/api/animal';
 import { AnimalResponse } from '@/api/index.schemas';
 import { Sheet } from '@/components/sheet';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { Check, LucideCat, LucideDog, LucidePlus } from 'lucide-react';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, Suspense } from 'react';
@@ -94,7 +95,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
                 {animal.thumbnail && (
                   <Image
                     className="size-full rounded-full object-cover"
-                    src={animal.thumbnail}
+                    src={optimizeImage({ src: animal.thumbnail, width: 48 })}
                     alt=""
                     width={48}
                     height={48}

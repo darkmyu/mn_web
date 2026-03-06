@@ -9,6 +9,7 @@ import {
 } from '@/api/photo';
 import { useCommentForm } from '@/hooks/forms/comment';
 import { useAuthStore } from '@/stores/auth';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'es-toolkit';
 import Image from 'next/image';
@@ -254,7 +255,7 @@ function ProfilePhotoCommentEditor({
         <div className="hidden h-9 w-9 items-center justify-center sm:flex">
           <Image
             className="h-9 w-9 rounded-full object-cover"
-            src={user?.thumbnail ?? ''}
+            src={optimizeImage({ src: user?.thumbnail ?? '', width: 36 })}
             alt=""
             width={36}
             height={36}

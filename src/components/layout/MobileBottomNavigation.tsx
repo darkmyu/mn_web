@@ -9,6 +9,7 @@ import {
 } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
+import { optimizeImage } from '@/utils/optimizeImage';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -97,7 +98,7 @@ function MobileBottomNavigation() {
         {user && (
           <div className="flex h-6 w-6 items-center justify-center rounded-full">
             <Image
-              src={user?.thumbnail ?? ''}
+              src={optimizeImage({ src: user.thumbnail ?? '', width: 24 })}
               alt=""
               width={24}
               height={24}

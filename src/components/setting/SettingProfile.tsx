@@ -6,6 +6,7 @@ import NaverLogo from '@/assets/images/naver.png';
 import { useProfileForm } from '@/hooks/forms/profile';
 import { useAuthStore } from '@/stores/auth';
 import { convertOptimizeImage } from '@/utils/converters/convertOptimizeImage';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { debounce } from 'es-toolkit';
 import { LucideSquarePen } from 'lucide-react';
 import Image from 'next/image';
@@ -111,7 +112,7 @@ function SettingProfile() {
         >
           <Image
             className="size-full rounded-full object-cover"
-            src={thumbnail ?? ''}
+            src={optimizeImage({ src: thumbnail ?? '', width: 96 })}
             alt=""
             width={96}
             height={96}

@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import dayjs from '@/utils/dayjs';
 import { formatAge } from '@/utils/formatters';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { Popover } from '@base-ui/react/popover';
 import { useQueryClient } from '@tanstack/react-query';
 import { LucideCake, LucideCat, LucideDog, LucideMars, LucideVenus, Plus } from 'lucide-react';
@@ -61,7 +62,7 @@ function ProfileAnimalList({ username }: Props) {
                     {animal.thumbnail && (
                       <Image
                         className="aspect-square rounded-full object-cover"
-                        src={animal.thumbnail}
+                        src={optimizeImage({ src: animal.thumbnail, width: 36 })}
                         alt=""
                         width={36}
                         height={36}

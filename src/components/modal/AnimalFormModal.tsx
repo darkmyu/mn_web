@@ -19,6 +19,7 @@ import { LAPTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { ModalControllerProps, useModalStore } from '@/stores/modal';
 import { convertOptimizeImage } from '@/utils/converters/convertOptimizeImage';
 import dayjs from '@/utils/dayjs';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { debounce } from 'es-toolkit';
 import { Camera, LucideX, Search } from 'lucide-react';
 import Image from 'next/image';
@@ -305,7 +306,14 @@ function AnimalFormModal({ resolve, animal }: Props) {
                 className="size-64 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
               >
                 {thumbnail && (
-                  <Image className="size-full object-cover" src={thumbnail} alt="" width={256} height={256} priority />
+                  <Image
+                    className="size-full object-cover"
+                    src={optimizeImage({ src: thumbnail, width: 256 })}
+                    alt=""
+                    width={256}
+                    height={256}
+                    priority
+                  />
                 )}
                 {!thumbnail && (
                   <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-400">

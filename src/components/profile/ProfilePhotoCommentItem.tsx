@@ -7,6 +7,7 @@ import {
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatDate, formatNumber } from '@/utils/formatters';
+import { optimizeImage } from '@/utils/optimizeImage';
 import { Popover } from '@base-ui/react/popover';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { LucideChevronDown, LucideEllipsisVertical, LucideReply, LucideSquarePen, LucideTrash2 } from 'lucide-react';
@@ -101,7 +102,7 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
           <Link href={`/@${comment.author.username}`} className="flex h-9 w-9 items-center justify-center">
             <Image
               className="h-9 w-9 rounded-full object-cover"
-              src={comment.author.thumbnail ?? ''}
+              src={optimizeImage({ src: comment.author.thumbnail ?? '', width: 36 })}
               alt=""
               width={36}
               height={36}

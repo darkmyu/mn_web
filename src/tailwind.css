@@ -1,3 +1,4 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import 'tailwindcss';
 @import 'tailwind-scrollbar-hide/v4';
 
@@ -7,7 +8,7 @@
   html,
   body {
     scrollbar-gutter: stable;
-    @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50;
+    @apply bg-zinc-50 font-sans text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50;
   }
 
   @media (max-width: 1023px) {
@@ -18,6 +19,11 @@
 }
 
 @theme {
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue',
+    'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', sans-serif;
+
   --animate-fade-in: fade-in 0.15s ease-in-out;
   --animate-fade-out: fade-out 0.2s ease-in-out;
   --animate-fade-up: fade-up 0.3s ease-in-out;

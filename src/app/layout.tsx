@@ -6,17 +6,12 @@ import AuthProvider from '@/components/provider/AuthProvider';
 import TanStackQueryProvider from '@/components/provider/TanStackQueryProvider';
 import { Metadata, Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
-import localFont from 'next/font/local';
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 
 interface Props {
   children: React.ReactNode;
 }
-
-const pretendardFonts = localFont({
-  src: '../assets/fonts/PretendardVariable.woff2',
-});
 
 export const viewport: Viewport = {
   maximumScale: 1,
@@ -35,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="ko" className={pretendardFonts.className} suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body>
         <TanStackQueryProvider>
           <ThemeProvider>

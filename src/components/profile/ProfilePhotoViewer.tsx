@@ -255,7 +255,7 @@ function ProfilePhotoViewer({ username, id }: Props) {
               <Link href={`/@${photo.author.username}`} className="size-10 cursor-pointer overflow-hidden rounded-full">
                 <Image
                   className="size-full object-cover"
-                  src={optimizeImage({ src: photo.author.thumbnail ?? '', width: 40 })}
+                  src={optimizeImage({ src: photo.author.thumbnail ?? '', width: 128 })}
                   alt=""
                   width={40}
                   height={40}
@@ -364,7 +364,7 @@ function ProfilePhotoViewer({ username, id }: Props) {
                   {animal.thumbnail && (
                     <div className="size-5 overflow-hidden rounded-full">
                       <Image
-                        src={optimizeImage({ src: animal.thumbnail, width: 20 })}
+                        src={optimizeImage({ src: animal.thumbnail, width: 128 })}
                         alt=""
                         width={20}
                         height={20}

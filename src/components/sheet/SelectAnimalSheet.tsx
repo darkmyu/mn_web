@@ -95,7 +95,7 @@ function AnimalList({ selectedAnimals, setSelectedAnimals }: AnimalListProps) {
                 {animal.thumbnail && (
                   <Image
                     className="size-full rounded-full object-cover"
-                    src={optimizeImage({ src: animal.thumbnail, width: 48 })}
+                    src={optimizeImage({ src: animal.thumbnail, width: 128 })}
                     alt=""
                     width={48}
                     height={48}

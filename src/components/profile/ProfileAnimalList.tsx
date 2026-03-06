@@ -62,7 +62,7 @@ function ProfileAnimalList({ username }: Props) {
                     {animal.thumbnail && (
                       <Image
                         className="aspect-square rounded-full object-cover"
-                        src={optimizeImage({ src: animal.thumbnail, width: 36 })}
+                        src={optimizeImage({ src: animal.thumbnail, width: 128 })}
                         alt=""
                         width={36}
                         height={36}

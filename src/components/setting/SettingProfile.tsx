@@ -112,7 +112,7 @@ function SettingProfile() {
         >
           <Image
             className="size-full rounded-full object-cover"
-            src={optimizeImage({ src: thumbnail ?? '', width: 96 })}
+            src={optimizeImage({ src: thumbnail ?? '', width: 128 })}
             alt=""
             width={96}
             height={96}

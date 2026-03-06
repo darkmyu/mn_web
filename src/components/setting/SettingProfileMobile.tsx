@@ -115,7 +115,7 @@ function SettingProfileMobile() {
           >
             <Image
               className="size-full rounded-full object-cover shadow-md"
-              src={optimizeImage({ src: thumbnail ?? '', width: 112 })}
+              src={optimizeImage({ src: thumbnail ?? '', width: 128 })}
               alt=""
               width={112}
               height={112}

@@ -96,7 +96,7 @@ function AnimalFormSheet({
             <div className="flex flex-1 flex-col items-center gap-6">
               <div
                 onClick={handleThumbnailClick}
-                className="size-64 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
+                className="relative size-64 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800"
               >
                 {thumbnail && (
                   <Image

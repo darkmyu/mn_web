@@ -118,6 +118,14 @@ function SettingProfile() {
             height={96}
             priority
           />
+          {(isProfileThumbnailPending || isThumbnailConverting) && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-zinc-950/40 backdrop-blur-[1px]">
+              <div className="relative h-full w-full">
+                <div className="absolute inset-1 rounded-full border border-white/20" />
+                <div className="absolute inset-1 animate-[spin_1.2s_linear_infinite] rounded-full border-2 border-transparent border-t-emerald-400 border-l-emerald-500" />
+              </div>
+            </div>
+          )}
           <div className="absolute right-0 bottom-0 flex h-8 w-8 items-center justify-center rounded-full bg-black">
             <LucideSquarePen className="h-3.5 w-3.5 text-white" />
           </div>

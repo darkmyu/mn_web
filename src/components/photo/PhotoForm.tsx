@@ -49,8 +49,8 @@ function PhotoForm({ photo }: Props) {
   const [isImageConverting, setIsImageConverting] = useState(false);
   const [selectedAnimals, setSelectedAnimals] = useState<AnimalResponse[]>(photo?.animals ?? []);
 
-  const { mutate: createPhotoMutate } = usePhotoControllerCreate();
-  const { mutate: updatePhotoMutate } = usePhotoControllerUpdate();
+  const { mutateAsync: createPhotoMutateAsync, isPending: isCreatePhotoPending } = usePhotoControllerCreate();
+  const { mutateAsync: updatePhotoMutateAsync, isPending: isUpdatePhotoPending } = usePhotoControllerUpdate();
 
   const { mutate: uploadPhotoImage, isPending: isUploadPhotoImagePending } = usePhotoControllerUpload({
     mutation: {
@@ -63,44 +63,58 @@ function PhotoForm({ photo }: Props) {
     },
   });
 
-  const debouncedCreatePhotoMutate = useMemo(
+  const debouncedCreatePhotoMutateAsync = useMemo(
     () =>
       debounce((data: PhotoCreateRequest) => {
-        createPhotoMutate(
-          { data },
-          {
-            onSuccess: (response) => {
-              router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
+        toast.promise(
+          createPhotoMutateAsync(
+            { data },
+            {
+              onSuccess: (response) => {
+                router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
+              },
             },
+          ),
+          {
+            loading: '반려동물 사진을 등록하고 있어요...',
+            success: '반려동물 사진이 등록되었어요!',
+            error: '반려동물 사진 등록에 실패했어요.',
           },
         );
       }, 300),
-    [createPhotoMutate, router],
+    [createPhotoMutateAsync, router],
   );
 
-  const debouncedUpdatePhotoMutate = useMemo(
+  const debouncedUpdatePhotoMutateAsync = useMemo(
     () =>
       debounce((id: number, data: PhotoUpdateRequest) => {
-        updatePhotoMutate(
-          {
-            id,
-            data,
-          },
-          {
-            onSuccess: (response) => {
-              router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
+        toast.promise(
+          updatePhotoMutateAsync(
+            {
+              id,
+              data,
             },
+            {
+              onSuccess: (response) => {
+                router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
+              },
+            },
+          ),
+          {
+            loading: '반려동물 사진을 수정하고 있어요...',
+            success: '반려동물 사진이 수정되었어요!',
+            error: '반려동물 사진 수정에 실패했어요.',
           },
         );
       }, 300),
-    [router, updatePhotoMutate],
+    [router, updatePhotoMutateAsync],
   );
 
   const onSubmit: SubmitHandler<PhotoCreateRequest> = (body) => {
     if (!isEdit) {
-      debouncedCreatePhotoMutate(body);
+      debouncedCreatePhotoMutateAsync(body);
     } else {
-      debouncedUpdatePhotoMutate(photo.id, body);
+      debouncedUpdatePhotoMutateAsync(photo.id, body);
     }
   };
 
@@ -178,9 +192,11 @@ function PhotoForm({ photo }: Props) {
           </p>
         </div>
         <button
-          disabled={!isValid || isUploadPhotoImagePending || isImageConverting}
           onClick={handleSubmit(onSubmit)}
           className="cursor-pointer rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-emerald-50 transition-colors duration-300 hover:bg-emerald-600/90 focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:hover:bg-zinc-300 dark:bg-emerald-800 dark:hover:bg-emerald-800/90 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500 dark:disabled:hover:bg-zinc-700"
+          disabled={
+            !isValid || isUploadPhotoImagePending || isImageConverting || isCreatePhotoPending || isUpdatePhotoPending
+          }
         >
           {!isEdit ? '등록하기' : '수정하기'}
         </button>

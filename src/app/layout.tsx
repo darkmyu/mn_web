@@ -38,7 +38,7 @@ export default function RootLayout({ children }: Props) {
             <ModalRenderer />
             <Layout>{children}</Layout>
             <Toaster
-              position="top-right"
+              position="top-center"
               toastOptions={{
                 className: '!text-sm !text-zinc-900 !bg-zinc-100 dark:!text-zinc-50 dark:!bg-zinc-800',
               }}

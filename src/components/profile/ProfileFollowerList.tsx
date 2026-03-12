@@ -15,7 +15,9 @@ function ProfileFollowerList({ username }: Props) {
   const { data, hasNextPage, isFetched, isFetchingNextPage, fetchNextPage } =
     useProfileControllerFollowersSuspenseInfinite(
       username,
-      {},
+      {
+        limit: 50,
+      },
       {
         query: {
           getNextPageParam: (lastPage) => (lastPage.data.hasNextPage ? lastPage.data.cursor : undefined),

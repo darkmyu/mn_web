@@ -15,20 +15,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { data: photo } = await profileControllerPhoto(username, id);
 
     const title = photo.title || '몽냥';
-    const description = photo.description || '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요!';
 
     return {
       title,
+      description: '',
       openGraph: {
         title,
-        description,
+        description: '',
         type: 'website',
         images: photo.image.path,
-        url: `https://mongnynag.com/@${username}/photos/${id}`,
+        url: `https://mongnyang.com/@${username}/photos/${id}`,
       },
       twitter: {
         title,
-        description,
+        description: '',
         card: 'summary_large_image',
         images: photo.image.path,
       },

@@ -11,7 +11,10 @@ interface Props {
 }
 
 function HomePhotoMasonry({ sort }: Props) {
-  const { ref, inView } = useInView();
+  const { ref, inView } = useInView({
+    rootMargin: '0px 0px 800px 0px',
+    threshold: 0.01,
+  });
 
   const { data, hasNextPage, isFetched, isFetchingNextPage, fetchNextPage } = usePhotoControllerAllSuspenseInfinite(
     {
@@ -28,15 +31,16 @@ function HomePhotoMasonry({ sort }: Props) {
   const photos = data.pages.flatMap((page) => page.data.items);
 
   useEffect(() => {
-    if (inView && hasNextPage && isFetched) {
+    if (inView && hasNextPage && isFetched && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [fetchNextPage, hasNextPage, inView, isFetched]);
+  }, [fetchNextPage, hasNextPage, inView, isFetched, isFetchingNextPage]);
 
   return (
-    <PhotoMasonry photos={photos} isFetchingNextPage={isFetchingNextPage}>
-      <div ref={ref} />
-    </PhotoMasonry>
+    <div className="flex flex-col">
+      <PhotoMasonry photos={photos} />
+      <div ref={ref} aria-hidden={true} />
+    </div>
   );
 }
 

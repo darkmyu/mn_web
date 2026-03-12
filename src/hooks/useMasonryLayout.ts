@@ -1,24 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-interface UseMasonryLayoutDimension {
-  id: number;
+export interface MasonryDimension {
   width: number;
   height: number;
 }
 
-interface UseMasonryLayoutOptions {
-  dimensions: UseMasonryLayoutDimension[];
+interface MasonryPosition {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+interface MasonryOptions {
+  dimensions: MasonryDimension[];
   gap?: number;
   minColumnCount?: number;
   minColumnWidth?: number;
 }
 
-export function useMasonryLayout({
-  dimensions,
-  gap = 16,
-  minColumnCount = 2,
-  minColumnWidth = 272,
-}: UseMasonryLayoutOptions) {
+export function useMasonryLayout({ dimensions, gap = 16, minColumnCount = 2, minColumnWidth = 272 }: MasonryOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -35,17 +36,13 @@ export function useMasonryLayout({
   }, []);
 
   const layout = useMemo(() => {
-    if (!containerWidth) {
-      return { positions: {}, height: 0 };
-    }
-
     const columnCount = Math.max(minColumnCount, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
     const columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount;
     const columnHeights = new Array(columnCount).fill(0);
-    const positions: Record<number, { left: number; top: number; width: number; height: number }> = {};
+    const positions: MasonryPosition[] = [];
     let maxHeight = 0;
 
-    dimensions.forEach((dimension) => {
+    for (const dimension of dimensions) {
       const ratio = dimension.height / dimension.width;
       const height = columnWidth * ratio;
 
@@ -53,10 +50,10 @@ export function useMasonryLayout({
       const left = targetIndex * (columnWidth + gap);
       const top = columnHeights[targetIndex];
 
-      positions[dimension.id] = { left, top, width: columnWidth, height };
+      positions.push({ left, top, width: columnWidth, height });
       columnHeights[targetIndex] += height + gap;
       maxHeight = Math.max(maxHeight, columnHeights[targetIndex]);
-    });
+    }
 
     return {
       positions,

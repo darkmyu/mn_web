@@ -13,9 +13,12 @@ interface Props {
 }
 
 function ProfilePhotoMasonry({ username }: Props) {
-  const { ref, inView } = useInView();
+  const { ref, inView } = useInView({
+    rootMargin: '0px 0px 800px 0px',
+    threshold: 0.01,
+  });
 
-  const { data, fetchNextPage, hasNextPage, isFetched, isFetchingNextPage } =
+  const { data, hasNextPage, isFetched, isFetchingNextPage, fetchNextPage } =
     useProfileControllerPhotosSuspenseInfinite(
       username,
       {
@@ -31,19 +34,20 @@ function ProfilePhotoMasonry({ username }: Props) {
   const photos = data.pages.flatMap((page) => page.data.items);
 
   useEffect(() => {
-    if (inView && hasNextPage && isFetched) {
+    if (inView && hasNextPage && isFetched && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [fetchNextPage, hasNextPage, inView, isFetched]);
+  }, [fetchNextPage, hasNextPage, inView, isFetched, isFetchingNextPage]);
 
   if (photos.length === 0) {
     return <ProfilePhotoEmpty username={username} />;
   }
 
   return (
-    <PhotoMasonry photos={photos} isFetchingNextPage={isFetchingNextPage}>
-      <div ref={ref} />
-    </PhotoMasonry>
+    <div className="flex flex-col">
+      <PhotoMasonry photos={photos} />
+      <div ref={ref} aria-hidden={true} />
+    </div>
   );
 }
 

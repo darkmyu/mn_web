@@ -2,7 +2,7 @@
 
 import { PhotoControllerAllSort } from '@/api/index.schemas';
 import { Suspense } from 'react';
-import PhotoMasonrySkeleton from '../photo/PhotoMasonrySkeleton';
+import MasonrySkeleton from '../masonry/MasonrySkeleton';
 import HomePhotoMasonry from './HomePhotoMasonry';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 
 function HomePhotoMasonrySuspense({ sort }: Props) {
   return (
-    <Suspense fallback={<PhotoMasonrySkeleton count={30} />}>
+    <Suspense fallback={<MasonrySkeleton count={30} />}>
       <HomePhotoMasonry sort={sort} />
     </Suspense>
   );

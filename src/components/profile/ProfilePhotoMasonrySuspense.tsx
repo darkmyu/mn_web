@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import PhotoMasonrySkeleton from '../photo/PhotoMasonrySkeleton';
+import MasonrySkeleton from '../masonry/MasonrySkeleton';
 import ProfilePhotoMasonry from './ProfilePhotoMasonry';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 function ProfilePhotoMasonrySuspense({ username }: Props) {
   return (
-    <Suspense fallback={<PhotoMasonrySkeleton count={20} />}>
+    <Suspense fallback={<MasonrySkeleton count={20} />}>
       <ProfilePhotoMasonry username={username} />
     </Suspense>
   );

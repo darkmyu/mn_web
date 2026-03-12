@@ -1,79 +1,36 @@
 import { PhotoResponse } from '@/api/index.schemas';
-import { useMasonryLayout } from '@/hooks/useMasonryLayout';
 import { optimizeImage } from '@/utils/optimizeImage';
 import Image from 'next/image';
 import Link from 'next/link';
+import Masonry from '../masonry/Masonry';
 
 interface Props {
   photos: PhotoResponse[];
-  children?: React.ReactNode;
-  isFetchingNextPage?: boolean;
 }
 
-const SKELETON_COUNT = 10;
-const SKELETON_RATIOS = [1, 1.25, 1.5, 0.75, 1.2, 0.8, 1.4, 1.1, 0.9, 1.3];
-
-function PhotoMasonry({ photos, children, isFetchingNextPage = false }: Props) {
-  const photoDimensions = photos.map((photo) => ({
+function PhotoMasonry({ photos }: Props) {
+  const dimensions = photos.map((photo) => ({
     id: photo.id,
     width: photo.image.width,
     height: photo.image.height,
   }));
 
-  const skeletonDimensions = isFetchingNextPage
-    ? Array.from({ length: SKELETON_COUNT }).map((_, index) => ({
-        id: -1 * (index + 1),
-        width: 100,
-        height: 100 * (SKELETON_RATIOS[index % SKELETON_RATIOS.length] ?? 1),
-      }))
-    : [];
-
-  const dimensions = [...photoDimensions, ...skeletonDimensions];
-
-  const { containerRef, layout } = useMasonryLayout({ dimensions });
-
   return (
-    <div className="w-full" ref={containerRef}>
-      <div className="relative" style={{ height: layout.height }}>
-        {photos.map((photo) => {
-          const position = layout.positions[photo.id];
-          if (!position) return null;
-
-          return (
-            <Link
-              key={photo.id}
-              scroll={false}
-              href={`/profile/${photo.author.username}/photos/${photo.id}`}
-              className="absolute cursor-pointer overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800"
-              style={{
-                width: position.width,
-                height: position.height,
-                transform: `translate3d(${position.left}px, ${position.top}px, 0)`,
-              }}
-            >
-              <Image src={optimizeImage({ src: photo.image.path, width: 480 })} alt="" sizes="25vw" fill priority />
-            </Link>
-          );
-        })}
-        {skeletonDimensions.map((item) => {
-          const position = layout.positions[item.id];
-          if (!position) return null;
-
-          return (
-            <div
-              key={item.id}
-              className="absolute animate-pulse overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800"
-              style={{
-                width: position.width,
-                height: position.height,
-                transform: `translate3d(${position.left}px, ${position.top}px, 0)`,
-              }}
-            />
-          );
-        })}
-      </div>
-      {layout.height > 0 && children}
-    </div>
+    <Masonry
+      items={photos}
+      dimensions={dimensions}
+      renderItem={(item, style) => (
+        <Link
+          key={item.id}
+          scroll={false}
+          href={`/profile/${item.author.username}/photos/${item.id}`}
+          className="cursor-pointer overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800"
+          style={style}
+        >
+          <Image src={optimizeImage({ src: item.image.path, width: 480 })} alt="" sizes="25vw" fill priority />
+        </Link>
+      )}
+    />
   );
 }
 

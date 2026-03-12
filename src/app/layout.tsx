@@ -20,11 +20,19 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: '몽냥',
-  description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
+  description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요!',
   openGraph: {
+    type: 'website',
     title: '몽냥',
-    description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요.',
+    description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요!',
+    images: 'https://image.mongnyang.com/mongnyang.jpg',
     url: 'https://mongnyang.com',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '몽냥',
+    images: 'https://image.mongnyang.com/mongnyang.jpg',
+    description: '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요!',
   },
 };
 

@@ -4,11 +4,43 @@ import ProfileFollowerListSuspense from '@/components/profile/ProfileFollowerLis
 import ProfileFollowingListSuspense from '@/components/profile/ProfileFollowingListSuspense';
 import ProfilePhotoMasonrySuspense from '@/components/profile/ProfilePhotoMasonrySuspense';
 import ProfileSuspense from '@/components/profile/ProfileSuspense';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 interface Props {
   params: Promise<{ username: string }>;
   searchParams: Promise<{ tab?: 'photos' | 'followers' | 'followings' }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params;
+
+  try {
+    const { data: profile } = await profileControllerRead(username);
+
+    const title = profile.nickname;
+    const description = profile.about || `${profile.nickname}님의 귀여운 동물들을 만나보세요!`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        siteName: '몽냥',
+        images: profile.thumbnail ?? undefined,
+        url: `https://mongnyang.com/@${profile.username}`,
+      },
+      twitter: {
+        title,
+        description,
+        card: 'summary',
+        images: profile.thumbnail ?? undefined,
+      },
+    };
+  } catch {
+    return {};
+  }
 }
 
 export default async function ProfilePage({ params, searchParams }: Props) {

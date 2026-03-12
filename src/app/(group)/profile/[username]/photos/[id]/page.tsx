@@ -1,10 +1,41 @@
 import { profileControllerPhoto } from '@/api/profile';
 import ProfilePhotoCommentListServerSuspense from '@/components/profile/ProfilePhotoCommentListServerSuspense';
 import ProfilePhotoViewerServerSuspense from '@/components/profile/ProfilePhotoViewerServerSuspense';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 interface Props {
   params: Promise<{ username: string; id: number }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username, id } = await params;
+
+  try {
+    const { data: photo } = await profileControllerPhoto(username, id);
+
+    const title = photo.title || '몽냥';
+    const description = photo.description || '몽냥에서 매일매일 쏟아지는 귀여운 동물들을 만나보세요!';
+
+    return {
+      title,
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        images: photo.image.path,
+        url: `https://mongnynag.com/@${username}/photos/${id}`,
+      },
+      twitter: {
+        title,
+        description,
+        card: 'summary_large_image',
+        images: photo.image.path,
+      },
+    };
+  } catch {
+    return {};
+  }
 }
 
 export default async function ProfilePhotosViewerPage({ params }: Props) {

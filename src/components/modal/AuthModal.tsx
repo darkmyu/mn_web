@@ -40,7 +40,7 @@ function AuthModal({ resolve }: Props) {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}${getAuthControllerKakaoUrl()}?redirect=${window.location.href}`;
   };
 
-  if (!isLaptop) {
+  if (isLaptop) {
     return (
       <AuthSheet
         isOpen={isOpen}

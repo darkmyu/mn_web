@@ -255,7 +255,7 @@ function ProfilePhotoCommentEditor({
         <div className="hidden h-9 w-9 items-center justify-center sm:flex">
           <Image
             className="h-9 w-9 rounded-full object-cover"
-            src={optimizeImage({ src: user?.thumbnail ?? '', width: 128 })}
+            src={optimizeImage({ src: user?.thumbnail ?? '', width: 280 })}
             alt=""
             width={36}
             height={36}

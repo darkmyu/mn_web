@@ -251,7 +251,7 @@ function AnimalFormModal({ resolve, animal }: Props) {
     }
   };
 
-  if (!isLaptop) {
+  if (isLaptop) {
     return (
       <FormProvider {...methods}>
         <AnimalFormSheet

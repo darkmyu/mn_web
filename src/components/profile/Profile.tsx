@@ -101,51 +101,51 @@ function Profile({ username }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
-      <div className="flex size-32 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-400 dark:border-zinc-600">
-        <Image
-          className="size-full object-cover"
-          src={optimizeImage({ src: target.thumbnail ?? '', width: 128 })}
-          alt=""
-          width={128}
-          height={128}
-          priority
-        />
-      </div>
-      <div className="flex flex-col items-center gap-6 py-2 lg:items-start">
-        <div className="flex flex-col gap-4 lg:gap-2">
-          <div className="flex items-center justify-center gap-4 lg:justify-start">
-            <p className="text-xl font-medium lg:text-2xl">{target.nickname}</p>
-            {target.isOwner && (
-              <button
-                onClick={handleSettingButtonClick}
-                className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-              >
-                프로필 편집
-              </button>
-            )}
-            {!target.isOwner && (
-              <button
-                onClick={handleFollowButtonClick}
-                className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-              >
-                {target.isFollowing ? '팔로우 중' : '팔로우'}
-              </button>
-            )}
-          </div>
-          <div className="flex items-center">
-            <p className="text-base font-semibold">{`@${target.username}`}</p>
-            <span className="mx-3 text-xs text-zinc-600">•</span>
-            <Link href={`/@${target.username}?tab=followers`} className="text-base">
+    <div className="flex flex-col gap-4 max-lg:gap-6">
+      <div className="flex flex-col gap-8 max-lg:flex-row max-lg:items-center max-lg:gap-4">
+        <div className="flex size-70 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-400 max-lg:size-16 dark:border-zinc-600">
+          <Image
+            className="size-full object-cover"
+            src={optimizeImage({ src: target.thumbnail ?? '', width: 280 })}
+            alt=""
+            width={280}
+            height={280}
+            priority
+          />
+        </div>
+        <div className="flex flex-col gap-2 max-lg:gap-1">
+          <p className="text-2xl font-bold max-lg:text-base">{target.nickname}</p>
+          <div className="flex items-center gap-1.5 text-zinc-800 dark:text-zinc-300">
+            <Link href={`/@${target.username}?tab=followers`} className="text-base max-lg:text-sm">
               <span className="font-semibold">{formatNumber(target.followers)}</span> 팔로워
             </Link>
-            <span className="mx-3 text-xs text-zinc-600">•</span>
-            <Link href={`/@${target.username}?tab=followings`} className="text-base">
+            <span className="text-xs text-zinc-600">•</span>
+            <Link href={`/@${target.username}?tab=followings`} className="text-base max-lg:text-sm">
               <span className="font-semibold">{formatNumber(target.followings)}</span> 팔로우
             </Link>
           </div>
         </div>
-        <p className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-400">{target.about}</p>
+      </div>
+      <div className="flex flex-col gap-6">
+        {target.about && (
+          <p className="flex items-center gap-2 text-sm text-zinc-700 max-lg:px-2 dark:text-zinc-400">{target.about}</p>
+        )}
+        {target.isOwner && (
+          <button
+            onClick={handleSettingButtonClick}
+            className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 max-lg:py-3 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          >
+            프로필 편집
+          </button>
+        )}
+        {!target.isOwner && (
+          <button
+            onClick={handleFollowButtonClick}
+            className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 max-lg:py-3 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          >
+            {target.isFollowing ? '팔로우 중' : '팔로우'}
+          </button>
+        )}
       </div>
     </div>
   );

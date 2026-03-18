@@ -34,7 +34,7 @@ function SelectBreedModal({ resolve, initialBreed, initialSpecies }: SelectBreed
     setSelectedBreed(breed);
   };
 
-  if (!isLaptop) {
+  if (isLaptop) {
     return (
       <SelectBreedSheet
         isOpen={isOpen}

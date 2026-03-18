@@ -56,7 +56,7 @@ function SelectAnimalModal({ resolve, initialAnimals }: SelectAnimalModalProps) 
     }
   };
 
-  if (!isLaptop) {
+  if (isLaptop) {
     return (
       <SelectAnimalSheet
         isOpen={isOpen}

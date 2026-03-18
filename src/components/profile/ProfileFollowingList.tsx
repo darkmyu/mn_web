@@ -35,7 +35,7 @@ function ProfileFollowingList({ username }: Props) {
   }, [fetchNextPage, hasNextPage, inView, isFetched]);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex w-full flex-col gap-8">
       <p className="text-base font-medium lg:text-lg">{`${formatNumber(total)}명을 팔로우 중`}</p>
       <div className="grid grid-cols-1 gap-x-16 gap-y-4 lg:grid-cols-2">
         {followings.map((follower) => (

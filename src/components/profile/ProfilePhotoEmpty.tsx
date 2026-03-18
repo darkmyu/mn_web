@@ -12,7 +12,7 @@ function ProfilePhotoEmpty({ username }: Props) {
   const isOwner = user?.username === username;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center py-0 lg:flex-0 lg:py-24">
+    <div className="flex w-full flex-1 flex-col items-center justify-center py-0 lg:flex-0 lg:py-24">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
         {isOwner ? (
           <LucideCamera className="h-8 w-8 text-zinc-400" />

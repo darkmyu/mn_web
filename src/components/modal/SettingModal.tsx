@@ -50,7 +50,7 @@ function SettingModal({ resolve }: Props) {
     logoutMutate();
   };
 
-  if (!isLaptop)
+  if (isLaptop)
     return (
       <SettingSheet
         isOpen={isOpen}

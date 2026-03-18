@@ -255,7 +255,7 @@ function ProfilePhotoViewer({ username, id }: Props) {
               <Link href={`/@${photo.author.username}`} className="size-10 cursor-pointer overflow-hidden rounded-full">
                 <Image
                   className="size-full object-cover"
-                  src={optimizeImage({ src: photo.author.thumbnail ?? '', width: 128 })}
+                  src={optimizeImage({ src: photo.author.thumbnail ?? '', width: 280 })}
                   alt=""
                   width={40}
                   height={40}

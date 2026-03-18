@@ -1,22 +1,23 @@
 function ProfileSkeleton() {
   return (
-    <div className="flex animate-pulse flex-col items-center gap-8 lg:flex-row lg:gap-16">
-      <div className="h-32 w-32 shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-800" />
-      <div className="flex w-full flex-col items-center gap-6 py-2 lg:w-auto lg:items-start">
-        <div className="flex w-full flex-col items-center gap-4 lg:w-auto lg:items-start lg:gap-2">
-          <div className="flex items-center justify-center gap-4 lg:justify-start">
-            <div className="h-8 w-32 rounded bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-8 w-24 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
-          </div>
-          <div className="flex items-center">
-            <div className="h-6 w-24 rounded bg-zinc-200 dark:bg-zinc-800" />
-            <span className="mx-3 text-xs text-zinc-600">•</span>
-            <div className="h-6 w-20 rounded bg-zinc-200 dark:bg-zinc-800" />
-            <span className="mx-3 text-xs text-zinc-600">•</span>
-            <div className="h-6 w-20 rounded bg-zinc-200 dark:bg-zinc-800" />
+    <div className="flex animate-pulse flex-col gap-4 max-lg:gap-6">
+      <div className="flex flex-col gap-8 max-lg:flex-row max-lg:items-center max-lg:gap-4">
+        <div className="size-70 shrink-0 rounded-full bg-zinc-200 max-lg:size-16 dark:bg-zinc-800" />
+        <div className="flex flex-col gap-2 max-lg:gap-1.5">
+          <div className="h-8 w-32 rounded bg-zinc-200 max-lg:h-5 max-lg:w-24 dark:bg-zinc-800" />
+          <div className="flex items-center gap-1.5">
+            <div className="h-5 w-20 rounded bg-zinc-200 max-lg:h-4 max-lg:w-16 dark:bg-zinc-800" />
+            <span className="text-xs text-zinc-300 dark:text-zinc-700">•</span>
+            <div className="h-5 w-20 rounded bg-zinc-200 max-lg:h-4 max-lg:w-16 dark:bg-zinc-800" />
           </div>
         </div>
-        <div className="h-5 w-3/4 rounded bg-zinc-200 lg:w-96 dark:bg-zinc-800" />
+      </div>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2 max-lg:px-2">
+          <div className="h-4 w-full rounded bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-4 w-2/3 rounded bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+        <div className="h-[38px] w-full rounded-lg bg-zinc-200 max-lg:h-[46px] dark:bg-zinc-800" />
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ function SidebarProfile() {
         render={
           <Image
             className="h-8 w-8 cursor-pointer rounded-full object-cover"
-            src={optimizeImage({ src: user.thumbnail ?? '', width: 128 })}
+            src={optimizeImage({ src: user.thumbnail ?? '', width: 280 })}
             alt=""
             width={32}
             height={32}
@@ -75,7 +75,7 @@ function SidebarProfile() {
                   {user.thumbnail && (
                     <Image
                       className="h-12 w-12 cursor-pointer rounded-full object-cover"
-                      src={optimizeImage({ src: user.thumbnail, width: 128 })}
+                      src={optimizeImage({ src: user.thumbnail, width: 280 })}
                       alt=""
                       width={48}
                       height={48}

@@ -36,7 +36,7 @@ function ProfilePhotoViewerModal({ username, id }: Props) {
     window.history.replaceState(window.history.state, '', fakeUrl);
   }, [username]);
 
-  if (!isLaptop) {
+  if (isLaptop) {
     return (
       <ProfilePhotoViewerSheet
         isOpen={isOpen}

@@ -44,7 +44,7 @@ function ProfilePhotoMasonry({ username }: Props) {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full flex-col">
       <PhotoMasonry photos={photos} />
       <div ref={ref} aria-hidden={true} />
     </div>

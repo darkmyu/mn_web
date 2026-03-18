@@ -8,7 +8,7 @@ interface Props {
 
 function Layout({ children }: Props) {
   return (
-    <div className="relative flex h-full min-h-dvh flex-col lg:flex-row">
+    <div className="relative flex min-h-dvh flex-col">
       <Sidebar />
       <main className="flex flex-1 flex-col pb-[calc(3.75rem+env(safe-area-inset-bottom))] lg:pb-0 lg:pl-16">
         {children}

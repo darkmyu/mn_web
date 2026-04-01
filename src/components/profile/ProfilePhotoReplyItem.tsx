@@ -141,7 +141,7 @@ function ProfilePhotoReplyItem({ reply, photoId, parentId }: Props) {
                 </Link>
                 <span className="text-xs text-zinc-500 dark:text-zinc-400">{formatDate(reply.createdAt)}</span>
               </div>
-              {reply.author.isOwner && (
+              {reply.isOwner && (
                 <Popover.Root>
                   <Popover.Trigger
                     render={

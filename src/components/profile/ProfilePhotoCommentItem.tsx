@@ -116,7 +116,7 @@ function ProfilePhotoCommentItem({ comment, photoId }: Props) {
                 </Link>
                 <span className="text-xs text-zinc-500 dark:text-zinc-400">{formatDate(comment.createdAt)}</span>
               </div>
-              {comment.author.isOwner && (
+              {comment.isOwner && (
                 <Popover.Root>
                   <Popover.Trigger
                     render={

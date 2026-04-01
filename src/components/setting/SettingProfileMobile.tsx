@@ -29,8 +29,9 @@ function SettingProfileMobile() {
     user
       ? {
           nickname: user.nickname,
-          about: user.about ?? '',
+          about: '',
           thumbnail: user.thumbnail,
+          socialLinks: [],
         }
       : undefined,
   );

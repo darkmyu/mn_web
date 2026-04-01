@@ -3,32 +3,18 @@
  * Do not edit manually.
  * OpenAPI spec version: 1.0.0
  */
-export type UserResponseProvider = (typeof UserResponseProvider)[keyof typeof UserResponseProvider];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UserResponseProvider = {
-  GOOGLE: 'GOOGLE',
-  NAVER: 'NAVER',
-  KAKAO: 'KAKAO',
-} as const;
-
-export interface UserResponse {
+export interface UserSummaryResponse {
   id: number;
   username: string;
   nickname: string;
   /** @nullable */
   thumbnail: string | null;
-  /** @nullable */
-  about: string | null;
-  /** @nullable */
-  email: string | null;
-  provider: UserResponseProvider;
 }
 
 /**
  * @nullable
  */
-export type AuthInfoResponseProfile = UserResponse | null;
+export type AuthInfoResponseProfile = UserSummaryResponse | null;
 
 export interface AuthInfoResponse {
   /** @nullable */
@@ -81,7 +67,7 @@ export interface AnimalResponse {
   birthday: string;
   /** @nullable */
   thumbnail: string | null;
-  owner: UserResponse;
+  owner: UserSummaryResponse;
   breed: BreedResponse;
 }
 
@@ -127,16 +113,32 @@ export interface FileResponse {
   mimetype: string;
 }
 
-export type ProfileResponseProvider = (typeof ProfileResponseProvider)[keyof typeof ProfileResponseProvider];
+export type UserSocialLinkResponseType = (typeof UserSocialLinkResponseType)[keyof typeof UserSocialLinkResponseType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ProfileResponseProvider = {
+export const UserSocialLinkResponseType = {
+  INSTAGRAM: 'INSTAGRAM',
+  YOUTUBE: 'YOUTUBE',
+  X: 'X',
+  EMAIL: 'EMAIL',
+  WEBSITE: 'WEBSITE',
+} as const;
+
+export interface UserSocialLinkResponse {
+  type: UserSocialLinkResponseType;
+  url: string;
+}
+
+export type UserResponseProvider = (typeof UserResponseProvider)[keyof typeof UserResponseProvider];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserResponseProvider = {
   GOOGLE: 'GOOGLE',
   NAVER: 'NAVER',
   KAKAO: 'KAKAO',
 } as const;
 
-export interface ProfileResponse {
+export interface UserResponse {
   id: number;
   username: string;
   nickname: string;
@@ -146,11 +148,16 @@ export interface ProfileResponse {
   about: string | null;
   /** @nullable */
   email: string | null;
-  provider: ProfileResponseProvider;
+  provider: UserResponseProvider;
+  socialLinks: UserSocialLinkResponse[];
+}
+
+export interface ProfileResponse {
   isFollowing: boolean;
   followers: number;
   followings: number;
   isOwner: boolean;
+  profile: UserResponse;
 }
 
 export interface TagResponse {
@@ -215,19 +222,20 @@ export interface PhotoUpdateRequest {
 /**
  * @nullable
  */
-export type PhotoCommentResponseMention = ProfileResponse | null;
+export type PhotoCommentResponseMention = UserSummaryResponse | null;
 
 export interface PhotoCommentResponse {
   id: number;
   content: string;
   createdAt: string;
   updatedAt: string;
-  author: ProfileResponse;
+  author: UserSummaryResponse;
   /** @nullable */
   parentId: number | null;
   /** @nullable */
   mention: PhotoCommentResponseMention;
   replyCount: number;
+  isOwner: boolean;
 }
 
 export interface PhotoCommentCreateRequest {
@@ -246,12 +254,29 @@ export interface PhotoCommentUpdateRequest {
   mentionId?: number | null;
 }
 
+export type UserSocialLinkRequestType = (typeof UserSocialLinkRequestType)[keyof typeof UserSocialLinkRequestType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserSocialLinkRequestType = {
+  INSTAGRAM: 'INSTAGRAM',
+  YOUTUBE: 'YOUTUBE',
+  X: 'X',
+  EMAIL: 'EMAIL',
+  WEBSITE: 'WEBSITE',
+} as const;
+
+export interface UserSocialLinkRequest {
+  type: UserSocialLinkRequestType;
+  url: string;
+}
+
 export interface UserUpdateRequest {
   nickname: string;
   /** @nullable */
   about?: string | null;
   /** @nullable */
   thumbnail?: string | null;
+  socialLinks: UserSocialLinkRequest[];
 }
 
 export type AnimalControllerAllParams = {

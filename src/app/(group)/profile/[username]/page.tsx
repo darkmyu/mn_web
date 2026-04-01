@@ -16,10 +16,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
 
   try {
-    const { data: profile } = await profileControllerRead(username);
+    const { data } = await profileControllerRead(username);
 
-    const title = profile.nickname;
-    const description = profile.about || `${profile.nickname}님의 귀여운 동물들을 만나보세요!`;
+    const title = data.profile.nickname;
+    const description = data.profile.about || `${data.profile.nickname}님의 귀여운 동물들을 만나보세요!`;
 
     return {
       title,
@@ -28,14 +28,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         siteName: '몽냥',
-        images: profile.thumbnail ?? undefined,
-        url: `https://mongnyang.com/@${profile.username}`,
+        images: data.profile.thumbnail ?? undefined,
+        url: `https://mongnyang.com/@${data.profile.username}`,
       },
       twitter: {
         title,
         description,
         card: 'summary',
-        images: profile.thumbnail ?? undefined,
+        images: data.profile.thumbnail ?? undefined,
       },
     };
   } catch {
@@ -53,6 +53,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     <div className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-[280px_1fr] items-start gap-20 px-4 py-16 max-lg:flex max-lg:flex-col max-lg:gap-10 max-lg:py-8">
       <div className="sticky top-16 flex w-full flex-col gap-8 max-lg:static max-lg:gap-4">
         <ProfileSuspense username={username} />
+        <hr className="border-zinc-200 dark:border-zinc-700" />
         <ProfileAnimalListSuspense username={username} />
       </div>
       {tab === 'photos' && <ProfilePhotoMasonrySuspense username={username} />}

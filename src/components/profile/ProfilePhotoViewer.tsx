@@ -252,10 +252,13 @@ function ProfilePhotoViewer({ username, id }: Props) {
           )}
           <div className="mb-12 flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Link href={`/@${photo.author.username}`} className="size-10 cursor-pointer overflow-hidden rounded-full">
+              <Link
+                href={`/@${photo.author.profile.username}`}
+                className="size-10 cursor-pointer overflow-hidden rounded-full"
+              >
                 <Image
                   className="size-full object-cover"
-                  src={optimizeImage({ src: photo.author.thumbnail ?? '', width: 280 })}
+                  src={optimizeImage({ src: photo.author.profile.thumbnail ?? '', width: 280 })}
                   alt=""
                   width={40}
                   height={40}
@@ -263,8 +266,8 @@ function ProfilePhotoViewer({ username, id }: Props) {
               </Link>
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
-                  <Link href={`/@${photo.author.username}`} className="text-sm font-semibold sm:text-base">
-                    {photo.author.nickname}
+                  <Link href={`/@${photo.author.profile.username}`} className="text-sm font-semibold sm:text-base">
+                    {photo.author.profile.nickname}
                   </Link>
                   {!photo.author.isOwner && (
                     <button
@@ -276,7 +279,7 @@ function ProfilePhotoViewer({ username, id }: Props) {
                   )}
                 </div>
                 <div className="flex items-center">
-                  <span className="text-xs font-medium text-zinc-500 sm:text-sm dark:text-zinc-400">{`@${photo.author.username}`}</span>
+                  <span className="text-xs font-medium text-zinc-500 sm:text-sm dark:text-zinc-400">{`@${photo.author.profile.username}`}</span>
                   <span className="mx-1 text-sm text-zinc-500 dark:text-zinc-400">•</span>
                   <span className="text-xs text-zinc-500 sm:text-sm dark:text-zinc-400">{`${formatNumber(photo.author.followers)} 팔로워`}</span>
                 </div>
@@ -339,7 +342,7 @@ function ProfilePhotoViewer({ username, id }: Props) {
                             //   <span className="text-sm">신고하기</span>
                             // </li>
                             <li
-                              onClick={() => router.push(`/@${photo.author.username}`)}
+                              onClick={() => router.push(`/@${photo.author.profile.username}`)}
                               className="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/40"
                             >
                               <LucideUserRound className="h-3.5 w-3.5" />

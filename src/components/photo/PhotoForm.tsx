@@ -71,7 +71,7 @@ function PhotoForm({ photo }: Props) {
             { data },
             {
               onSuccess: (response) => {
-                router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
+                router.push(`/@${response.data.author.profile.username}/photos/${response.data.id}`);
               },
             },
           ),
@@ -96,7 +96,7 @@ function PhotoForm({ photo }: Props) {
             },
             {
               onSuccess: (response) => {
-                router.push(`/@${response.data.author.username}/photos/${response.data.id}`);
+                router.push(`/@${response.data.author.profile.username}/photos/${response.data.id}`);
               },
             },
           ),

@@ -1,13 +1,13 @@
-import { UserResponse } from '@/api/index.schemas';
+import { UserSummaryResponse } from '@/api/index.schemas';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 interface AuthState {
-  user: UserResponse | null;
+  user: UserSummaryResponse | null;
 }
 
 interface AuthAction {
-  setUser: (user: UserResponse | null) => void;
+  setUser: (user: UserSummaryResponse | null) => void;
 }
 
 interface AuthStore extends AuthState, AuthAction {}

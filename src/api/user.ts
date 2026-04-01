@@ -33,7 +33,13 @@ import type {
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
 
-import type { FileResponse, UserControllerThumbnailBody, UserResponse, UserUpdateRequest } from './index.schemas';
+import type {
+  FileResponse,
+  UserControllerThumbnailBody,
+  UserResponse,
+  UserSummaryResponse,
+  UserUpdateRequest,
+} from './index.schemas';
 
 import { customFetch } from './mutator/custom-fetch';
 
@@ -498,7 +504,7 @@ export const useUserControllerUpdate = <TError = unknown, TContext = unknown>(
   return useMutation(mutationOptions, queryClient);
 };
 export type userControllerDeleteResponse200 = {
-  data: UserResponse;
+  data: UserSummaryResponse;
   status: 200;
 };
 

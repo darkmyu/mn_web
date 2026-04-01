@@ -23,7 +23,7 @@ function PhotoMasonry({ photos }: Props) {
         <Link
           key={item.id}
           scroll={false}
-          href={`/profile/${item.author.username}/photos/${item.id}`}
+          href={`/profile/${item.author.profile.username}/photos/${item.id}`}
           className="cursor-pointer overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800"
           style={style}
         >

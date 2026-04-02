@@ -1,5 +1,5 @@
 import { useAuthControllerLogout } from '@/api/auth';
-import { ROUTE_HOME_PAGE } from '@/constants/route';
+import { ROUTE_HOME_PAGE, ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { optimizeImage } from '@/utils/optimizeImage';
@@ -9,7 +9,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AuthModal from '../modal/AuthModal';
-import SettingModal from '../modal/SettingModal';
 
 function SidebarProfile() {
   const router = useRouter();
@@ -25,11 +24,8 @@ function SidebarProfile() {
     },
   });
 
-  const handleSettingButtonClick = async () => {
-    await modals.push({
-      key: 'setting-modal',
-      component: SettingModal,
-    });
+  const handleSettingButtonClick = () => {
+    router.push(ROUTE_SETTINGS_PAGE);
   };
 
   const handleLoginButtonClick = async () => {

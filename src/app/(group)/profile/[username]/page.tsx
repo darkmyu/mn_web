@@ -51,7 +51,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   return (
     <div className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-[280px_1fr] items-start gap-20 px-4 py-16 max-lg:flex max-lg:flex-col max-lg:gap-10 max-lg:py-8">
-      <div className="sticky top-16 flex w-full flex-col gap-8 max-lg:static max-lg:gap-4">
+      <div className="sticky top-16 flex w-full flex-col gap-8 max-lg:static max-lg:gap-6">
         <ProfileSuspense username={username} />
         <hr className="border-zinc-200 dark:border-zinc-700" />
         <ProfileAnimalListSuspense username={username} />

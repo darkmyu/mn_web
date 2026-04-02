@@ -7,14 +7,16 @@ import {
   useProfileControllerReadSuspense,
   useProfileControllerUnfollow,
 } from '@/api/profile';
+import { ROUTE_SETTINGS_PAGE } from '@/constants/route';
 import { useAuthStore } from '@/stores/auth';
 import { useModalStore } from '@/stores/modal';
 import { formatNumber } from '@/utils/formatters';
 import { optimizeImage } from '@/utils/optimizeImage';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AuthModal from '../modal/AuthModal';
-import SettingModal from '../modal/SettingModal';
+import ProfileSocialLinkList from './ProfileSocialLinkList';
 
 interface Props {
   username: string;
@@ -25,6 +27,7 @@ function Profile({ username }: Props) {
     data: { data: target },
   } = useProfileControllerReadSuspense(username);
 
+  const router = useRouter();
   const modals = useModalStore();
   const { user } = useAuthStore();
 
@@ -93,60 +96,62 @@ function Profile({ username }: Props) {
     }
   };
 
-  const handleSettingButtonClick = async () => {
-    await modals.push({
-      key: 'setting-modal',
-      component: SettingModal,
-    });
+  const handleSettingButtonClick = () => {
+    router.push(ROUTE_SETTINGS_PAGE);
   };
 
   return (
-    <div className="flex flex-col gap-4 max-lg:gap-6">
-      <div className="flex flex-col gap-8 max-lg:flex-row max-lg:items-center max-lg:gap-4">
-        <div className="flex size-70 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-400 max-lg:size-16 dark:border-zinc-600">
-          <Image
-            className="size-full object-cover"
-            src={optimizeImage({ src: target.thumbnail ?? '', width: 280 })}
-            alt=""
-            width={280}
-            height={280}
-            priority
-          />
-        </div>
-        <div className="flex flex-col gap-2 max-lg:gap-1">
-          <p className="text-2xl font-bold max-lg:text-base">{target.nickname}</p>
-          <div className="flex items-center gap-1.5 text-zinc-800 dark:text-zinc-300">
-            <Link href={`/@${target.username}?tab=followers`} className="text-base max-lg:text-sm">
-              <span className="font-semibold">{formatNumber(target.followers)}</span> 팔로워
-            </Link>
-            <span className="text-xs text-zinc-600">•</span>
-            <Link href={`/@${target.username}?tab=followings`} className="text-base max-lg:text-sm">
-              <span className="font-semibold">{formatNumber(target.followings)}</span> 팔로우
-            </Link>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 max-lg:gap-6">
+        <div className="flex flex-col gap-8 max-lg:flex-row max-lg:items-center max-lg:gap-4">
+          <div className="flex size-70 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-400 max-lg:size-16 dark:border-zinc-600">
+            <Image
+              className="size-full object-cover"
+              src={optimizeImage({ src: target.profile.thumbnail ?? '', width: 280 })}
+              alt=""
+              width={280}
+              height={280}
+              priority
+            />
+          </div>
+          <div className="flex flex-col gap-2 max-lg:gap-1">
+            <p className="text-2xl font-bold max-lg:text-base">{target.profile.nickname}</p>
+            <div className="flex items-center gap-1.5 text-zinc-800 dark:text-zinc-300">
+              <Link href={`/@${target.profile.username}?tab=followers`} className="text-base max-lg:text-sm">
+                <span className="font-semibold">{formatNumber(target.followers)}</span> 팔로워
+              </Link>
+              <span className="text-xs text-zinc-600">•</span>
+              <Link href={`/@${target.profile.username}?tab=followings`} className="text-base max-lg:text-sm">
+                <span className="font-semibold">{formatNumber(target.followings)}</span> 팔로우
+              </Link>
+            </div>
           </div>
         </div>
+        <div className="flex flex-col gap-6">
+          {target.profile.about && (
+            <p className="flex items-center gap-2 text-sm text-zinc-700 max-lg:px-2 dark:text-zinc-400">
+              {target.profile.about}
+            </p>
+          )}
+          {target.isOwner && (
+            <button
+              onClick={handleSettingButtonClick}
+              className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 max-lg:py-3 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            >
+              프로필 편집
+            </button>
+          )}
+          {!target.isOwner && (
+            <button
+              onClick={handleFollowButtonClick}
+              className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 max-lg:py-3 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            >
+              {target.isFollowing ? '팔로우 중' : '팔로우'}
+            </button>
+          )}
+        </div>
       </div>
-      <div className="flex flex-col gap-6">
-        {target.about && (
-          <p className="flex items-center gap-2 text-sm text-zinc-700 max-lg:px-2 dark:text-zinc-400">{target.about}</p>
-        )}
-        {target.isOwner && (
-          <button
-            onClick={handleSettingButtonClick}
-            className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 max-lg:py-3 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-          >
-            프로필 편집
-          </button>
-        )}
-        {!target.isOwner && (
-          <button
-            onClick={handleFollowButtonClick}
-            className="cursor-pointer rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-zinc-200/40 max-lg:py-3 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-          >
-            {target.isFollowing ? '팔로우 중' : '팔로우'}
-          </button>
-        )}
-      </div>
+      <ProfileSocialLinkList socialLinks={target.profile.socialLinks} />
     </div>
   );
 }

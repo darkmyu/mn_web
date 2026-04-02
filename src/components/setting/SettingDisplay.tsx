@@ -14,17 +14,17 @@ function SettingDisplay() {
   }, []);
 
   if (!mounted) {
-    return <div className="animate-fade-in p-8" />;
+    return <div className="animate-fade-in" />;
   }
 
   return (
-    <div className="animate-fade-in p-8">
+    <div className="animate-fade-in flex w-full flex-col gap-8">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200">테마</label>
-          <p className="text-xs text-zinc-500">애플리케이션의 테마를 설정합니다.</p>
+          <p className="text-xs text-zinc-500">화면의 전체적인 테마를 설정할 수 있어요.</p>
         </div>
-        <div className="flex w-fit min-w-80 items-center rounded-lg bg-zinc-100 p-1.5 dark:bg-zinc-800">
+        <div className="flex w-fit min-w-80 items-center rounded-lg bg-zinc-100 p-1.5 max-lg:w-full dark:bg-zinc-800">
           <button
             onClick={() => setTheme('light')}
             className={`relative flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
@@ -79,6 +79,22 @@ function SettingDisplay() {
             <LucideMonitor className="relative z-10 h-4 w-4" />
             <span className="relative z-10">시스템</span>
           </button>
+        </div>
+      </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200">미리보기</label>
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center gap-3 border-b border-zinc-100 p-4 dark:border-zinc-800">
+            <div className="h-8 w-8 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-700" />
+            <div className="h-3 w-24 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800" />
+          </div>
+          <div className="flex flex-col gap-3 p-4">
+            <div className="h-4 w-full animate-pulse rounded-full bg-zinc-50 dark:bg-zinc-800/50" />
+            <div className="h-4 w-[80%] animate-pulse rounded-full bg-zinc-50 dark:bg-zinc-800/50" />
+            <div className="mt-2 h-32 w-full animate-pulse rounded-xl bg-zinc-100 dark:bg-zinc-800" />
+          </div>
         </div>
       </div>
     </div>

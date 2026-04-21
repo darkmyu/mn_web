@@ -2,12 +2,12 @@
 <br />
 
 <div align="center">
-  <img width="160" height="360" alt="logo" src="https://github.com/user-attachments/assets/dbe7b8b2-7c9f-43a7-9801-4c80fd1339d9" />
+  <img width="160" height="auto" alt="logo" src="https://github.com/user-attachments/assets/dbe7b8b2-7c9f-43a7-9801-4c80fd1339d9" />
   <br />
   <br />
   <br />
   <p>반려동물 사진 공유 서비스</p>
-  <img width="200" height="858" alt="text" src="https://github.com/user-attachments/assets/cf672ae3-00ce-459d-af7b-d795ff3489cd" />
+  <img width="200" height="auto" alt="text" src="https://github.com/user-attachments/assets/cf672ae3-00ce-459d-af7b-d795ff3489cd" />
 </div>
 
 <br />

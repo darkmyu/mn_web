@@ -85,7 +85,7 @@ function OnboardingForm() {
   }, [debouncedCheckDuplicateUsernameMutate, errors.username, username]);
 
   return (
-    <main className="flex h-full flex-col items-center justify-center">
+    <main className="flex h-full flex-1 flex-col items-center justify-center">
       <div className="flex w-full flex-col gap-20 rounded-lg bg-zinc-50 p-6 sm:w-md dark:bg-zinc-900">
         <div className="flex flex-col items-center gap-4">
           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">환영합니다!</p>

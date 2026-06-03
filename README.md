@@ -42,7 +42,7 @@
 
 |프로필|
 |---|
-|<img width="1920" height="1323" alt="chrome-capture-2026-2-27 (2)" src="https://github.com/user-attachments/assets/95f2d62f-a3db-4501-a586-522057d2e282" />|
+|<img width="1920" height="1323" alt="chrome-capture-2026-2-27 (2)" src="https://github.com/user-attachments/assets/499468f3-f2ab-4ddf-9b4c-11f9b300eee6" />|
 
 <br />
 
@@ -60,6 +60,6 @@
 
 |설정|
 |---|
-|<img width="1920" height="1323" alt="chrome-capture-2026-2-27 (5)" src="https://github.com/user-attachments/assets/ea478dfe-6073-435a-818f-ab2e4c3c3255" />|
+|<img width="1920" height="1323" alt="chrome-capture-2026-2-27 (5)" src="https://github.com/user-attachments/assets/ee8b2833-20c0-46ca-85b1-67599d5e9bf6" />|
 
 </div>

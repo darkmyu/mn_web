@@ -221,16 +221,6 @@ function ProfilePhotoViewer({ username, id }: Props) {
   return (
     <div className="flex flex-col gap-12 sm:gap-24">
       <div className="relative sm:grid sm:grid-cols-4">
-        <div className="absolute inset-0 opacity-50 blur-3xl sm:opacity-35">
-          <Image
-            className="object-cover"
-            src={optimizeImage({ src: photo.image.path, width: 768 })}
-            alt=""
-            sizes="25vw"
-            fill
-            priority
-          />
-        </div>
         <div
           className="relative col-span-2 col-start-2"
           style={{ aspectRatio: photo.image.width / photo.image.height }}
